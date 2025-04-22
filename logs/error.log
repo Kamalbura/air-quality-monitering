@@ -1,0 +1,521 @@
+[2025-04-21T06:33:51.466Z] [ERR-m9qpa25m-1zkdv] API Request: Error analyzing data: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+Error: Error analyzing data: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+    at Object.analyzeData (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\services\thingspeak-service.js:441:11)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:555:9)
+    at process.processTimers (node:internal/timers:529:7)
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:224:20
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:55:22
+
+[2025-04-21T06:33:51.527Z] [ERR-m9qpa27b-ytikj] API Request: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+Error: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+    at Object.getChannelData (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\services\thingspeak-service.js:209:15)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:555:9)
+    at process.processTimers (node:internal/timers:529:7)
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:86:18
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:55:22
+
+[2025-04-21T06:34:13.037Z] [ERR-m9qpaist-9ew03] API Request: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+Error: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+    at Object.getChannelData (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\services\thingspeak-service.js:209:15)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:555:9)
+    at process.processTimers (node:internal/timers:529:7)
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:86:18
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:55:22
+
+[2025-04-21T06:34:13.072Z] [ERR-m9qpaits-9e1qx] API Request: Error analyzing data: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+Error: Error analyzing data: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+    at Object.analyzeData (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\services\thingspeak-service.js:441:11)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:555:9)
+    at process.processTimers (node:internal/timers:529:7)
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:224:20
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:55:22
+
+[2025-04-21T06:34:23.633Z] [ERR-m9qpaqz5-rklpv] API Request: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+Error: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+    at Object.getChannelData (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\services\thingspeak-service.js:209:15)
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:86:18
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:55:22
+
+[2025-04-21T06:34:45.169Z] [ERR-m9qpb7ld-s96mw] API Request: Error analyzing data: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+Error: Error analyzing data: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+    at Object.analyzeData (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\services\thingspeak-service.js:441:11)
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:224:20
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:55:22
+
+[2025-04-21T06:34:45.294Z] [ERR-m9qpb7ou-wiptg] API Request: Error analyzing data: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+Error: Error analyzing data: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+    at Object.analyzeData (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\services\thingspeak-service.js:441:11)
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:224:20
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:55:22
+
+[2025-04-21T06:34:45.330Z] [ERR-m9qpb7pu-5mti9] API Request: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+Error: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+    at Object.getChannelData (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\services\thingspeak-service.js:209:15)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:555:9)
+    at process.processTimers (node:internal/timers:529:7)
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:86:18
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:55:22
+
+[2025-04-21T06:35:17.428Z] [ERR-m9qpbwhg-285ei] API Request: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+Error: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+    at Object.getChannelData (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\services\thingspeak-service.js:209:15)
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:72:18
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:55:22
+
+[2025-04-21T06:35:43.984Z] [ERR-m9qpcgz4-0fzge] API Request: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+Error: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+    at Object.getChannelData (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\services\thingspeak-service.js:209:15)
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:72:18
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:55:22
+
+[2025-04-21T06:35:44.125Z] [ERR-m9qpch31-smssw] API Request: Error analyzing data: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+Error: Error analyzing data: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+    at Object.analyzeData (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\services\thingspeak-service.js:441:11)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:555:9)
+    at process.processTimers (node:internal/timers:529:7)
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:224:20
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:55:22
+
+[2025-04-21T06:35:44.155Z] [ERR-m9qpch3v-mt07y] API Request: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+Error: Error fetching ThingSpeak data: API Error: timeout of 10000ms exceeded
+    at Object.getChannelData (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\services\thingspeak-service.js:209:15)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:555:9)
+    at process.processTimers (node:internal/timers:529:7)
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:86:18
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:55:22
+
+[2025-04-21T06:35:50.778Z] [ERR-m9qpcm7u-ie2qr] API Request: Error fetching ThingSpeak data: API Error: getaddrinfo ENOTFOUND api.thingspeak.com
+Error: Error fetching ThingSpeak data: API Error: getaddrinfo ENOTFOUND api.thingspeak.com
+    at Object.getChannelData (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\services\thingspeak-service.js:209:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:72:18
+    at async C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:55:22
+
+[2025-04-21T06:47:03.478Z] [ERR-m9qpr19y-pomku] API Request: thingspeakService.checkChannelHealth is not a function
+TypeError: thingspeakService.checkChannelHealth is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:170:44
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\node_modules\express\lib\router\index.js:175:3)
+    at router (C:\Users\burak\Desktop\iotprojects\air-quality-monitering\node_modules\express\lib\router\index.js:47:12)
+
+[2025-04-21T16:38:45.270Z] [ERR-m9ravymu-symvj] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:39:48.240Z] [ERR-m9raxb81-f4go0] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:40:25.211Z] [ERR-m9ray3qz-s3dlo] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:40:37.576Z] [ERR-m9raydag-yxuri] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:41:20.186Z] [ERR-m9raza62-fizyy] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:41:35.009Z] [ERR-m9razllt-wz6kt] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:41:37.799Z] [ERR-m9raznrb-q3ntd] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:41:50.564Z] [ERR-m9razxlw-0kjvp] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:41:59.800Z] [ERR-m9rb04qg-5sq9t] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:43:37.603Z] [ERR-m9rb2877-h1fgx] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:43:38.782Z] [ERR-m9rb293y-mgsm7] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:44:41.110Z] [ERR-m9rb3l7a-u0xyr] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:44:55.935Z] [ERR-m9rb3wn3-iyh46] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:44:55.975Z] [ERR-m9rb3wo7-bx3am] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:44:56.023Z] [ERR-m9rb3wpj-sqpqp] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:44:56.460Z] [ERR-m9rb3x1o-lh61k] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:44:57.134Z] [ERR-m9rb3xke-eav78] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:45:17.259Z] [ERR-m9rb4d3f-3vdym] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:46:36.118Z] [ERR-m9rb61xy-e3tmq] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:46:50.687Z] [ERR-m9rb6d6n-shhqh] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:47:35.858Z] [ERR-m9rb7c1e-6u6tq] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:47:37.562Z] [ERR-m9rb7dcq-pz3cn] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:47:38.629Z] [ERR-m9rb7e6d-zm490] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:47:38.784Z] [ERR-m9rb7eao-kbbgc] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:47:38.981Z] [ERR-m9rb7eg5-20mcf] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:47:39.131Z] [ERR-m9rb7ekb-lqyao] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:47:39.429Z] [ERR-m9rb7esl-77504] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:47:52.624Z] [ERR-m9rb7oz4-mruqt] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:47:53.158Z] [ERR-m9rb7pdy-pxn2d] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:47:53.618Z] [ERR-m9rb7pqr-7lwcl] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:47:54.638Z] [ERR-m9rb7qj2-gbfuo] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:47:54.872Z] [ERR-m9rb7qpk-3ncw2] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:47:55.440Z] [ERR-m9rb7r5c-r0syw] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:48:00.654Z] [ERR-m9rb7v66-1akgf] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:48:35.728Z] [ERR-m9rb8m8g-ucue2] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+
+[2025-04-21T16:48:35.763Z] [ERR-m9rb8m9f-aujmz] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:48:42.314Z] [ERR-m9rb8rbe-llr57] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:48:57.472Z] [ERR-m9rb930g-84o2w] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:48:58.616Z] [ERR-m9rb93w8-7mob7] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:48:59.213Z] [ERR-m9rb94ct-wlkpf] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:50:19.303Z] [ERR-m9rbau5j-cfy1q] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:50:33.707Z] [ERR-m9rbb59n-n060k] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:51:00.887Z] [ERR-m9rbbq8n-o55mc] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:51:01.482Z] [ERR-m9rbbqp6-8zvp5] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:56:10.231Z] [ERR-m9rbicxj-z8hsb] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:56:13.332Z] [ERR-m9rbifbo-jiqly] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:56:22.913Z] [ERR-m9rbimpt-n6i4a] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:56:41.866Z] [ERR-m9rbj1ca-r6nij] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:56:42.653Z] [ERR-m9rbj1y5-mt3hr] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:56:54.458Z] [ERR-m9rbjb23-29f33] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:56:55.370Z] [ERR-m9rbjbre-wm9oj] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:56:58.262Z] [ERR-m9rbjdzq-qa4m8] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T16:58:14.702Z] [ERR-m9rbl0z2-w2jfr] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:00:51.519Z] [ERR-m9rbodz3-xoh22] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:01:05.376Z] [ERR-m9rbooo0-h5h3s] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:02:07.258Z] [ERR-m9rbq0ey-10k3j] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:02:10.429Z] [ERR-m9rbq2v1-6gks0] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:06:21.806Z] [ERR-m9rbvgtq-qs2fe] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:06:36.307Z] [ERR-m9rbvs0j-v8tje] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:08:22.373Z] [ERR-m9rby1ut-6govj] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:08:36.508Z] [ERR-m9rbycrg-8s2cv] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:08:36.680Z] [ERR-m9rbycw8-q4w59] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:08:37.001Z] [ERR-m9rbyd55-57vu5] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:08:48.731Z] [ERR-m9rbym6z-bejpa] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:09:02.233Z] [ERR-m9rbywm1-w040h] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:09:02.314Z] [ERR-m9rbywoa-xzq0e] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:09:10.203Z] [ERR-m9rbz2rf-gdmjy] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:12:31.707Z] [ERR-m9rc3e8r-kydx8] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:12:45.030Z] [ERR-m9rc3oiu-qmi3c] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:12:59.046Z] [ERR-m9rc3zc6-5l6ka] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:12:59.121Z] [ERR-m9rc3ze9-buf9h] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:13:02.490Z] [ERR-m9rc41zu-u2gr7] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:13:07.686Z] [ERR-m9rc4606-2oog1] API Route: Visualization generation failed
+Error: Visualization generation failed
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:307:21
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:41:28.328Z] [ERR-m9rd4m88-qvcyj] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:47:26.423Z] [ERR-m9rdcajb-74kb1] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:47:56.422Z] [ERR-m9rdcxom-22hmg] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-21T17:48:55.038Z] [ERR-m9rde6wu-943ba] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+
+[2025-04-21T18:24:44.835Z] [ERR-m9reo9pf-acuoc] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-22T00:06:02.667Z] [ERR-m9rqv6i3-w6hsy] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:124:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-22T00:10:30.835Z] [ERR-m9rr0xf7-6u9e6] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:136:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-22T00:14:16.269Z] [ERR-m9rr5rd9-4wnj1] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:136:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-04-22T00:16:06.216Z] [ERR-m9rr847c-2nptp] API Route: dataResult.data.forEach is not a function
+TypeError: dataResult.data.forEach is not a function
+    at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:136:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
