@@ -111,6 +111,9 @@ requiredDirs.forEach(dir => {
 // Routes
 app.use('/api', apiRoutes);
 
+// Add route to serve CSV files directly
+app.use('/data', express.static(path.join(__dirname, 'data')));
+
 // Dashboard routes
 app.get('/', (req, res) => {
   res.render('dashboard', { 

@@ -403,6 +403,83 @@ router.get('/analysis', async (req, res) => {
   }
 });
 
+// API endpoint for raw CSV data access (for client-side visualizations)
+router.get('/csv-data', async (req, res) => {
+  const { startDate, endDate } = req.query;
+  const cacheKey = `csv_data_${startDate || 'all'}_${endDate || 'all'}`;
+  
+  if (apiCache.has(cacheKey)) {
+    return res.json(apiCache.get(cacheKey));
+  }
+  
+  try {
+    // Try both possible CSV paths
+    let dataPath = path.join(__dirname, '..', 'data', 'air_quality_data.csv');
+    if (!fs.existsSync(dataPath)) {
+      dataPath = path.join(__dirname, '..', 'data', 'feeds-data.csv');
+      if (!fs.existsSync(dataPath)) {
+        throw new Error("No CSV data files found");
+      }
+    }
+    
+    console.log(`Reading CSV data from: ${dataPath}`);
+    const data = [];
+    
+    // Use streams for memory efficiency
+    const parser = fs.createReadStream(dataPath).pipe(require('csv-parser')());
+    
+    // Parse start and end dates if provided
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+    
+    // Process the CSV data
+    for await (const row of parser) {
+      // Apply date filter if provided
+      if (start || end) {
+        const rowDate = new Date(row.created_at);
+        if ((start && rowDate < start) || (end && rowDate > end)) {
+          continue; // Skip rows outside date range
+        }
+      }
+      
+      // Map fields for consistency
+      data.push({
+        created_at: row.created_at,
+        entry_id: row.entry_id || data.length + 1,
+        humidity: parseFloat(row.humidity || row.field1),
+        temperature: parseFloat(row.temperature || row.field2),
+        pm25: parseFloat(row.pm25 || row.field3),
+        pm10: parseFloat(row.pm10 || row.field4),
+        // Also include the field names for compatibility
+        field1: parseFloat(row.humidity || row.field1),
+        field2: parseFloat(row.temperature || row.field2),
+        field3: parseFloat(row.pm25 || row.field3),
+        field4: parseFloat(row.pm10 || row.field4)
+      });
+    }
+    
+    const response = {
+      data,
+      count: data.length,
+      source: 'csv',
+      path: dataPath,
+      timestamp: new Date().toISOString()
+    };
+    
+    // Cache with appropriate TTL based on size
+    const ttl = data.length > 1000 ? 1800 : 600; // 30 min for large data, 10 min for smaller
+    apiCache.set(cacheKey, response, ttl);
+    
+    res.json(response);
+  } catch (error) {
+    console.error('Error reading CSV data:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // API endpoint for retrieving data
 router.get('/data', async (req, res) => {
   const { limit, page } = req.query;

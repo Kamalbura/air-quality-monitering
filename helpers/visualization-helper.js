@@ -272,11 +272,26 @@ async function generateVisualization(type, options = {}) {
     
     while (retries > 0) {
       try {
+        // CHANGE: First try to use the local CSV file directly
+        const csvData = await readLocalCsvData(
+          options.dataPath || path.join(__dirname, '..', 'data', 'air_quality_data.csv'),
+          options.startDate,
+          options.endDate
+        );
+        
+        if (csvData && csvData.length > 0) {
+          console.log(`Successfully read ${csvData.length} records from local CSV file`);
+          result = { data: csvData };
+          break;
+        }
+        
+        // If local file read fails or has no data, fall back to ThingSpeak
         result = await thingspeakService.getChannelData({
           results: Math.min(options.sampling || 1000, 10000), // Cap at 10,000 to prevent memory issues
           start: options.startDate,
           end: options.endDate
         });
+        
         if (result && result.data && result.data.length > 0) {
           break;
         }
@@ -290,21 +305,24 @@ async function generateVisualization(type, options = {}) {
       }
     }
     
-    if (!result || !result.data || result.data.length === 0) {
-      console.log('No data available for visualization');
-      return {
-        success: false,
-        error: 'No data available for visualization',
-        data: {
-          imagePath: ensureErrorImageExists(),
-          description: 'No data available for the selected date range.',
-        },
-        clientSide: true  // Signal that client-side rendering should be used
-      };
+    // Safety check - if result.data is not an array, make it one
+    if (!result || !result.data) {
+      console.log('No data available for visualization - creating empty result');
+      result = { data: [] };
+    } else if (!Array.isArray(result.data)) {
+      console.log('Converting result.data to array format');
+      if (typeof result.data === 'object' && Array.isArray(result.data.data)) {
+        result.data = result.data.data; // Fix the path for ThingSpeak data structure
+      } else {
+        result.data = []; // Create empty array as fallback
+      }
     }
     
+     dataPoints = result.data.length;
+    console.log(`Retrieved ${dataPoints} data points for visualization`);
+    
     // For large datasets, create data in chunks to avoid memory issues
-    const dataPoints = result.data.length;
+    dataPoints = result.data.length;
     console.log(`Retrieved ${dataPoints} data points for visualization`);
     
     // Memory efficient CSV creation - use streaming for large datasets
@@ -504,6 +522,72 @@ async function generateVisualization(type, options = {}) {
     process.removeListener('SIGINT', exitHandler);
     process.removeListener('uncaughtException', exitHandler);
   }
+}
+
+/**
+ * Read data directly from local CSV file
+ * @param {string} filePath - Path to CSV file
+ * @param {string} startDate - Optional start date filter
+ * @param {string} endDate - Optional end date filter
+ * @returns {Promise<Array>} - Array of data objects
+ */
+async function readLocalCsvData(filePath, startDate, endDate) {
+  return new Promise((resolve, reject) => {
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      console.log(`CSV file not found at ${filePath}, trying alternate location...`);
+      // Try alternate path
+      const alternatePath = path.join(__dirname, '..', 'data', 'feeds-data.csv');
+      if (fs.existsSync(alternatePath)) {
+        filePath = alternatePath;
+      } else {
+        console.error('No CSV file found');
+        return resolve([]);
+      }
+    }
+    
+    console.log(`Reading CSV data from ${filePath}`);
+    
+    const results = [];
+    const stream = fs.createReadStream(filePath)
+      .pipe(require('csv-parser')())
+      .on('data', (row) => {
+        // Convert date strings to Date objects for comparison
+        const rowDate = new Date(row.created_at);
+        
+        // Apply date filter if provided
+        if (startDate && endDate) {
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+          if (rowDate < start || rowDate > end) {
+            return; // Skip rows outside date range
+          }
+        }
+        
+        // Map fields for consistency
+        results.push({
+          created_at: row.created_at,
+          entry_id: parseInt(row.entry_id) || results.length + 1,
+          humidity: parseFloat(row.humidity || row.field1) || null,
+          temperature: parseFloat(row.temperature || row.field2) || null,
+          pm25: parseFloat(row.pm25 || row.field3) || null,
+          pm10: parseFloat(row.pm10 || row.field4) || null,
+          // Also include field names for compatibility
+          field1: parseFloat(row.humidity || row.field1) || null,
+          field2: parseFloat(row.temperature || row.field2) || null,
+          field3: parseFloat(row.pm25 || row.field3) || null,
+          field4: parseFloat(row.pm10 || row.field4) || null
+        });
+      })
+      .on('end', () => {
+        console.log(`CSV parsing complete, read ${results.length} rows`);
+        resolve(results);
+      })
+      .on('error', (error) => {
+        console.error('Error reading CSV:', error);
+        reject(error);
+      });
+  });
 }
 
 /**

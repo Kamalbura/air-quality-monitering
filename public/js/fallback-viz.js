@@ -1,10 +1,35 @@
 /**
- * Fallback Visualization System
- * Provides client-side visualization when Python processing fails
+ * Enhanced Fallback Visualization System
+ * Provides powerful client-side visualization when Python processing fails
  */
 (function() {
   // Initialize the module
-  console.log("Fallback visualization module loaded");
+  console.log("Enhanced visualization module loaded");
+  
+  // Register required Chart.js plugins if available
+  if (Chart) {
+    if (Chart.registry && Chart.registry.plugins) {
+      // Check for and register annotation plugin
+      if (window.ChartAnnotation && !Chart.registry.plugins.get('annotation')) {
+        Chart.register(window.ChartAnnotation);
+        console.log("Registered Chart.js annotation plugin");
+      }
+      
+      // Check for and register zoom plugin
+      if (window.ChartZoom && !Chart.registry.plugins.get('zoom')) {
+        Chart.register(window.ChartZoom);
+        console.log("Registered Chart.js zoom plugin");
+      }
+      
+      // Check for and register matrix plugin
+      if (window.ChartMatrixController && !Chart.registry.controllers.get('matrix')) {
+        Chart.register(window.ChartMatrixController);
+        console.log("Registered Chart.js matrix plugin");
+      }
+    }
+  } else {
+    console.error("Chart.js not found! Visualizations will not work correctly.");
+  }
   
   /**
    * Render a chart using client-side fallback
@@ -13,7 +38,7 @@
    * @param {HTMLElement} container - Container element
    */
   function renderChart(type, rawData, container) {
-    console.log(`Rendering fallback ${type} chart with ${rawData?.length || 0} points`);
+    console.log(`Rendering enhanced ${type} chart with ${rawData?.length || 0} points`);
     
     // Clear the container and create canvas
     container.innerHTML = '';
@@ -22,49 +47,220 @@
     canvas.height = container.clientHeight;
     container.appendChild(canvas);
     
-    // Get chart context
+    // Get the context for drawing
     const ctx = canvas.getContext('2d');
     
     // Check if we have usable data
-    if (!rawData || rawData.length === 0) {
+    if (!rawData || !Array.isArray(rawData) || rawData.length === 0) {
       showNoDataMessage(ctx, canvas);
       return;
     }
     
-    try {
-      // Extract data with validation
-      const points = processData(rawData);
-      
-      if (points.dates.length === 0) {
-        showNoDataMessage(ctx, canvas);
-        return;
+    // Add loading indicator
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.className = 'spinner-border text-primary';
+    loadingIndicator.setAttribute('role', 'status');
+    loadingIndicator.style.position = 'absolute';
+    loadingIndicator.style.top = '50%';
+    loadingIndicator.style.left = '50%';
+    loadingIndicator.style.transform = 'translate(-50%, -50%)';
+    loadingIndicator.innerHTML = '<span class="visually-hidden">Processing...</span>';
+    container.appendChild(loadingIndicator);
+    
+    // Process data in a setTimeout to avoid blocking the UI
+    setTimeout(() => {
+      try {
+        // Process the raw data into the expected format
+        const points = processData(rawData);
+        
+        if (points.dates.length === 0) {
+          showNoDataMessage(ctx, canvas);
+          container.removeChild(loadingIndicator);
+          return;
+        }
+        
+        // Remove loading indicator after processing
+        container.removeChild(loadingIndicator);
+        
+        // Select the appropriate visualization based on type
+        switch(type) {
+          case 'time_series':
+            renderEnhancedTimeSeries(canvas, points);
+            break;
+          case 'daily_pattern':
+            renderEnhancedDailyPattern(canvas, points);
+            break;
+          case 'correlation':
+            renderEnhancedCorrelation(canvas, points);
+            break;
+          case 'heatmap':
+            renderEnhancedHeatmap(canvas, points);
+            break;
+          case 'aqi':
+            renderAQIGauge(canvas, points);
+            break;
+          case 'pm25_trend':
+            renderPM25Trend(canvas, points);
+            break;
+          case 'standard':
+            renderEnhancedTimeSeries(canvas, points);
+            break;
+          default:
+            console.warn(`Unsupported visualization type: ${type}, falling back to time series`);
+            renderEnhancedTimeSeries(canvas, points);
+        }
+      } catch (error) {
+        console.error("Error rendering visualization:", error);
+        showErrorMessage(ctx, canvas, error.message);
+        if (loadingIndicator.parentNode) {
+          container.removeChild(loadingIndicator);
+        }
       }
-      
-      // Render appropriate chart based on type
-      switch(type) {
-        case 'time_series':
-          renderTimeSeriesChart(canvas, points);
-          break;
-        case 'daily_pattern':
-          renderDailyPatternChart(canvas, points);
-          break;
-        case 'correlation':
-          renderCorrelationChart(canvas, points);
-          break;
-        case 'heatmap':
-          renderHeatmapChart(canvas, points);
-          break;
-        default:
-          renderTimeSeriesChart(canvas, points); // Default
-      }
-    } catch (error) {
-      console.error("Error rendering fallback visualization:", error);
-      showErrorMessage(ctx, canvas, error.message);
-    }
+    }, 10);
   }
   
   /**
+   * Render enhanced time series chart with annotation support and WHO guidelines
+   */
+  function renderEnhancedTimeSeries(canvas, data) {
+    // Resample data if there are too many points
+    let displayData = data;
+    if (data.dates.length > 500) {
+      displayData = resampleData(data, 500);
+    }
+    
+    // Add WHO guideline values
+    const whoGuidelines = [{
+      label: 'WHO PM2.5 Guideline',
+      value: 15,
+      borderColor: 'rgba(255, 0, 0, 0.7)',
+      borderWidth: 2,
+      borderDash: [5, 5]
+    }, {
+      label: 'WHO PM10 Guideline',
+      value: 45,
+      borderColor: 'rgba(255, 165, 0, 0.7)',
+      borderWidth: 2,
+      borderDash: [5, 5]
+    }];
+    
+    // Create annotations for guidelines
+    const annotations = {};
+    whoGuidelines.forEach((guideline, index) => {
+      annotations[`line${index}`] = {
+        type: 'line',
+        yMin: guideline.value,
+        yMax: guideline.value,
+        borderColor: guideline.borderColor,
+        borderWidth: guideline.borderWidth,
+        borderDash: guideline.borderDash,
+        label: {
+          display: true,
+          content: guideline.label,
+          position: 'end',
+          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+          color: guideline.borderColor,
+          font: {
+            weight: 'bold'
+          }
+        }
+      };
+    });
+    
+    new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: displayData.dates,
+        datasets: [
+          {
+            label: 'PM2.5',
+            data: displayData.pm25,
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: Math.min(3, Math.max(1, Math.floor(300 / displayData.dates.length)))
+          },
+          {
+            label: 'PM10',
+            data: displayData.pm10,
+            borderColor: 'rgba(255, 99, 132, 1)',
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: Math.min(3, Math.max(1, Math.floor(300 / displayData.dates.length)))
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false,
+        },
+        scales: {
+          x: {
+            type: 'time',
+            time: {
+              unit: determineTimeUnit(displayData.dates)
+            },
+            title: {
+              display: true,
+              text: 'Date/Time'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Concentration (μg/m³)'
+            },
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          title: {
+            display: true,
+            text: 'Air Quality Time Series'
+          },
+          annotation: {
+            annotations: annotations
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.dataset.label || '';
+                const value = context.raw !== null ? context.raw.toFixed(2) : 'N/A';
+                return `${label}: ${value} μg/m³`;
+              }
+            }
+          },
+          zoom: {
+            pan: {
+              enabled: true,
+              mode: 'x',
+            },
+            zoom: {
+              wheel: {
+                enabled: true,
+              },
+              pinch: {
+                enabled: true
+              },
+              mode: 'x',
+            }
+          }
+        }
+      }
+    });
+  }
+  
+  // ...other existing helper functions...
+  
+  /**
    * Process raw data into usable format with validation and field mapping
+   * @param {Array} rawData - The raw data from the API or CSV
+   * @returns {Object} Processed data with date objects and validated values
    */
   function processData(rawData) {
     const result = {
@@ -75,6 +271,17 @@
       humidity: []
     };
     
+    // Handle undefined or null data
+    if (!rawData || !Array.isArray(rawData) || rawData.length === 0) {
+      console.warn("No data provided to process or data is not an array");
+      return result;
+    }
+    
+    // Debug to verify data structure
+    console.log(`Processing ${rawData.length} data points, first item:`, 
+                rawData[0] ? JSON.stringify(rawData[0]) : 'undefined');
+    
+    // Process each data point into visualization-friendly format
     rawData.forEach(item => {
       if (!item || !item.created_at) return; // Skip invalid items
       
@@ -98,331 +305,79 @@
       }
     });
     
+    console.log(`Processed data contains ${result.dates.length} valid points`);
     return result;
   }
   
   /**
-   * Render time series chart
-   */
-  function renderTimeSeriesChart(canvas, data) {
-    new Chart(canvas, {
-      type: 'line',
-      data: {
-        labels: data.dates,
-        datasets: [
-          {
-            label: 'PM2.5',
-            data: data.pm25,
-            borderColor: 'rgba(75, 192, 192, 1)',
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            tension: 0.4,
-            pointRadius: Math.min(3, Math.max(1, Math.floor(300 / data.dates.length)))
-          },
-          {
-            label: 'PM10',
-            data: data.pm10,
-            borderColor: 'rgba(255, 99, 132, 1)',
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            tension: 0.4,
-            pointRadius: Math.min(3, Math.max(1, Math.floor(300 / data.dates.length)))
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            type: 'time',
-            time: {
-              unit: determineTimeUnit(data.dates)
-            },
-            title: {
-              display: true,
-              text: 'Date/Time'
-            }
-          },
-          y: {
-            title: {
-              display: true,
-              text: 'Concentration (μg/m³)'
-            },
-            beginAtZero: true
-          }
-        },
-        plugins: {
-          title: {
-            display: true,
-            text: 'Air Quality Time Series'
-          }
-        }
-      }
-    });
-  }
-  
-  /**
-   * Render daily pattern chart
-   */
-  function renderDailyPatternChart(canvas, data) {
-    // Group data by hour
-    const hourlyData = Array(24).fill().map(() => ({pm25: [], pm10: []}));
-    
-    data.dates.forEach((date, i) => {
-      const hour = date.getHours();
-      hourlyData[hour].pm25.push(data.pm25[i]);
-      hourlyData[hour].pm10.push(data.pm10[i]);
-    });
-    
-    // Calculate averages
-    const hours = Array(24).fill().map((_, i) => i);
-    const pm25Avg = hourlyData.map(hour => {
-      const validValues = hour.pm25.filter(v => v !== null);
-      return validValues.length ? 
-        validValues.reduce((sum, val) => sum + val, 0) / validValues.length : null;
-    });
-    const pm10Avg = hourlyData.map(hour => {
-      const validValues = hour.pm10.filter(v => v !== null);
-      return validValues.length ? 
-        validValues.reduce((sum, val) => sum + val, 0) / validValues.length : null;
-    });
-    
-    new Chart(canvas, {
-      type: 'bar',
-      data: {
-        labels: hours.map(h => `${h}:00`),
-        datasets: [
-          {
-            label: 'PM2.5 Average',
-            data: pm25Avg,
-            backgroundColor: 'rgba(75, 192, 192, 0.5)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1
-          },
-          {
-            label: 'PM10 Average',
-            data: pm10Avg,
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            borderColor: 'rgba(255, 99, 132, 1)',
-            borderWidth: 1
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Average Concentration (μg/m³)'
-            }
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Hour of Day'
-            }
-          }
-        },
-        plugins: {
-          title: {
-            display: true,
-            text: 'Daily Air Quality Pattern'
-          }
-        }
-      }
-    });
-  }
-  
-  /**
-   * Render correlation chart
-   */
-  function renderCorrelationChart(canvas, data) {
-    // Create scatter plot data
-    const pm25VsTemp = data.pm25.map((pm25, i) => ({
-      x: data.temp[i],
-      y: pm25
-    })).filter(point => point.x !== null && point.y !== null);
-    
-    const pm25VsHumidity = data.pm25.map((pm25, i) => ({
-      x: data.humidity[i],
-      y: pm25
-    })).filter(point => point.x !== null && point.y !== null);
-    
-    new Chart(canvas, {
-      type: 'scatter',
-      data: {
-        datasets: [
-          {
-            label: 'PM2.5 vs Temperature',
-            data: pm25VsTemp,
-            backgroundColor: 'rgba(75, 192, 192, 0.5)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            pointRadius: 3
-          },
-          {
-            label: 'PM2.5 vs Humidity',
-            data: pm25VsHumidity,
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            borderColor: 'rgba(255, 99, 132, 1)',
-            pointRadius: 3,
-            hidden: true
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: 'Temperature / Humidity'
-            }
-          },
-          y: {
-            title: {
-              display: true,
-              text: 'PM2.5 (μg/m³)'
-            }
-          }
-        },
-        plugins: {
-          title: {
-            display: true,
-            text: 'Correlation Analysis'
-          }
-        }
-      }
-    });
-  }
-  
-  /**
-   * Render heatmap chart (fallback as basic bar chart)
-   */
-  function renderHeatmapChart(canvas, data) {
-    // Group data by day of week
-    const dayData = Array(7).fill().map(() => ({pm25: [], pm10: []}));
-    
-    data.dates.forEach((date, i) => {
-      const day = date.getDay();
-      dayData[day].pm25.push(data.pm25[i]);
-      dayData[day].pm10.push(data.pm10[i]);
-    });
-    
-    // Calculate averages
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const pm25Avg = dayData.map(day => {
-      const validValues = day.pm25.filter(v => v !== null);
-      return validValues.length ? 
-        validValues.reduce((sum, val) => sum + val, 0) / validValues.length : 0;
-    });
-    const pm10Avg = dayData.map(day => {
-      const validValues = day.pm10.filter(v => v !== null);
-      return validValues.length ? 
-        validValues.reduce((sum, val) => sum + val, 0) / validValues.length : 0;
-    });
-    
-    new Chart(canvas, {
-      type: 'bar',
-      data: {
-        labels: days,
-        datasets: [
-          {
-            label: 'PM2.5 Average',
-            data: pm25Avg,
-            backgroundColor: 'rgba(75, 192, 192, 0.5)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1
-          },
-          {
-            label: 'PM10 Average',
-            data: pm10Avg,
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            borderColor: 'rgba(255, 99, 132, 1)',
-            borderWidth: 1
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Concentration (μg/m³)'
-            }
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Day of Week'
-            }
-          }
-        },
-        plugins: {
-          title: {
-            display: true,
-            text: 'Weekly Air Quality Pattern'
-          }
-        }
-      }
-    });
-  }
-  
-  /**
-   * Determine appropriate time unit based on data range
-   */
-  function determineTimeUnit(dates) {
-    if (!dates || dates.length < 2) return 'hour';
-    
-    const firstDate = new Date(dates[0]);
-    const lastDate = new Date(dates[dates.length - 1]);
-    const diffMs = lastDate - firstDate;
-    const diffDays = diffMs / (1000 * 60 * 60 * 24);
-    
-    if (diffDays < 1) return 'hour';
-    if (diffDays < 14) return 'day';
-    if (diffDays < 60) return 'week';
-    return 'month';
-  }
-  
-  /**
-   * Show message when no data is available
-   */
-  function showNoDataMessage(ctx, canvas) {
-    canvas.width = 400;  // Set default width
-    canvas.height = 200; // Set default height
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.font = '16px Arial';
-    ctx.fillStyle = '#666';
-    ctx.fillText('No data available for visualization', canvas.width / 2, canvas.height / 2);
-  }
-  
-  /**
-   * Show error message
+   * Display error message on canvas
    */
   function showErrorMessage(ctx, canvas, message) {
-    canvas.width = 400;  // Set default width
-    canvas.height = 200; // Set default height
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    
+    // Draw error icon
+    ctx.beginPath();
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2 - 30;
+    const radius = 30;
+    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+    ctx.fillStyle = 'rgba(220, 53, 69, 0.1)';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(220, 53, 69, 1)';
+    ctx.stroke();
+    
+    // Draw exclamation mark
+    ctx.font = 'bold 40px Arial';
+    ctx.fillStyle = 'rgba(220, 53, 69, 1)';
+    ctx.fillText('!', centerX, centerY);
+    
+    // Draw error message
     ctx.font = '16px Arial';
-    ctx.fillStyle = '#dc3545';
-    ctx.fillText('Error rendering visualization', canvas.width / 2, canvas.height / 2 - 20);
+    ctx.fillText('Visualization Error', centerX, centerY + 50);
     ctx.font = '14px Arial';
-    ctx.fillText(message, canvas.width / 2, canvas.height / 2 + 20);
+    ctx.fillText(message, centerX, centerY + 75);
+    ctx.fillText('Try refreshing or selecting a different date range', centerX, centerY + 95);
+  }
+  
+  /**
+   * Display no data message on canvas
+   */
+  function showNoDataMessage(ctx, canvas) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    // Draw icon
+    ctx.beginPath();
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2 - 20;
+    const radius = 30;
+    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+    ctx.fillStyle = 'rgba(108, 117, 125, 0.1)';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(108, 117, 125, 0.6)';
+    ctx.stroke();
+    
+    // Draw icon content
+    ctx.font = 'bold 16px Arial';
+    ctx.fillStyle = 'rgba(108, 117, 125, 0.6)';
+    ctx.fillText('?', centerX, centerY);
+    
+    // Draw message
+    ctx.font = '16px Arial';
+    ctx.fillStyle = 'rgba(108, 117, 125, 0.8)';
+    ctx.fillText('No data available for visualization', centerX, centerY + 60);
+    ctx.font = '14px Arial';
+    ctx.fillText('Try selecting a different date range', centerX, centerY + 85);
   }
   
   // Export API
   window.FallbackViz = {
-    renderChart: renderChart,
-    version: '1.0.0'
+    renderChart,
+    version: '2.0.0'
   };
 })();

@@ -499,6 +499,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function loadVisualization(type = 'time_series', options = {}) {
     console.log(`Loading visualization: ${type}`);
     document.getElementById('viz-description').textContent = 'Loading visualization...';
+    document.getElementById('vizTitle').textContent = getVizTitle(type);
     
     const vizContainer = document.getElementById('visualization-container');
     vizContainer.innerHTML = `
@@ -512,12 +513,31 @@ document.addEventListener('DOMContentLoaded', function() {
     // Build query parameters
     const params = new URLSearchParams({ ...options });
     
+    // Update app state to track current viz type
+    appState.currentVizType = type;
+    
+    // Check if we're using client-side rendering
+    const useClientSide = localStorage.getItem('useClientSideViz') === 'true';
+    
+    // Update toggle button text
+    const toggleBtn = document.getElementById('toggleVizMode');
+    if (toggleBtn) {
+      toggleBtn.innerHTML = useClientSide ? 
+        '<i class="bi bi-server"></i> Use Server Rendering' : 
+        '<i class="bi bi-browser"></i> Use Client Rendering';
+    }
+    
+    if (useClientSide) {
+      console.log('Using client-side visualization rendering');
+      loadDataAndRenderClientSide(type, options);
+      return;
+    }
+    
+    // Try server-side rendering first
+    console.log(`Fetching ${type} visualization from server with params:`, options);
+    
     // Direct path loading for standard visualizations
     if (type === 'time_series' || type === 'pm25_trend') {
-      // Add debug logging to help troubleshoot
-      console.log(`Fetching standard visualization: ${type} with params:`, options);
-      console.log(`Endpoint URL: /api/visualizations/standard?${params.toString()}`);
-      
       fetch(`/api/visualizations/standard?${params.toString()}`)
         .then(response => {
           if (!response.ok) {
@@ -534,93 +554,311 @@ document.addEventListener('DOMContentLoaded', function() {
               imageUrl = result.data.pm25Trend;
             }
             
-            // Verify image exists by trying to load it first
+            // Verify image exists by trying to load it
             const img = new Image();
             img.onload = function() {
-              // Image exists and loaded successfully
+              // Image loaded successfully
               vizContainer.innerHTML = `<img src="${imageUrl}" class="img-fluid" alt="${type} visualization">`;
               
               // Set description based on statistics
-              const stats = result.data.stats || {};
-              let description = '';
-              if (type === 'time_series') {
-                description = `Time series analysis of air quality data`;
-                if (stats.date_range) {
-                  description += ` from ${stats.date_range.start || 'N/A'} to ${stats.date_range.end || 'N/A'}.`;
-                }
-                if (stats.average_pm25 !== undefined) {
-                  description += ` Average PM2.5: ${Number(stats.average_pm25).toFixed(2)} μg/m³,`;
-                }
-                if (stats.average_pm10 !== undefined) {
-                  description += ` Average PM10: ${Number(stats.average_pm10).toFixed(2)} μg/m³.`;
-                }
-              } else {
-                description = `PM2.5 trend analysis with rolling average.`;
-                if (stats.min_pm25 !== undefined && stats.max_pm25 !== undefined) {
-                  description += ` Range: ${Number(stats.min_pm25).toFixed(2)} to ${Number(stats.max_pm25).toFixed(2)} μg/m³.`;
-                }
-              }
-              
-              document.getElementById('viz-description').textContent = description;
+              updateVizDescription(type, result.data.stats);
               
               // Update dashboard stats
-              updateDashboardStats(stats);
+              updateDashboardStats(result.data.stats);
             };
             
             img.onerror = function() {
-              // Image failed to load
-              console.error(`Failed to load image: ${imageUrl}`);
-              vizContainer.innerHTML = `
-                <div class="alert alert-warning">
-                  <h5>Visualization Not Available</h5>
-                  <p>The generated image could not be loaded. The file may be missing or corrupted.</p>
-                  <p>Try refreshing the visualization or check server logs.</p>
-                  <p>Path: ${imageUrl}</p>
-                </div>
-              `;
-              document.getElementById('viz-description').textContent = 'Error loading visualization image.';
+              console.error(`Failed to load image from ${imageUrl}, falling back to client-side`);
+              loadDataAndRenderClientSide(type, options);
             };
             
-            // Start the image loading
             img.src = imageUrl;
+          } else if (result.clientSide) {
+            loadDataAndRenderClientSide(type, options);
           } else {
-            vizContainer.innerHTML = `
-              <div class="alert alert-danger">
-                <h5>Visualization Error</h5>
-                <p>${result.error || 'Failed to load visualization'}</p>
-                <p>Details: ${JSON.stringify(result.error || {})}</p>
-              </div>
-            `;
-            document.getElementById('viz-description').textContent = 'Error loading visualization.';
+            console.warn('Error from standard visualization API:', result.error);
+            loadDataAndRenderClientSide(type, options);
+          }
+        })
+        .catch(error => {
+          console.error("Error loading visualization:", error);
+          showToast('Falling back to client-side rendering', 'warning');
+          loadDataAndRenderClientSide(type, options);
+        });
+    } else {
+      // Use the regular visualization API for other types
+      fetch(`/api/visualizations/${type}?${params.toString()}`)
+        .then(response => response.json())
+        .then(result => {
+          if (result.success && result.data) {
+            vizContainer.innerHTML = `<img src="${result.data.imagePath}" class="img-fluid" alt="${type} visualization">`;
+            document.getElementById('viz-description').textContent = result.data.description || '';
+          } else {
+            // Fall back to client-side for any error
+            loadDataAndRenderClientSide(type, options);
           }
         })
         .catch(error => {
           console.error("Error in visualization fetch:", error);
-          vizContainer.innerHTML = `
-            <div class="alert alert-danger">
-              <h5>Connection Error</h5>
-              <p>Could not connect to visualization service: ${error.message}</p>
-              <p>Make sure Python is running and the server is set up correctly</p>
-            </div>
-          `;
-          document.getElementById('viz-description').textContent = 'Connection error while loading visualization.';
-        });
-    } else {
-      // Use the regular visualization API for other types
-      console.log(`Fetching non-standard visualization: ${type} with params:`, options);
-      console.log(`Endpoint URL: /api/visualizations/${type}?${params.toString()}`);
-      
-      fetch(`/api/visualizations/${type}?${params.toString()}`)
-        .then(response => response.json())
-        .then(result => {
-          // ...existing code for other visualization types...
-        })
-        .catch(error => {
-          // ...existing error handling...
+          loadDataAndRenderClientSide(type, options);
         });
     }
   }
-
+  
+  /**
+   * Get visualization title based on type
+   */
+  function getVizTitle(type) {
+    const titles = {
+      'time_series': 'Time Series Visualization',
+      'daily_pattern': 'Daily Pattern Analysis',
+      'correlation': 'Environmental Correlation Analysis',
+      'heatmap': 'Weekly Heatmap',
+      'pm25_trend': 'PM2.5 Trend Analysis',
+      'aqi': 'Air Quality Index'
+    };
+    return titles[type] || 'Visualization';
+  }
+  
+  /**
+   * Update visualization description based on type and stats
+   */
+  function updateVizDescription(type, stats = {}) {
+    let description = '';
+    
+    switch(type) {
+      case 'time_series':
+        description = `Time series analysis of air quality data`;
+        if (stats.date_range) {
+          description += ` from ${stats.date_range.start || 'N/A'} to ${stats.date_range.end || 'N/A'}.`;
+        }
+        if (stats.average_pm25 !== undefined) {
+          description += ` Average PM2.5: ${Number(stats.average_pm25).toFixed(2)} μg/m³,`;
+        }
+        if (stats.average_pm10 !== undefined) {
+          description += ` Average PM10: ${Number(stats.average_pm10).toFixed(2)} μg/m³.`;
+        }
+        break;
+      case 'pm25_trend':
+        description = `PM2.5 trend analysis with rolling average.`;
+        if (stats.min_pm25 !== undefined && stats.max_pm25 !== undefined) {
+          description += ` Range: ${Number(stats.min_pm25).toFixed(2)} to ${Number(stats.max_pm25).toFixed(2)} μg/m³.`;
+        }
+        break;
+      default:
+        description = `${getVizTitle(type)} showing air quality patterns.`;
+    }
+    
+    document.getElementById('viz-description').textContent = description;
+  }
+  
+  /**
+   * Load data and render visualization client-side
+   */
+  function loadDataAndRenderClientSide(type, options = {}) {
+    console.log(`Rendering client-side visualization: ${type}`);
+    document.getElementById('viz-description').textContent = 'Preparing client-side visualization...';
+    
+    // Build the parameters for CSV data API
+    const params = new URLSearchParams({
+      // Pass date range if provided
+      ...(options.startDate && { startDate: options.startDate }),
+      ...(options.endDate && { endDate: options.endDate })
+    });
+    
+    // Show loading indicator
+    const vizContainer = document.getElementById('visualization-container');
+    vizContainer.innerHTML = `
+      <div class="d-flex flex-column justify-content-center align-items-center h-100">
+        <div class="mb-2">Loading and processing data...</div>
+        <div class="progress w-75 mb-3">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+        </div>
+        <div id="viz-loading-status">Fetching data...</div>
+      </div>
+    `;
+    
+    // Attempt to fetch CSV data directly (most efficient)
+    fetch(`/api/csv-data?${params.toString()}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Failed to fetch CSV data: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(result => {
+        if (!result || !result.data || result.data.length === 0) {
+          throw new Error('No data available');
+        }
+        
+        document.getElementById('viz-loading-status').innerText = `Processing ${result.data.length} data points...`;
+        
+        // Avoid UI blocking with setTimeout
+        setTimeout(() => {
+          try {
+            // Render visualization with the enhanced fallback visualizer
+            window.FallbackViz.renderChart(type, result.data, vizContainer);
+            
+            // Calculate stats for the description
+            const stats = calculateStats(result.data);
+            updateDashboardStats(stats);
+            
+            // Set description based on visualization type
+            updateVizDescription(type, stats);
+            
+            showToast('Client-side visualization rendered successfully', 'info');
+          } catch (err) {
+            console.error('Error rendering client-side visualization:', err);
+            vizContainer.innerHTML = `
+              <div class="alert alert-danger">
+                <h5>Rendering Error</h5>
+                <p>Failed to render visualization: ${err.message}</p>
+                <p>Try switching to server-side rendering or select a different date range.</p>
+              </div>
+            `;
+            document.getElementById('viz-description').textContent = 'Error rendering visualization.';
+            showToast('Visualization rendering failed', 'error');
+          }
+        }, 100);
+      })
+      .catch(error => {
+        console.error("Error in client-side visualization:", error);
+        
+        // Fall back to regular data API as last resort
+        fetch(`/api/data?${params.toString()}`)
+          .then(response => response.json())
+          .then(result => {
+            if (result.success && result.data && result.data.data) {
+              // Try to render using this data
+              setTimeout(() => {
+                try {
+                  window.FallbackViz.renderChart(type, result.data.data, vizContainer);
+                  document.getElementById('viz-description').textContent = `Client-side visualization using ${result.data.data.length} data points.`;
+                } catch (err) {
+                  vizContainer.innerHTML = `
+                    <div class="alert alert-danger">
+                      <h5>Visualization Error</h5>
+                      <p>Failed to render: ${err.message}</p>
+                    </div>
+                  `;
+                  document.getElementById('viz-description').textContent = 'Error rendering visualization.';
+                }
+              }, 100);
+            } else {
+              vizContainer.innerHTML = `
+                <div class="alert alert-warning">
+                  <h5>No Data Available</h5>
+                  <p>Could not retrieve data for visualization. Try adjusting your filters.</p>
+                </div>
+              `;
+              document.getElementById('viz-description').textContent = 'No data available for visualization.';
+            }
+          })
+          .catch(finalError => {
+            vizContainer.innerHTML = `
+              <div class="alert alert-danger">
+                <h5>Connection Error</h5>
+                <p>Failed to load data: ${finalError.message}</p>
+              </div>
+            `;
+            document.getElementById('viz-description').textContent = 'Connection error.';
+          });
+      });
+  }
+  
+  // Initialization code - Add after the initial load code
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log("Setting up visualization controls...");
+    
+    // Add visualization toggle button event handler
+    const toggleBtn = document.getElementById('toggleVizMode');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function() {
+        const currentMode = localStorage.getItem('useClientSideViz') === 'true';
+        localStorage.setItem('useClientSideViz', !currentMode);
+        
+        // Update button text
+        this.innerHTML = !currentMode ? 
+          '<i class="bi bi-server"></i> Use Server Rendering' : 
+          '<i class="bi bi-browser"></i> Use Client Rendering';
+        
+        // Reload current visualization
+        const dates = dateRangePicker.selectedDates;
+        let options = {};
+        if (dates && dates.length === 2) {
+          options.startDate = formatDate(dates[0]);
+          options.endDate = formatDate(dates[1]);
+        }
+        
+        loadVisualization(appState.currentVizType, options);
+        
+        showToast(!currentMode ? 
+          'Using client-side JavaScript visualization' : 
+          'Using server-side Python visualization', 'info');
+      });
+    }
+    
+    // Setup extended visualization button
+    const extendedVizBtn = document.getElementById('showExtendedViz');
+    if (extendedVizBtn) {
+      extendedVizBtn.addEventListener('click', function() {
+        const dates = dateRangePicker.selectedDates;
+        let params = new URLSearchParams();
+        
+        if (dates && dates.length === 2) {
+          params.append('startDate', formatDate(dates[0]));
+          params.append('endDate', formatDate(dates[1]));
+        }
+        
+        // Show loading state
+        const galleryEl = document.getElementById('visualization-gallery');
+        if (galleryEl) {
+          galleryEl.innerHTML = `
+            <div class="col-12 text-center p-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading extended visualizations...</span>
+              </div>
+              <p class="mt-2">Loading extended visualizations...</p>
+            </div>
+          `;
+          
+          // Scroll to gallery
+          galleryEl.scrollIntoView({ behavior: 'smooth' });
+          
+          // Determine if we should use client-side or server-side
+          const useClientSide = localStorage.getItem('useClientSideViz') === 'true';
+          
+          if (useClientSide) {
+            loadClientSideGallery(galleryEl, params);
+          } else {
+            loadServerSideGallery(galleryEl, params);
+          }
+        }
+      });
+    }
+    
+    // Make sure date selection works properly
+    const dateFilterBtn = document.getElementById('applyDateFilter');
+    if (dateFilterBtn) {
+      dateFilterBtn.addEventListener('click', function() {
+        const dates = dateRangePicker.selectedDates;
+        if (dates && dates.length === 2) {
+          const startDate = formatDate(dates[0]);
+          const endDate = formatDate(dates[1]);
+          
+          // Update dashboard with date range
+          loadDataByDateRange(startDate, endDate);
+          loadAnalysisByDateRange(startDate, endDate);
+          loadVisualization(appState.currentVizType, {startDate, endDate});
+          
+          showToast(`Date range applied: ${startDate} to ${endDate}`, 'success');
+        } else {
+          showToast('Please select a valid date range', 'warning');
+        }
+      });
+    }
+  });
+  
   /**
    * Update dashboard statistics from analysis results
    */
@@ -669,111 +907,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (avgHumidityEl) avgHumidityEl.textContent = stats.average_humidity.toFixed(2);
     }
   }
-
-  // Add function to load the extended visualizations
-  function loadExtendedVisualizations(options = {}) {
-    console.log('Loading extended visualizations');
-    
-    // Build query parameters
-    const params = new URLSearchParams({ ...options });
-    
-    fetch(`/api/visualizations/extended?${params.toString()}`)
-      .then(response => response.json())
-      .then(result => {
-        if (result.success && result.data) {
-          // Show all available visualizations in a gallery format
-          const vizGallery = document.getElementById('visualization-gallery');
-          if (vizGallery) {
-            let galleryHtml = '<div class="row">';
-            
-            // Time Series
-            if (result.data.timeSeries) {
-              galleryHtml += `
-                <div class="col-md-6 mb-4">
-                  <div class="card">
-                    <div class="card-header">Time Series Analysis</div>
-                    <div class="card-body">
-                      <img src="${result.data.timeSeries}" class="img-fluid" alt="Time Series">
-                    </div>
-                  </div>
-                </div>
-              `;
-            }
-            
-            // PM2.5 Trend
-            if (result.data.pm25Trend) {
-              galleryHtml += `
-                <div class="col-md-6 mb-4">
-                  <div class="card">
-                    <div class="card-header">PM2.5 Trend Analysis</div>
-                    <div class="card-body">
-                      <img src="${result.data.pm25Trend}" class="img-fluid" alt="PM2.5 Trend">
-                    </div>
-                  </div>
-                </div>
-              `;
-            }
-            
-            // Add other visualizations if available
-            if (result.data.heatmap) {
-              galleryHtml += `
-                <div class="col-md-6 mb-4">
-                  <div class="card">
-                    <div class="card-header">Daily Heatmap</div>
-                    <div class="card-body">
-                      <img src="${result.data.heatmap}" class="img-fluid" alt="Heatmap">
-                    </div>
-                  </div>
-                </div>
-              `;
-            }
-            
-            if (result.data.correlationHeatmap) {
-              galleryHtml += `
-                <div class="col-md-6 mb-4">
-                  <div class="card">
-                    <div class="card-header">Correlation Analysis</div>
-                    <div class="card-body">
-                      <img src="${result.data.correlationHeatmap}" class="img-fluid" alt="Correlation Heatmap">
-                    </div>
-                  </div>
-                </div>
-              `;
-            }
-            
-            galleryHtml += '</div>';
-            vizGallery.innerHTML = galleryHtml;
-          }
-        }
-      })
-      .catch(error => {
-        console.error("Error loading extended visualizations:", error);
-      });
-  }
-
-  // Initialize more visualizations on page load
-  document.addEventListener('DOMContentLoaded', function() {
-    // ...existing initialization code...
-    
-    // Add button for extended visualizations if it exists
-    const extendedVizBtn = document.getElementById('load-extended-visualizations');
-    if (extendedVizBtn) {
-      extendedVizBtn.addEventListener('click', function() {
-        // Get current date range if exists
-        const dates = dateRangePicker.selectedDates;
-        let options = {};
-        if (dates.length === 2) {
-          options.startDate = formatDate(dates[0]);
-          options.endDate = formatDate(dates[1]);
-        }
-        
-        loadExtendedVisualizations(options);
-      });
-    }
-    
-    // ...existing code...
-  });
-
+  
   /**
    * Initialize real-time updates
    */
