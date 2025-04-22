@@ -13,7 +13,8 @@ const dependencies = [
   'cors', 
   'dotenv',
   'chart.js',
-  'moment'
+  'moment',
+  'simple-statistics'  // Removed danfojs-node from the check
 ];
 
 let hasErrors = false;
@@ -23,7 +24,7 @@ dependencies.forEach(dep => {
     require.resolve(dep);
     console.log(`✅ ${dep} is installed.`);
   } catch (e) {
-    console.error(`❌ ${dep} is NOT installed. Run 'npm install' to fix.`);
+    console.error(`❌ ${dep} is NOT installed. Run 'npm install ${dep}' to fix.`);
     hasErrors = true;
   }
 });
@@ -42,5 +43,8 @@ PythonShell.run('python/check_deps.py', null, function (err, results) {
   if (!hasErrors) {
     console.log('\nAll Node.js dependencies are installed correctly!');
     console.log('\nRun start.bat to launch the application.');
+  } else {
+    console.log('\n⚠️ Some dependencies are missing. Run the following command to install them:');
+    console.log('npm install');
   }
 });

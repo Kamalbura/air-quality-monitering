@@ -1,508 +1,312 @@
 /**
- * Enhanced dashboard with real-time updates, improved UX and better memory management
+ * Main Dashboard JavaScript
+ * Controls the dashboard interface and data loading
  */
-document.addEventListener('DOMContentLoaded', function() {
-  // State management
-  const appState = {
-    lastEntryId: 0,
-    realtimeEnabled: true,
-    updateInterval: null,
-    darkMode: localStorage.getItem('darkMode') === 'true',
-    charts: {},
-    failedUpdateAttempts: 0,
-    isVisible: true,
-    currentVizType: 'time_series',
-    dataTablePage: 1,
-    dataTableLimit: 10
-  };
-  
-  // Handle page visibility changes
-  document.addEventListener('visibilitychange', function() {
-    appState.isVisible = !document.hidden;
-    
-    if (appState.isVisible) {
-      console.log('Page is now visible, updating data...');
-      loadData();
-      loadAnalysis();
-      
-      if (appState.realtimeEnabled) {
-        initializeRealtimeUpdates();
-      }
-    } else {
-      console.log('Page is now hidden, pausing updates');
-      clearInterval(appState.updateInterval);
-    }
-  });
 
-  // Initialize date picker with better defaults
-  const dateRangePicker = flatpickr('#dateRange', {
-    mode: 'range',
-    dateFormat: 'Y-m-d',
-    defaultDate: [
-      new Date(new Date().setDate(new Date().getDate() - 7)),
-      new Date()
-    ],
-    maxDate: new Date(),
-    onChange: function(selectedDates) {
-      if (selectedDates.length === 2) {
-        console.log('Date range selected:', selectedDates);
-      }
-    }
-  });
-  
-  // Initialize time picker
-  const timePicker = flatpickr('#timeFilter', {
-    enableTime: true,
-    noCalendar: true,
-    dateFormat: "H:i",
-    defaultDate: "12:00",
-    time_24hr: true
-  });
-  
-  // Initialize tooltips
-  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-  tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl);
-  });
-  
-  // Set up event listeners
-  document.getElementById('applyDateFilter').addEventListener('click', function() {
-    const dates = dateRangePicker.selectedDates;
-    if (dates.length === 2) {
-      const startDate = formatDate(dates[0]);
-      const endDate = formatDate(dates[1]);
-      loadDataByDateRange(startDate, endDate);
-      loadAnalysisByDateRange(startDate, endDate);
-      loadVisualization(appState.currentVizType, {startDate, endDate});
-    }
-  });
-  
-  document.getElementById('applyTimeFilter').addEventListener('click', function() {
-    const time = timePicker.selectedDates[0];
-    if (time) {
-      const timeString = formatTime(time);
-      loadDataByTime(timeString);
-    }
-  });
-  
-  document.getElementById('toggleTheme').addEventListener('click', function() {
-    appState.darkMode = !appState.darkMode;
-    localStorage.setItem('darkMode', appState.darkMode);
-    applyTheme();
-  });
-  
-  document.getElementById('realtimeSwitch').addEventListener('change', function() {
-    appState.realtimeEnabled = this.checked;
-    if (appState.realtimeEnabled) {
-      initializeRealtimeUpdates();
-      showToast('Real-time updates enabled', 'info');
-    } else {
-      clearInterval(appState.updateInterval);
-      showToast('Real-time updates disabled', 'info');
-    }
-  });
-  
-  // Set up visualization switch handlers
-  const vizLinks = document.querySelectorAll('.viz-link');
-  vizLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      vizLinks.forEach(l => l.classList.remove('active'));
-      this.classList.add('active');
-      
-      const vizType = this.getAttribute('data-type');
-      appState.currentVizType = vizType;
-      
-      // Update visualization title
-      const vizTitles = {
-        'time_series': 'Time Series Visualization',
-        'daily_pattern': 'Daily Pattern Analysis',
-        'heatmap': 'Weekly Heatmap Analysis',
-        'correlation': 'Environmental Correlation Analysis'
-      };
-      document.getElementById('vizTitle').textContent = vizTitles[vizType] || 'Visualization';
-      
-      // Get current date range if exists
-      const dates = dateRangePicker.selectedDates;
-      let options = {};
-      if (dates.length === 2) {
-        options.startDate = formatDate(dates[0]);
-        options.endDate = formatDate(dates[1]);
-      }
-      
-      loadVisualization(vizType, options);
-    });
-  });
-  
-  // Data table navigation
-  document.getElementById('prev-page').addEventListener('click', function() {
-    if (appState.dataTablePage > 1) {
-      appState.dataTablePage--;
-      loadDataTable(appState.dataTablePage);
-    }
-  });
-  
-  document.getElementById('next-page').addEventListener('click', function() {
-    appState.dataTablePage++;
-    loadDataTable(appState.dataTablePage);
-  });
-  
-  document.getElementById('refreshTable').addEventListener('click', function() {
-    loadDataTable(appState.dataTablePage);
-  });
-  
-  document.getElementById('refreshViz').addEventListener('click', function() {
-    // Get current date range if exists
-    const dates = dateRangePicker.selectedDates;
-    let options = {};
-    if (dates.length === 2) {
-      options.startDate = formatDate(dates[0]);
-      options.endDate = formatDate(dates[1]);
-    }
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize dashboard
+  const dashboard = new Dashboard();
+  dashboard.init();
+});
+
+class Dashboard {
+  constructor() {
+    // State
+    this.currentVizType = 'time_series';
+    this.isClientMode = false; // Default to server-side mode
+    this.dateRange = null;
+    this.timeFilter = null;
+    this.currentPage = 0;
+    this.pageSize = 10;
+    this.darkMode = false;
     
-    loadVisualization(appState.currentVizType, options);
-  });
-  
-  // Apply theme on load
-  applyTheme();
-  
-  // Load initial data with explicit debug messages
-  console.log("Starting to load initial dashboard data");
-  loadAnalysis();
-  loadData();
-  loadVisualization('time_series');
-  loadDataSource();
-  loadDataTable(1);
-  validateData();
-  initializeRealtimeUpdates();
-  
-  /**
-   * Load basic analysis data (averages, min, max)
-   */
-  function loadAnalysis(options = {}) {
-    console.log("Loading analysis data");
-    const queryParams = new URLSearchParams({ quick: 'true', ...options }).toString();
-    
-    fetch(`/api/analysis?${queryParams}`)
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          console.log("Analysis data loaded successfully", data);
-          
-          // Update the UI with analysis results - add explicit fallbacks for all values
-          document.getElementById('avgPM25').textContent = formatValue(data.average_pm25 || 0);
-          document.getElementById('avgPM10').textContent = formatValue(data.average_pm10 || 0);
-          document.getElementById('avgTemp').textContent = formatValue(data.average_temperature || 0);
-          document.getElementById('avgHumidity').textContent = formatValue(data.average_humidity || 0);
-          
-          // Update peak and low values with fallbacks
-          document.getElementById('peakPM25').textContent = formatValue(data.max_pm25 || 0);
-          document.getElementById('peakPM10').textContent = formatValue(data.max_pm10 || 0);
-          document.getElementById('lowPM25').textContent = formatValue(data.min_pm25 || 0);
-          document.getElementById('lowPM10').textContent = formatValue(data.min_pm10 || 0);
-        } else {
-          console.error("Failed to load analysis data:", data.error);
-          showToast('Error loading analysis data', 'error');
-          
-          // Set default values on failure
-          document.getElementById('avgPM25').textContent = '--';
-          document.getElementById('avgPM10').textContent = '--';
-          document.getElementById('peakPM25').textContent = '--';
-          document.getElementById('peakPM10').textContent = '--';
-          document.getElementById('lowPM25').textContent = '--';
-          document.getElementById('lowPM10').textContent = '--';
-        }
-      })
-      .catch(error => {
-        console.error("Error in analysis data fetch:", error);
-        showToast('Error fetching analysis data', 'error');
-        
-        // Set default values on error
-        document.getElementById('avgPM25').textContent = '--';
-        document.getElementById('avgPM10').textContent = '--';
-        document.getElementById('peakPM25').textContent = '--';
-        document.getElementById('peakPM10').textContent = '--';
-        document.getElementById('lowPM25').textContent = '--';
-        document.getElementById('lowPM10').textContent = '--';
-      });
-  }
-  
-  /**
-   * Load analysis by date range
-   */
-  function loadAnalysisByDateRange(startDate, endDate) {
-    loadAnalysis({ startDate, endDate });
-  }
-  
-  /**
-   * Load current data
-   */
-  function loadData() {
-    console.log("Loading current data");
-    
-    fetch('/api/data?results=10')
-      .then(response => response.json())
-      .then(result => {
-        if (result.success && result.data) {
-          console.log("Data loaded successfully");
-          
-          // Update the latest entry ID for realtime updates
-          const data = result.data.data;
-          if (data && data.length > 0) {
-            // Get the highest entry ID
-            const highestId = Math.max(...data.map(item => parseInt(item.entry_id) || 0));
-            if (highestId > appState.lastEntryId) {
-              appState.lastEntryId = highestId;
-              console.log("Updated last entry ID:", appState.lastEntryId);
-            }
-          }
-          
-          // Update connection status
-          document.getElementById('status-indicator').className = 'status-indicator connected';
-          document.getElementById('status-text').textContent = 'Connected';
-        } else {
-          console.error("Failed to load data:", result.error);
-          
-          // Update connection status
-          document.getElementById('status-indicator').className = 'status-indicator error';
-          document.getElementById('status-text').textContent = 'Connection Error';
-        }
-      })
-      .catch(error => {
-        console.error("Error in data fetch:", error);
-        
-        // Update connection status
-        document.getElementById('status-indicator').className = 'status-indicator disconnected';
-        document.getElementById('status-text').textContent = 'Disconnected';
-      });
-  }
-  
-  /**
-   * Load data by date range
-   */
-  function loadDataByDateRange(startDate, endDate) {
-    console.log(`Loading data for range: ${startDate} to ${endDate}`);
-    
-    // Update the visualization and data table
-    loadDataTable(1, { startDate, endDate });
-  }
-  
-  /**
-   * Load data by time
-   */
-  function loadDataByTime(time) {
-    console.log(`Loading data for time: ${time}`);
-    
-    fetch(`/api/data/time?startTime=${time}&endTime=${time}`)
-      .then(response => response.json())
-      .then(result => {
-        if (result.success && result.data) {
-          console.log(`Found ${result.data.data.length} records at time ${time}`);
-          loadDataTable(1, { time });
-        } else {
-          console.error("Failed to load data by time:", result.error);
-          showToast(`No data found at time ${time}`, 'warning');
-        }
-      })
-      .catch(error => {
-        console.error("Error in time-based fetch:", error);
-        showToast('Error fetching time-based data', 'error');
-      });
-  }
-  
-  /**
-   * Load data table
-   */
-  function loadDataTable(page = 1, filters = {}) {
-    console.log(`Loading data table, page ${page}`);
-    appState.dataTablePage = page;
-    
-    // Build query parameters
-    let params = new URLSearchParams({
-      page: page,
-      limit: appState.dataTableLimit
+    // Initialize data renderer
+    this.renderer = new DataRenderer({
+      baseUrl: '',
+      clientMode: this.isClientMode
     });
     
-    // Add any filters
-    if (filters.startDate && filters.endDate) {
-      params.append('startDate', filters.startDate);
-      params.append('endDate', filters.endDate);
-    }
+    // Fallback visualizations
+    this.fallbackViz = new FallbackViz();
+  }
+  
+  /**
+   * Initialize the dashboard
+   */
+  init() {
+    // Setup UI event listeners
+    this.setupEventListeners();
     
-    if (filters.time) {
-      params.append('startTime', filters.time);
-      params.append('endTime', filters.time);
+    // Initialize date pickers
+    this.initializeDatePickers();
+    
+    // Load initial data
+    this.loadData();
+    
+    // Load initial visualization
+    this.loadVisualization(this.currentVizType);
+    
+    // Check connection status
+    this.checkConnection();
+    
+    // Apply saved theme if any
+    this.loadThemePreference();
+    
+    // Check real-time data updates setting
+    this.setupRealTimeUpdates();
+  }
+  
+  /**
+   * Setup event listeners for UI interactions
+   */
+  setupEventListeners() {
+    // Visualization type links
+    document.querySelectorAll('.viz-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const vizType = e.currentTarget.getAttribute('data-type');
+        
+        // Update active link
+        document.querySelectorAll('.viz-link').forEach(l => l.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        
+        // Load visualization
+        this.currentVizType = vizType;
+        this.loadVisualization(vizType);
+      });
+    });
+    
+    // Toggle visualization mode (client/server)
+    document.getElementById('toggleVizMode').addEventListener('click', () => {
+      this.isClientMode = !this.isClientMode;
+      document.getElementById('vizModeText').textContent = this.isClientMode ? 'Client-side' : 'Server-side';
+      
+      // Update renderer mode
+      this.renderer.isClientMode = this.isClientMode;
+      
+      // Reload current visualization
+      this.loadVisualization(this.currentVizType);
+    });
+    
+    // Refresh visualization button
+    document.getElementById('refreshViz').addEventListener('click', () => {
+      this.loadVisualization(this.currentVizType);
+    });
+    
+    // Extended visualization views
+    document.getElementById('showExtendedViz').addEventListener('click', () => {
+      this.toggleExtendedViews();
+    });
+    
+    // Table refresh button
+    document.getElementById('refreshTable').addEventListener('click', () => {
+      this.loadData();
+    });
+    
+    // Table pagination
+    document.getElementById('prev-page').addEventListener('click', () => {
+      if (this.currentPage > 0) {
+        this.currentPage--;
+        this.updateDataTable();
+      }
+    });
+    
+    document.getElementById('next-page').addEventListener('click', () => {
+      this.currentPage++;
+      this.updateDataTable();
+    });
+    
+    // Apply date filter
+    document.getElementById('applyDateFilter').addEventListener('click', () => {
+      this.loadData();
+      this.loadVisualization(this.currentVizType);
+    });
+    
+    // Apply time filter
+    document.getElementById('applyTimeFilter').addEventListener('click', () => {
+      this.applyTimeFilter();
+    });
+    
+    // Theme toggle
+    document.getElementById('toggleTheme').addEventListener('click', () => {
+      this.toggleDarkMode();
+    });
+    
+    // Download data
+    window.downloadData = () => {
+      this.downloadData();
+    };
+  }
+  
+  /**
+   * Initialize date pickers
+   */
+  initializeDatePickers() {
+    // Date range picker
+    flatpickr("#dateRange", {
+      mode: "range",
+      maxDate: "today",
+      dateFormat: "Y-m-d",
+      onClose: (selectedDates) => {
+        if (selectedDates.length === 2) {
+          this.dateRange = {
+            startDate: selectedDates[0].toISOString().split('T')[0],
+            endDate: selectedDates[1].toISOString().split('T')[0]
+          };
+        }
+      }
+    });
+    
+    // Time filter
+    flatpickr("#timeFilter", {
+      enableTime: true,
+      noCalendar: true,
+      dateFormat: "H:i",
+      time_24hr: true,
+      onClose: (selectedDates) => {
+        if (selectedDates.length > 0) {
+          const hours = selectedDates[0].getHours();
+          const minutes = selectedDates[0].getMinutes();
+          this.timeFilter = { hours, minutes };
+        }
+      }
+    });
+  }
+  
+  /**
+   * Load data from API or CSV
+   */
+  async loadData() {
+    try {
+      // Show loading state
+      document.getElementById('data-table-body').innerHTML = 
+        '<tr><td colspan="5" class="text-center"><div class="spinner-border spinner-border-sm" role="status"></div> Loading data...</td></tr>';
+      
+      // Prepare options
+      const options = {};
+      
+      // Add date range if specified
+      if (this.dateRange) {
+        options.startDate = this.dateRange.startDate;
+        options.endDate = this.dateRange.endDate;
+      } else {
+        // Default to last 7 days
+        options.days = 7;
+      }
+      
+      // Add limit
+      options.limit = 1000; // Get more data for client-side processing
+      
+      // Fetch data
+      this.data = await this.renderer.getData(options);
+      
+      // Apply time filter if specified
+      if (this.timeFilter) {
+        this.applyTimeFilter();
+      } else {
+        // Update table
+        this.updateDataTable();
+        
+        // Update statistics
+        this.updateStatistics();
+      }
+    } catch (error) {
+      console.error('Error loading data:', error);
+      document.getElementById('data-table-body').innerHTML = 
+        `<tr><td colspan="5" class="text-center text-danger">Error loading data: ${error.message}</td></tr>`;
     }
+  }
+  
+  /**
+   * Update the data table with current data
+   */
+  updateDataTable() {
+    if (!this.data) return;
+    
+    this.renderer.renderDataTable('data-table-body', this.data, {
+      pageSize: this.pageSize,
+      currentPage: this.currentPage,
+      infoElementId: 'data-table-info',
+      prevButtonId: 'prev-page',
+      nextButtonId: 'next-page'
+    });
+  }
+  
+  /**
+   * Apply time filter to the data
+   */
+  applyTimeFilter() {
+    if (!this.data || !this.timeFilter) return;
+    
+    const filteredData = this.data.filter(item => {
+      const date = new Date(item.created_at);
+      return date.getHours() === this.timeFilter.hours && 
+             date.getMinutes() === this.timeFilter.minutes;
+    });
+    
+    // Update with filtered data
+    this.filteredData = filteredData;
+    
+    // Reset pagination
+    this.currentPage = 0;
+    
+    // Update table with filtered data
+    this.renderer.renderDataTable('data-table-body', this.filteredData, {
+      pageSize: this.pageSize,
+      currentPage: this.currentPage,
+      infoElementId: 'data-table-info',
+      prevButtonId: 'prev-page',
+      nextButtonId: 'next-page'
+    });
+    
+    // Update statistics with filtered data
+    this.updateStatistics(this.filteredData);
+    
+    // Update visualizations with filtered data
+    if (this.isClientMode) {
+      this.loadVisualization(this.currentVizType, this.filteredData);
+    }
+  }
+  
+  /**
+   * Update statistics displays
+   */
+  async updateStatistics(dataToUse = null) {
+    try {
+      // Get statistics
+      const dataSource = dataToUse || this.data;
+      const stats = this.isClientMode ? 
+                    this.renderer.calculateStatistics(dataSource) : 
+                    await this.renderer.getStats(this.dateRange || {});
+      
+      // Update statistics cards
+      document.getElementById('avgPM25').textContent = stats.average_pm25 ? stats.average_pm25.toFixed(2) : '0.00';
+      document.getElementById('avgPM10').textContent = stats.average_pm10 ? stats.average_pm10.toFixed(2) : '0.00';
+      document.getElementById('avgTemp').textContent = stats.average_temperature ? stats.average_temperature.toFixed(2) : '0.00';
+      document.getElementById('avgHumidity').textContent = stats.average_humidity ? stats.average_humidity.toFixed(2) : '0.00';
+      
+      // Update peak and low values
+      document.getElementById('peakPM25').textContent = stats.max_pm25 ? stats.max_pm25.toFixed(2) : '0.00';
+      document.getElementById('peakPM10').textContent = stats.max_pm10 ? stats.max_pm10.toFixed(2) : '0.00';
+      document.getElementById('lowPM25').textContent = stats.min_pm25 ? stats.min_pm25.toFixed(2) : '0.00';
+      document.getElementById('lowPM10').textContent = stats.min_pm10 ? stats.min_pm10.toFixed(2) : '0.00';
+      
+      // Update data validation section
+      this.updateDataValidation(stats);
+    } catch (error) {
+      console.error('Error updating statistics:', error);
+    }
+  }
+  
+  /**
+   * Load visualization based on type
+   */
+  async loadVisualization(vizType, dataToUse = null) {
+    // Update title
+    document.getElementById('vizTitle').textContent = this.getVizTitle(vizType);
     
     // Show loading state
-    document.getElementById('data-table-body').innerHTML = 
-      '<tr><td colspan="5" class="text-center"><div class="spinner-border spinner-border-sm" role="status"></div> Loading...</td></tr>';
-    
-    fetch(`/api/data?${params.toString()}`)
-      .then(response => response.json())
-      .then(result => {
-        if (result.success && result.data && result.data.data) {
-          const data = result.data.data;
-          const tableBody = document.getElementById('data-table-body');
-          
-          if (data.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No data available</td></tr>';
-            document.getElementById('data-table-info').textContent = 'No records found';
-            return;
-          }
-          
-          tableBody.innerHTML = '';
-          
-          data.forEach(item => {
-            const row = document.createElement('tr');
-            
-            // Format timestamp
-            const date = new Date(item.created_at);
-            const formattedDate = date.toLocaleString();
-            
-            row.innerHTML = `
-              <td>${formattedDate}</td>
-              <td>${formatValue(item.pm25 || item.field3)}</td>
-              <td>${formatValue(item.pm10 || item.field4)}</td>
-              <td>${formatValue(item.temperature || item.field2)}</td>
-              <td>${formatValue(item.humidity || item.field1)}</td>
-            `;
-            
-            tableBody.appendChild(row);
-          });
-          
-          // Update pagination info
-          const pagination = result.data.pagination || {};
-          document.getElementById('data-table-info').textContent = 
-            `Showing ${data.length} records of ${pagination.total || 'unknown'} total`;
-          
-          // Update pagination buttons
-          document.getElementById('prev-page').disabled = page <= 1;
-          document.getElementById('next-page').disabled = !pagination.total || (page * appState.dataTableLimit) >= pagination.total;
-          
-        } else {
-          console.error("Failed to load data table:", result.error);
-          document.getElementById('data-table-body').innerHTML = 
-            '<tr><td colspan="5" class="text-center text-danger">Error loading data</td></tr>';
-        }
-      })
-      .catch(error => {
-        console.error("Error in data table fetch:", error);
-        document.getElementById('data-table-body').innerHTML = 
-          '<tr><td colspan="5" class="text-center text-danger">Connection error</td></tr>';
-      });
-  }
-  
-  /**
-   * Load data source info
-   */
-  function loadDataSource() {
-    fetch('/api/data-source')
-      .then(response => response.json())
-      .then(result => {
-        if (result.success && result.data) {
-          const source = result.data.dataSource;
-          console.log("Data source info:", source);
-        } else {
-          console.error("Failed to load data source:", result.error);
-        }
-      })
-      .catch(error => {
-        console.error("Error fetching data source:", error);
-      });
-  }
-  
-  /**
-   * Validate data quality
-   */
-  function validateData() {
-    console.log("Validating data quality");
-    
-    fetch('/api/validate')
-      .then(response => response.json())
-      .then(result => {
-        if (result.success && result.data) {
-          const data = result.data;
-          const badge = document.getElementById('validation-badge');
-          const detailsContainer = document.getElementById('validation-details');
-          
-          // Update badge
-          if (data.valid) {
-            badge.className = 'badge bg-success';
-            badge.textContent = 'Valid';
-          } else {
-            badge.className = 'badge bg-warning';
-            badge.textContent = 'Issues Found';
-          }
-          
-          // Update details
-          let detailsHtml = '';
-          
-          if (data.valid) {
-            detailsHtml = `
-              <div class="alert alert-success">
-                <h5><i class="bi bi-check-circle"></i> Data validation successful</h5>
-                <p>All ${data.recordCount} records were found to be valid and complete.</p>
-                <div class="progress mb-2">
-                  <div class="progress-bar bg-success" role="progressbar" style="width: ${data.completion}%" aria-valuenow="${data.completion}" aria-valuemin="0" aria-valuemax="100">
-                    ${data.completion}% Complete
-                  </div>
-                </div>
-                <p class="mb-0">Field Coverage:</p>
-                <ul>
-                  <li>PM2.5: ${data.fieldStatistics.field3_coverage}%</li>
-                  <li>PM10: ${data.fieldStatistics.field4_coverage}%</li>
-                  <li>Temperature: ${data.fieldStatistics.field2_coverage}%</li>
-                  <li>Humidity: ${data.fieldStatistics.field1_coverage}%</li>
-                </ul>
-              </div>
-            `;
-          } else {
-            detailsHtml = `
-              <div class="alert alert-warning">
-                <h5><i class="bi bi-exclamation-triangle"></i> Data validation issues found</h5>
-                <p>${data.validRecords} of ${data.recordCount} records (${data.completion}%) are valid and complete.</p>
-                <div class="progress mb-2">
-                  <div class="progress-bar bg-warning" role="progressbar" style="width: ${data.completion}%" aria-valuenow="${data.completion}" aria-valuemin="0" aria-valuemax="100">
-                    ${data.completion}% Complete
-                  </div>
-                </div>
-                <p>Issues found:</p>
-                <ul>
-                  ${data.issues.map(issue => `<li>${issue}</li>`).join('')}
-                </ul>
-              </div>
-            `;
-          }
-          
-          detailsContainer.innerHTML = detailsHtml;
-        } else {
-          console.error("Failed to validate data:", result.error);
-          document.getElementById('validation-badge').className = 'badge bg-danger';
-          document.getElementById('validation-badge').textContent = 'Error';
-          document.getElementById('validation-details').innerHTML = 
-            '<div class="alert alert-danger">Error validating data. The validation service may be unavailable.</div>';
-        }
-      })
-      .catch(error => {
-        console.error("Error in data validation:", error);
-        document.getElementById('validation-badge').className = 'badge bg-danger';
-        document.getElementById('validation-badge').textContent = 'Error';
-        document.getElementById('validation-details').innerHTML = 
-          '<div class="alert alert-danger">Connection error while validating data.</div>';
-      });
-  }
-  
-  /**
-   * Load visualization
-   */
-  function loadVisualization(type = 'time_series', options = {}) {
-    console.log(`Loading visualization: ${type}`);
-    document.getElementById('viz-description').textContent = 'Loading visualization...';
-    document.getElementById('vizTitle').textContent = getVizTitle(type);
-    
-    const vizContainer = document.getElementById('visualization-container');
-    vizContainer.innerHTML = `
+    document.getElementById('visualization-container').innerHTML = `
       <div class="d-flex justify-content-center align-items-center h-100">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">Loading...</span>
@@ -510,618 +314,475 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     `;
     
-    // Build query parameters
-    const params = new URLSearchParams({ ...options });
-    
-    // Update app state to track current viz type
-    appState.currentVizType = type;
-    
-    // Check if we're using client-side rendering
-    const useClientSide = localStorage.getItem('useClientSideViz') === 'true';
-    
-    // Update toggle button text
-    const toggleBtn = document.getElementById('toggleVizMode');
-    if (toggleBtn) {
-      toggleBtn.innerHTML = useClientSide ? 
-        '<i class="bi bi-server"></i> Use Server Rendering' : 
-        '<i class="bi bi-browser"></i> Use Client Rendering';
+    try {
+      if (this.isClientMode) {
+        // Client-side visualization
+        await this.loadClientVisualization(vizType, dataToUse);
+      } else {
+        // Server-side visualization
+        await this.loadServerVisualization(vizType);
+      }
+    } catch (error) {
+      console.error(`Error loading ${vizType} visualization:`, error);
+      document.getElementById('visualization-container').innerHTML = `
+        <div class="alert alert-danger">
+          <h4 class="alert-heading">Visualization Error</h4>
+          <p>${error.message}</p>
+        </div>
+      `;
+    }
+  }
+  
+  /**
+   * Load client-side visualization
+   */
+  async loadClientVisualization(vizType, dataToUse = null) {
+    // Ensure we have data
+    if (!this.data && !dataToUse) {
+      await this.loadData();
     }
     
-    if (useClientSide) {
-      console.log('Using client-side visualization rendering');
-      loadDataAndRenderClientSide(type, options);
+    const container = document.getElementById('visualization-container');
+    
+    // Clear previous content
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
+    
+    // Create canvas for chart
+    const canvas = document.createElement('canvas');
+    canvas.id = 'chart-canvas';
+    container.appendChild(canvas);
+    
+    // Use provided data or main data
+    const data = dataToUse || this.data;
+    
+    // Create visualization
+    switch (vizType) {
+      case 'time_series':
+        this.fallbackViz.createTimeSeriesChart(canvas, data);
+        document.getElementById('viz-description').textContent = 
+          'Time series of PM2.5 and PM10 concentrations over the selected period.';
+        break;
+      case 'daily_pattern':
+        this.fallbackViz.createDailyPatternChart(canvas, data);
+        document.getElementById('viz-description').textContent = 
+          'Average air quality readings by hour of day, showing daily patterns.';
+        break;
+      case 'correlation':
+        this.fallbackViz.createCorrelationChart(canvas, data);
+        document.getElementById('viz-description').textContent = 
+          'Correlation between different measurements: PM2.5, PM10, temperature, and humidity.';
+        break;
+      case 'heatmap':
+        this.fallbackViz.createHeatmapChart(canvas, data);
+        document.getElementById('viz-description').textContent = 
+          'Heatmap showing PM2.5 concentration patterns over time.';
+        break;
+      default:
+        container.innerHTML = '<div class="alert alert-warning">Unknown visualization type</div>';
+        document.getElementById('viz-description').textContent = '';
+    }
+  }
+  
+  /**
+   * Load server-side visualization
+   */
+  async loadServerVisualization(vizType) {
+    try {
+      // Build the API endpoint URL
+      let endpoint = `/api/visualization/${vizType}`;
+      
+      // Add date filter parameters if specified
+      if (this.dateRange) {
+        endpoint += `?startDate=${this.dateRange.startDate}&endDate=${this.dateRange.endDate}`;
+      }
+      
+      // Fetch visualization data from server
+      const response = await fetch(endpoint);
+      
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`);
+      }
+      
+      const vizData = await response.json();
+      
+      if (vizData.error) {
+        throw new Error(vizData.message || 'Unknown error');
+      }
+      
+      // Display the visualization image
+      const container = document.getElementById('visualization-container');
+      container.innerHTML = `<img src="${vizData.imagePath}" class="img-fluid" alt="${this.getVizTitle(vizType)}">`;
+      
+      // Update description
+      document.getElementById('viz-description').textContent = vizData.description || '';
+    } catch (error) {
+      console.error('Error loading server visualization:', error);
+      // Switch to client-side visualization as fallback
+      this.isClientMode = true;
+      this.renderer.isClientMode = true;
+      document.getElementById('vizModeText').textContent = 'Client-side';
+      await this.loadClientVisualization(vizType);
+    }
+  }
+  
+  /**
+   * Toggle extended visualization views
+   */
+  toggleExtendedViews() {
+    const galleryContainer = document.getElementById('visualization-gallery');
+    
+    // Check if gallery is already populated
+    if (galleryContainer.childNodes.length > 0) {
+      galleryContainer.innerHTML = ''; // Clear gallery
       return;
     }
     
-    // Try server-side rendering first
-    console.log(`Fetching ${type} visualization from server with params:`, options);
-    
-    // Direct path loading for standard visualizations
-    if (type === 'time_series' || type === 'pm25_trend') {
-      fetch(`/api/visualizations/standard?${params.toString()}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(result => {
-          console.log("Visualization result:", result);
-          
-          if (result.success && result.data) {
-            let imageUrl = result.data.timeSeries;
-            if (type === 'pm25_trend' && result.data.pm25Trend) {
-              imageUrl = result.data.pm25Trend;
-            }
-            
-            // Verify image exists by trying to load it
-            const img = new Image();
-            img.onload = function() {
-              // Image loaded successfully
-              vizContainer.innerHTML = `<img src="${imageUrl}" class="img-fluid" alt="${type} visualization">`;
-              
-              // Set description based on statistics
-              updateVizDescription(type, result.data.stats);
-              
-              // Update dashboard stats
-              updateDashboardStats(result.data.stats);
-            };
-            
-            img.onerror = function() {
-              console.error(`Failed to load image from ${imageUrl}, falling back to client-side`);
-              loadDataAndRenderClientSide(type, options);
-            };
-            
-            img.src = imageUrl;
-          } else if (result.clientSide) {
-            loadDataAndRenderClientSide(type, options);
-          } else {
-            console.warn('Error from standard visualization API:', result.error);
-            loadDataAndRenderClientSide(type, options);
-          }
-        })
-        .catch(error => {
-          console.error("Error loading visualization:", error);
-          showToast('Falling back to client-side rendering', 'warning');
-          loadDataAndRenderClientSide(type, options);
-        });
-    } else {
-      // Use the regular visualization API for other types
-      fetch(`/api/visualizations/${type}?${params.toString()}`)
-        .then(response => response.json())
-        .then(result => {
-          if (result.success && result.data) {
-            vizContainer.innerHTML = `<img src="${result.data.imagePath}" class="img-fluid" alt="${type} visualization">`;
-            document.getElementById('viz-description').textContent = result.data.description || '';
-          } else {
-            // Fall back to client-side for any error
-            loadDataAndRenderClientSide(type, options);
-          }
-        })
-        .catch(error => {
-          console.error("Error in visualization fetch:", error);
-          loadDataAndRenderClientSide(type, options);
-        });
-    }
-  }
-  
-  /**
-   * Get visualization title based on type
-   */
-  function getVizTitle(type) {
-    const titles = {
-      'time_series': 'Time Series Visualization',
-      'daily_pattern': 'Daily Pattern Analysis',
-      'correlation': 'Environmental Correlation Analysis',
-      'heatmap': 'Weekly Heatmap',
-      'pm25_trend': 'PM2.5 Trend Analysis',
-      'aqi': 'Air Quality Index'
-    };
-    return titles[type] || 'Visualization';
-  }
-  
-  /**
-   * Update visualization description based on type and stats
-   */
-  function updateVizDescription(type, stats = {}) {
-    let description = '';
-    
-    switch(type) {
-      case 'time_series':
-        description = `Time series analysis of air quality data`;
-        if (stats.date_range) {
-          description += ` from ${stats.date_range.start || 'N/A'} to ${stats.date_range.end || 'N/A'}.`;
-        }
-        if (stats.average_pm25 !== undefined) {
-          description += ` Average PM2.5: ${Number(stats.average_pm25).toFixed(2)} μg/m³,`;
-        }
-        if (stats.average_pm10 !== undefined) {
-          description += ` Average PM10: ${Number(stats.average_pm10).toFixed(2)} μg/m³.`;
-        }
-        break;
-      case 'pm25_trend':
-        description = `PM2.5 trend analysis with rolling average.`;
-        if (stats.min_pm25 !== undefined && stats.max_pm25 !== undefined) {
-          description += ` Range: ${Number(stats.min_pm25).toFixed(2)} to ${Number(stats.max_pm25).toFixed(2)} μg/m³.`;
-        }
-        break;
-      default:
-        description = `${getVizTitle(type)} showing air quality patterns.`;
-    }
-    
-    document.getElementById('viz-description').textContent = description;
-  }
-  
-  /**
-   * Load data and render visualization client-side
-   */
-  function loadDataAndRenderClientSide(type, options = {}) {
-    console.log(`Rendering client-side visualization: ${type}`);
-    document.getElementById('viz-description').textContent = 'Preparing client-side visualization...';
-    
-    // Build the parameters for CSV data API
-    const params = new URLSearchParams({
-      // Pass date range if provided
-      ...(options.startDate && { startDate: options.startDate }),
-      ...(options.endDate && { endDate: options.endDate })
-    });
-    
     // Show loading indicator
-    const vizContainer = document.getElementById('visualization-container');
-    vizContainer.innerHTML = `
-      <div class="d-flex flex-column justify-content-center align-items-center h-100">
-        <div class="mb-2">Loading and processing data...</div>
-        <div class="progress w-75 mb-3">
-          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+    galleryContainer.innerHTML = `
+      <div class="col-12 text-center p-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
         </div>
-        <div id="viz-loading-status">Fetching data...</div>
+        <p>Loading additional visualizations...</p>
       </div>
     `;
     
-    // Attempt to fetch CSV data directly (most efficient)
-    fetch(`/api/csv-data?${params.toString()}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`Failed to fetch CSV data: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(result => {
-        if (!result || !result.data || result.data.length === 0) {
-          throw new Error('No data available');
-        }
-        
-        document.getElementById('viz-loading-status').innerText = `Processing ${result.data.length} data points...`;
-        
-        // Avoid UI blocking with setTimeout
-        setTimeout(() => {
-          try {
-            // Render visualization with the enhanced fallback visualizer
-            window.FallbackViz.renderChart(type, result.data, vizContainer);
-            
-            // Calculate stats for the description
-            const stats = calculateStats(result.data);
-            updateDashboardStats(stats);
-            
-            // Set description based on visualization type
-            updateVizDescription(type, stats);
-            
-            showToast('Client-side visualization rendered successfully', 'info');
-          } catch (err) {
-            console.error('Error rendering client-side visualization:', err);
-            vizContainer.innerHTML = `
-              <div class="alert alert-danger">
-                <h5>Rendering Error</h5>
-                <p>Failed to render visualization: ${err.message}</p>
-                <p>Try switching to server-side rendering or select a different date range.</p>
-              </div>
-            `;
-            document.getElementById('viz-description').textContent = 'Error rendering visualization.';
-            showToast('Visualization rendering failed', 'error');
-          }
-        }, 100);
-      })
-      .catch(error => {
-        console.error("Error in client-side visualization:", error);
-        
-        // Fall back to regular data API as last resort
-        fetch(`/api/data?${params.toString()}`)
-          .then(response => response.json())
-          .then(result => {
-            if (result.success && result.data && result.data.data) {
-              // Try to render using this data
-              setTimeout(() => {
-                try {
-                  window.FallbackViz.renderChart(type, result.data.data, vizContainer);
-                  document.getElementById('viz-description').textContent = `Client-side visualization using ${result.data.data.length} data points.`;
-                } catch (err) {
-                  vizContainer.innerHTML = `
-                    <div class="alert alert-danger">
-                      <h5>Visualization Error</h5>
-                      <p>Failed to render: ${err.message}</p>
-                    </div>
-                  `;
-                  document.getElementById('viz-description').textContent = 'Error rendering visualization.';
-                }
-              }, 100);
-            } else {
-              vizContainer.innerHTML = `
-                <div class="alert alert-warning">
-                  <h5>No Data Available</h5>
-                  <p>Could not retrieve data for visualization. Try adjusting your filters.</p>
-                </div>
-              `;
-              document.getElementById('viz-description').textContent = 'No data available for visualization.';
-            }
-          })
-          .catch(finalError => {
-            vizContainer.innerHTML = `
-              <div class="alert alert-danger">
-                <h5>Connection Error</h5>
-                <p>Failed to load data: ${finalError.message}</p>
-              </div>
-            `;
-            document.getElementById('viz-description').textContent = 'Connection error.';
-          });
-      });
+    // Define visualization types to load
+    const vizTypes = ['time_series', 'daily_pattern', 'correlation', 'heatmap'];
+    const vizTitles = {
+      'time_series': 'Time Series Analysis',
+      'daily_pattern': 'Daily Pattern Analysis',
+      'correlation': 'Correlation Analysis',
+      'heatmap': 'Heatmap Analysis'
+    };
+    
+    // Clear gallery and create layout
+    galleryContainer.innerHTML = '';
+    
+    // Create gallery items
+    vizTypes.forEach(type => {
+      // Create gallery item
+      const col = document.createElement('div');
+      col.className = 'col-md-6 mb-4';
+      
+      const card = document.createElement('div');
+      card.className = 'card';
+      
+      const header = document.createElement('div');
+      header.className = 'card-header';
+      header.textContent = vizTitles[type] || type;
+      
+      const body = document.createElement('div');
+      body.className = 'card-body';
+      body.innerHTML = `
+        <div id="viz-${type}-container" style="height: 300px;" class="text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      `;
+      
+      // Assemble card
+      card.appendChild(header);
+      card.appendChild(body);
+      col.appendChild(card);
+      
+      // Add to gallery
+      galleryContainer.appendChild(col);
+      
+      // Load visualization
+      setTimeout(() => {
+        this.loadGalleryVisualization(type);
+      }, 100 * vizTypes.indexOf(type)); // Stagger loading to prevent browser freeze
+    });
   }
   
-  // Initialization code - Add after the initial load code
-  document.addEventListener('DOMContentLoaded', function() {
-    console.log("Setting up visualization controls...");
-    
-    // Add visualization toggle button event handler
-    const toggleBtn = document.getElementById('toggleVizMode');
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', function() {
-        const currentMode = localStorage.getItem('useClientSideViz') === 'true';
-        localStorage.setItem('useClientSideViz', !currentMode);
-        
-        // Update button text
-        this.innerHTML = !currentMode ? 
-          '<i class="bi bi-server"></i> Use Server Rendering' : 
-          '<i class="bi bi-browser"></i> Use Client Rendering';
-        
-        // Reload current visualization
-        const dates = dateRangePicker.selectedDates;
-        let options = {};
-        if (dates && dates.length === 2) {
-          options.startDate = formatDate(dates[0]);
-          options.endDate = formatDate(dates[1]);
-        }
-        
-        loadVisualization(appState.currentVizType, options);
-        
-        showToast(!currentMode ? 
-          'Using client-side JavaScript visualization' : 
-          'Using server-side Python visualization', 'info');
-      });
-    }
-    
-    // Setup extended visualization button
-    const extendedVizBtn = document.getElementById('showExtendedViz');
-    if (extendedVizBtn) {
-      extendedVizBtn.addEventListener('click', function() {
-        const dates = dateRangePicker.selectedDates;
-        let params = new URLSearchParams();
-        
-        if (dates && dates.length === 2) {
-          params.append('startDate', formatDate(dates[0]));
-          params.append('endDate', formatDate(dates[1]));
-        }
-        
-        // Show loading state
-        const galleryEl = document.getElementById('visualization-gallery');
-        if (galleryEl) {
-          galleryEl.innerHTML = `
-            <div class="col-12 text-center p-5">
-              <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading extended visualizations...</span>
-              </div>
-              <p class="mt-2">Loading extended visualizations...</p>
-            </div>
-          `;
-          
-          // Scroll to gallery
-          galleryEl.scrollIntoView({ behavior: 'smooth' });
-          
-          // Determine if we should use client-side or server-side
-          const useClientSide = localStorage.getItem('useClientSideViz') === 'true';
-          
-          if (useClientSide) {
-            loadClientSideGallery(galleryEl, params);
-          } else {
-            loadServerSideGallery(galleryEl, params);
-          }
-        }
-      });
-    }
-    
-    // Make sure date selection works properly
-    const dateFilterBtn = document.getElementById('applyDateFilter');
-    if (dateFilterBtn) {
-      dateFilterBtn.addEventListener('click', function() {
-        const dates = dateRangePicker.selectedDates;
-        if (dates && dates.length === 2) {
-          const startDate = formatDate(dates[0]);
-          const endDate = formatDate(dates[1]);
-          
-          // Update dashboard with date range
-          loadDataByDateRange(startDate, endDate);
-          loadAnalysisByDateRange(startDate, endDate);
-          loadVisualization(appState.currentVizType, {startDate, endDate});
-          
-          showToast(`Date range applied: ${startDate} to ${endDate}`, 'success');
-        } else {
-          showToast('Please select a valid date range', 'warning');
-        }
-      });
-    }
-  });
-  
   /**
-   * Update dashboard statistics from analysis results
+   * Load visualization for gallery
    */
-  function updateDashboardStats(stats) {
-    // Make sure we have stats before trying to update
-    if (!stats) return;
+  async loadGalleryVisualization(vizType) {
+    const container = document.getElementById(`viz-${vizType}-container`);
     
-    // Update PM2.5 stats
-    if (stats.average_pm25) {
-      document.getElementById('avgPM25').textContent = stats.average_pm25.toFixed(2);
-    }
-    
-    if (stats.max_pm25) {
-      const peakPM25El = document.getElementById('peakPM25');
-      if (peakPM25El) peakPM25El.textContent = stats.max_pm25.toFixed(2);
-    }
-    
-    if (stats.min_pm25) {
-      const lowPM25El = document.getElementById('lowPM25');
-      if (lowPM25El) lowPM25El.textContent = stats.min_pm25.toFixed(2);
-    }
-    
-    // Update PM10 stats
-    if (stats.average_pm10) {
-      document.getElementById('avgPM10').textContent = stats.average_pm10.toFixed(2);
-    }
-    
-    if (stats.max_pm10) {
-      const peakPM10El = document.getElementById('peakPM10');
-      if (peakPM10El) peakPM10El.textContent = stats.max_pm10.toFixed(2);
-    }
-    
-    if (stats.min_pm10) {
-      const lowPM10El = document.getElementById('lowPM10');
-      if (lowPM10El) lowPM10El.textContent = stats.min_pm10.toFixed(2);
-    }
-    
-    // Update temperature and humidity
-    if (stats.average_temperature) {
-      const avgTempEl = document.getElementById('avgTemp');
-      if (avgTempEl) avgTempEl.textContent = stats.average_temperature.toFixed(2);
-    }
-    
-    if (stats.average_humidity) {
-      const avgHumidityEl = document.getElementById('avgHumidity');
-      if (avgHumidityEl) avgHumidityEl.textContent = stats.average_humidity.toFixed(2);
+    try {
+      if (this.isClientMode) {
+        // Create canvas for chart
+        const canvas = document.createElement('canvas');
+        canvas.id = `chart-${vizType}-canvas`;
+        container.innerHTML = '';
+        container.appendChild(canvas);
+        
+        // Create visualization
+        switch (vizType) {
+          case 'time_series':
+            this.fallbackViz.createTimeSeriesChart(canvas, this.data);
+            break;
+          case 'daily_pattern':
+            this.fallbackViz.createDailyPatternChart(canvas, this.data);
+            break;
+          case 'correlation':
+            this.fallbackViz.createCorrelationChart(canvas, this.data);
+            break;
+          case 'heatmap':
+            this.fallbackViz.createHeatmapChart(canvas, this.data);
+            break;
+        }
+      } else {
+        // Server-side visualization
+        let endpoint = `/api/visualization/${vizType}`;
+        
+        // Add date filter parameters if specified
+        if (this.dateRange) {
+          endpoint += `?startDate=${this.dateRange.startDate}&endDate=${this.dateRange.endDate}`;
+        }
+        
+        const response = await fetch(endpoint);
+        if (!response.ok) throw new Error(`API request failed: ${response.status}`);
+        
+        const vizData = await response.json();
+        
+        container.innerHTML = `<img src="${vizData.imagePath}" class="img-fluid" alt="${vizType}">`;
+      }
+    } catch (error) {
+      console.error(`Error loading gallery visualization ${vizType}:`, error);
+      container.innerHTML = `
+        <div class="alert alert-danger">
+          Failed to load visualization
+        </div>
+      `;
     }
   }
   
   /**
-   * Initialize real-time updates
+   * Update data validation section
    */
-  function initializeRealtimeUpdates() {
-    // Clear existing interval if any
-    if (appState.updateInterval) {
-      clearInterval(appState.updateInterval);
-    }
+  updateDataValidation(stats) {
+    const validationBadge = document.getElementById('validation-badge');
+    const validationDetails = document.getElementById('validation-details');
     
-    console.log("Setting up real-time updates");
-    
-    // Set up polling for updates
-    appState.updateInterval = setInterval(() => {
-      if (!appState.isVisible || !appState.realtimeEnabled) {
-        return; // Skip updates if page is hidden or realtime is disabled
+    if (stats.validation) {
+      // Show validation results
+      const validation = stats.validation;
+      
+      // Set overall quality badge
+      let badgeClass = 'bg-success';
+      let badgeText = 'Good';
+      
+      if (validation.missing_values_percent > 5) {
+        badgeClass = 'bg-danger';
+        badgeText = 'Poor';
+      } else if (validation.outliers_percent > 2) {
+        badgeClass = 'bg-warning';
+        badgeText = 'Fair';
       }
       
-      console.log("Checking for real-time updates, last entry:", appState.lastEntryId);
+      validationBadge.className = `badge ${badgeClass}`;
+      validationBadge.textContent = `Quality: ${badgeText}`;
       
-      fetch(`/api/realtime?lastEntryId=${appState.lastEntryId}`)
-        .then(response => response.json())
-        .then(result => {
-          if (result.success) {
-            if (result.data && result.data.newEntries > 0) {
-              console.log(`Received ${result.data.newEntries} new entries`);
-              
-              // Update the latest entry ID
-              if (result.data.channel && result.data.channel.last_entry_id) {
-                appState.lastEntryId = parseInt(result.data.channel.last_entry_id);
-              }
-              
-              // Update the UI with new data
-              loadAnalysis();
-              loadDataTable(1); // Reload first page of data table
-              
-              // Show a notification
-              showToast(`Received ${result.data.newEntries} new data points`, 'success');
-              
-              // Update status indicator
-              document.getElementById('status-indicator').className = 'status-indicator connected';
-              document.getElementById('status-text').textContent = 'Connected';
-              
-              // Reset failed attempts counter
-              appState.failedUpdateAttempts = 0;
-            } else {
-              // No new entries
-              console.log("No new entries available");
-              
-              // Still update the status as connected
-              document.getElementById('status-indicator').className = 'status-indicator connected';
-              document.getElementById('status-text').textContent = 'Connected';
-            }
-          } else {
-            console.error("Failed to check for updates:", result.error);
-            
-            // Increment failed attempts counter
-            appState.failedUpdateAttempts++;
-            
-            // Update status indicator based on failed attempts
-            if (appState.failedUpdateAttempts > 3) {
-              document.getElementById('status-indicator').className = 'status-indicator error';
-              document.getElementById('status-text').textContent = 'Connection Error';
-            }
-          }
-        })
-        .catch(error => {
-          console.error("Error checking for updates:", error);
-          
-          // Increment failed attempts counter
-          appState.failedUpdateAttempts++;
-          
-          // Update status indicator based on failed attempts
-          if (appState.failedUpdateAttempts > 3) {
-            document.getElementById('status-indicator').className = 'status-indicator disconnected';
-            document.getElementById('status-text').textContent = 'Disconnected';
-          }
-        });
-    }, 30000); // Check every 30 seconds
-  }
-  
-  /**
-   * Format date to YYYY-MM-DD
-   */
-  function formatDate(date) {
-    const d = new Date(date);
-    let month = '' + (d.getMonth() + 1);
-    let day = '' + d.getDate();
-    const year = d.getFullYear();
-
-    if (month.length < 2) month = '0' + month;
-    if (day.length < 2) day = '0' + day;
-
-    return [year, month, day].join('-');
-  }
-  
-  /**
-   * Format time to HH:MM
-   */
-  function formatTime(date) {
-    const d = new Date(date);
-    let hours = '' + d.getHours();
-    let minutes = '' + d.getMinutes();
-
-    if (hours.length < 2) hours = '0' + hours;
-    if (minutes.length < 2) minutes = '0' + minutes;
-
-    return `${hours}:${minutes}`;
-  }
-  
-  /**
-   * Format value to 2 decimal places
-   */
-  function formatValue(value) {
-    if (value === null || value === undefined) return '--';
-    const numValue = parseFloat(value);
-    return isNaN(numValue) ? '--' : numValue.toFixed(2);
-  }
-  
-  /**
-   * Show a toast notification
-   */
-  function showToast(message, type = 'info') {
-    const toastContainer = document.getElementById('toast-container');
-    const toastId = `toast-${Date.now()}`;
-    
-    const bgClass = type === 'error' ? 'bg-danger' : 
-                  type === 'success' ? 'bg-success' : 
-                  type === 'warning' ? 'bg-warning' :
-                  'bg-info';
-    
-    const html = `
-      <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header ${bgClass} text-white">
-          <strong class="me-auto">Air Quality Monitor</strong>
-          <small>${new Date().toLocaleTimeString()}</small>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+      // Show detailed validation information
+      validationDetails.innerHTML = `
+        <div class="row">
+          <div class="col-md-6">
+            <h6>Data Completeness</h6>
+            <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Missing Values
+                <span class="badge ${validation.missing_values_percent > 5 ? 'bg-danger' : 'bg-success'} rounded-pill">
+                  ${validation.missing_values_percent.toFixed(1)}%
+                </span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Sample Count
+                <span class="badge bg-secondary rounded-pill">
+                  ${validation.total_samples}
+                </span>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h6>Data Quality</h6>
+            <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Outliers
+                <span class="badge ${validation.outliers_percent > 2 ? 'bg-warning' : 'bg-success'} rounded-pill">
+                  ${validation.outliers_percent.toFixed(1)}%
+                </span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Sensor Health
+                <span class="badge ${validation.sensor_health ? 'bg-success' : 'bg-danger'} rounded-pill">
+                  ${validation.sensor_health ? 'OK' : 'Check Required'}
+                </span>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div class="toast-body">
-          ${message}
-        </div>
-      </div>
-    `;
-    
-    toastContainer.insertAdjacentHTML('beforeend', html);
-    const toastElement = document.getElementById(toastId);
-    const toast = new bootstrap.Toast(toastElement, { autohide: true, delay: 5000 });
-    toast.show();
-    
-    // Remove toast from DOM after it's hidden
-    toastElement.addEventListener('hidden.bs.toast', function() {
-      this.remove();
-    });
-  }
-  
-  /**
-   * Apply theme (dark/light mode)
-   */
-  function applyTheme() {
-    if (appState.darkMode) {
-      document.body.classList.add('dark-mode');
-      document.getElementById('toggleTheme').innerHTML = '<i class="bi bi-sun-fill"></i>';
+      `;
     } else {
-      document.body.classList.remove('dark-mode');
-      document.getElementById('toggleTheme').innerHTML = '<i class="bi bi-moon-fill"></i>';
+      // Show default content when validation data is not available
+      validationBadge.className = 'badge bg-secondary';
+      validationBadge.textContent = 'Not Available';
+      validationDetails.innerHTML = '<p class="text-center">Data validation is only available with server-side processing and extended statistics.</p>';
+    }
+  }
+  
+  /**
+   * Get title for visualization
+   */
+  getVizTitle(vizType) {
+    switch (vizType) {
+      case 'time_series': return 'Time Series Visualization';
+      case 'daily_pattern': return 'Daily Pattern Visualization';
+      case 'correlation': return 'Correlation Visualization';
+      case 'heatmap': return 'Heatmap Visualization';
+      default: return 'Visualization';
+    }
+  }
+  
+  /**
+   * Check API connection status
+   */
+  checkConnection() {
+    const statusIndicator = document.getElementById('status-indicator');
+    const statusText = document.getElementById('status-text');
+    
+    fetch('/health')
+      .then(response => {
+        if (response.ok) {
+          statusIndicator.className = 'status-indicator connected';
+          statusText.textContent = 'Connected';
+        } else {
+          statusIndicator.className = 'status-indicator error';
+          statusText.textContent = 'Error';
+        }
+      })
+      .catch(() => {
+        statusIndicator.className = 'status-indicator disconnected';
+        statusText.textContent = 'Disconnected';
+      });
+  }
+  
+  /**
+   * Toggle dark/light mode
+   */
+  toggleDarkMode() {
+    this.darkMode = !this.darkMode;
+    const body = document.body;
+    const themeIcon = document.querySelector('#toggleTheme i');
+    
+    if (this.darkMode) {
+      body.classList.add('dark-mode');
+      themeIcon.className = 'bi bi-sun-fill';
+    } else {
+      body.classList.remove('dark-mode');
+      themeIcon.className = 'bi bi-moon-fill';
+    }
+    
+    // Save preference
+    localStorage.setItem('darkMode', this.darkMode);
+  }
+  
+  /**
+   * Load theme preference from storage
+   */
+  loadThemePreference() {
+    const savedDarkMode = localStorage.getItem('darkMode');
+    if (savedDarkMode === 'true') {
+      this.darkMode = false; // Will be toggled to true
+      this.toggleDarkMode();
+    }
+  }
+  
+  /**
+   * Setup real-time data updates
+   */
+  setupRealTimeUpdates() {
+    const realtimeSwitch = document.getElementById('realtimeSwitch');
+    
+    realtimeSwitch.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        this.startRealTimeUpdates();
+      } else {
+        this.stopRealTimeUpdates();
+      }
+    });
+    
+    // Start real-time updates if switch is checked
+    if (realtimeSwitch.checked) {
+      this.startRealTimeUpdates();
+    }
+  }
+  
+  /**
+   * Start real-time data updates
+   */
+  startRealTimeUpdates() {
+    this.updateInterval = setInterval(() => {
+      this.loadData();
+      if (this.isClientMode) {
+        this.loadVisualization(this.currentVizType);
+      }
+    }, 60000); // Update every minute
+  }
+  
+  /**
+   * Stop real-time data updates
+   */
+  stopRealTimeUpdates() {
+    if (this.updateInterval) {
+      clearInterval(this.updateInterval);
+      this.updateInterval = null;
     }
   }
   
   /**
    * Download current data as CSV
    */
-  function downloadData() {
-    console.log("Preparing data download");
+  downloadData() {
+    if (!this.data || this.data.length === 0) {
+      alert('No data available to download');
+      return;
+    }
     
-    fetch('/api/data?results=1000')
-      .then(response => response.json())
-      .then(result => {
-        if (result.success && result.data && result.data.data) {
-          const data = result.data.data;
-          
-          // Convert to CSV
-          const headers = ['Timestamp', 'PM2.5', 'PM10', 'Temperature', 'Humidity'];
-          const csvRows = [headers.join(',')];
-          
-          data.forEach(item => {
-            const row = [
-              item.created_at,
-              item.pm25 || item.field3 || '',
-              item.pm10 || item.field4 || '',
-              item.temperature || item.field2 || '',
-              item.humidity || item.field1 || ''
-            ];
-            csvRows.push(row.join(','));
-          });
-          
-          const csvContent = csvRows.join('\n');
-          
-          // Create download link
-          const blob = new Blob([csvContent], { type: 'text/csv' });
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = `air_quality_data_${formatDate(new Date())}.csv`;
-          link.click();
-          URL.revokeObjectURL(url);
-          
-          showToast(`Downloaded ${data.length} records as CSV`, 'success');
-        } else {
-          console.error("Failed to download data:", result.error);
-          showToast('Error preparing data for download', 'error');
+    // Get the data to download (filtered or all)
+    const dataToDownload = this.filteredData || this.data;
+    
+    // Create fields array
+    const fields = ['created_at', 'pm25', 'pm10', 'temperature', 'humidity'];
+    
+    // Create CSV content
+    let csvContent = fields.join(',') + '\n';
+    
+    dataToDownload.forEach(item => {
+      let row = [
+        item.created_at,
+        item.pm25 || item.field3 || '',
+        item.pm10 || item.field4 || '',
+        item.temperature || item.field2 || '',
+        item.humidity || item.field1 || ''
+      ].map(value => {
+        // Quote strings with commas
+        if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+          return `"${value.replace(/"/g, '""')}"`;
         }
-      })
-      .catch(error => {
-        console.error("Error in data download:", error);
-        showToast('Error fetching data for download', 'error');
+        return value;
       });
+      
+      csvContent += row.join(',') + '\n';
+    });
+    
+    // Create download link
+    const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', 'air_quality_data.csv');
+    document.body.appendChild(link);
+    
+    // Trigger download
+    link.click();
+    
+    // Clean up
+    document.body.removeChild(link);
   }
-});
+}

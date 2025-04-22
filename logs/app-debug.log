@@ -1,0 +1,15 @@
+2025-04-22T22:45:15.127Z [INFO] [local-data-service] Successfully read 82099 records from CSV file
+2025-04-22T22:45:16.600Z [INFO] [local-data-service] Successfully read 82099 records from CSV file
+2025-04-22T22:45:17.607Z [INFO] [visualization-helper] Time series visualization error: This method is not implemented: Check that a complete date adapter is provided.
+2025-04-22T22:45:17.908Z [INFO] [local-data-service] Successfully read 82099 records from CSV file
+2025-04-22T22:47:29.146Z [INFO] [local-data-service] Successfully read 82099 records from CSV file
+2025-04-22T22:47:30.603Z [INFO] [visualization-helper] Time series visualization error: This method is not implemented: Check that a complete date adapter is provided.
+2025-04-22T22:47:30.764Z [INFO] [local-data-service] Successfully read 82099 records from CSV file
+2025-04-22T22:47:35.949Z [INFO] [local-data-service] Successfully read 82099 records from CSV file
+2025-04-22T22:47:37.037Z [INFO] [visualization-helper] Time series visualization error: This method is not implemented: Check that a complete date adapter is provided.
+2025-04-22T22:48:19.793Z [INFO] [local-data-service] Successfully read 82099 records from CSV file
+2025-04-22T22:48:20.568Z [INFO] [local-data-service] Successfully read 82099 records from CSV file
+2025-04-22T22:48:20.857Z [INFO] [local-data-service] Successfully read 82099 records from CSV file
+2025-04-22T22:53:37.501Z [INFO] [local-data-service] Successfully read 82099 records from CSV file
+2025-04-22T22:53:39.022Z [INFO] [local-data-service] Successfully read 82099 records from CSV file
+2025-04-22T22:53:39.360Z [INFO] [local-data-service] Successfully read 82099 records from CSV file

@@ -1,220 +1,261 @@
 /**
- * System status dashboard functionality
+ * Status page JavaScript
+ * Provides monitoring and diagnostic information about the Air Quality Monitoring system
  */
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Load channel status
-    loadChannelStatus();
-    
-    // Load system health
-    loadSystemHealth();
-    
-    // Load API endpoints
+    // Initialize the system status page
+    checkChannelStatus();
+    checkSystemHealth();
     loadApiEndpoints();
     
-    // Configure cache clear button
+    // Set up cache clear button
     document.getElementById('clearCacheBtn').addEventListener('click', clearCache);
     
-    // Update status every 60 seconds
-    setInterval(() => {
-        loadChannelStatus();
-        loadSystemHealth();
-    }, 60000);
+    // Set up auto-refresh
+    setInterval(checkChannelStatus, 60000); // Check channel status every minute
+    setInterval(checkSystemHealth, 30000);  // Check system health every 30 seconds
 });
 
 /**
- * Load ThingSpeak channel status
+ * Check ThingSpeak channel status
  */
-function loadChannelStatus() {
-    fetch('/api/status')
+function checkChannelStatus() {
+    const statusElement = document.getElementById('channel-status-info');
+    statusElement.innerHTML = '<div class="d-flex align-items-center"><div class="spinner-border spinner-border-sm me-2" role="status"></div>Checking channel status...</div>';
+    
+    fetch('/api/channel/status')
         .then(response => response.json())
         .then(data => {
-            if (data.success && data.status) {
-                const status = data.status;
-                const healthStatus = status.health || {};
-                
-                // Create status card with appropriate color
-                let statusClass = 'success';
-                if (healthStatus.status === 'warning') statusClass = 'warning';
-                if (healthStatus.status === 'error') statusClass = 'danger';
-                
-                const html = `
-                    <div class="alert alert-${statusClass}">
-                        <h5>Channel Status: ${healthStatus.status || 'Unknown'}</h5>
-                        <p>Last update: ${new Date(status.channel?.updated_at || Date.now()).toLocaleString()}</p>
-                        <p>Time since last update: ${healthStatus.lastUpdateMinutesAgo || '?'} minutes</p>
-                        <p>Entry count: ${status.channel?.last_entry_id || 0}</p>
-                    </div>
-                `;
-                
-                document.getElementById('channel-status-info').innerHTML = html;
-            } else {
-                document.getElementById('channel-status-info').innerHTML = `
-                    <div class="alert alert-danger">
-                        <h5>Unable to fetch channel status</h5>
-                        <p>${data.error || 'Unknown error'}</p>
-                    </div>
-                `;
+            if (data.error) {
+                throw new Error(data.error);
             }
+            
+            let statusHtml = `
+                <div class="alert ${data.active ? 'alert-success' : 'alert-warning'}">
+                    <h5><i class="bi ${data.active ? 'bi-check-circle' : 'bi-exclamation-triangle'}"></i> 
+                    Channel ${data.channelId || 'Unknown'} - ${data.active ? 'Active' : 'Inactive'}</h5>
+                </div>
+                <div class="mb-2"><strong>Last Entry:</strong> ${data.lastEntryDate || 'No data'}</div>
+                <div class="mb-2"><strong>Entry Count:</strong> ${data.entryCount || 0}</div>
+                <div class="mb-2"><strong>Data Age:</strong> ${getDataAgeDisplay(data.dataAge)}</div>`;
+                
+            if (data.fields) {
+                statusHtml += '<div class="mt-3"><strong>Available Fields:</strong></div>';
+                statusHtml += '<ul class="list-group">';
+                
+                for (const [key, value] of Object.entries(data.fields)) {
+                    statusHtml += `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${key}
+                            <span class="badge ${value ? 'bg-success' : 'bg-secondary'} rounded-pill">
+                                ${value ? 'Available' : 'Not Available'}
+                            </span>
+                        </li>`;
+                }
+                
+                statusHtml += '</ul>';
+            }
+            
+            statusElement.innerHTML = statusHtml;
         })
         .catch(error => {
-            document.getElementById('channel-status-info').innerHTML = `
+            statusElement.innerHTML = `
                 <div class="alert alert-danger">
-                    <h5>Connection Error</h5>
-                    <p>${error.message}</p>
+                    <i class="bi bi-exclamation-triangle"></i> Error checking channel status: ${error.message}
                 </div>
-            `;
+                <button class="btn btn-sm btn-outline-secondary" onclick="checkChannelStatus()">
+                    <i class="bi bi-arrow-repeat"></i> Try Again
+                </button>`;
         });
 }
 
 /**
- * Load system health information
+ * Check system health status
  */
-function loadSystemHealth() {
-    fetch('/api/health')
+function checkSystemHealth() {
+    const healthElement = document.getElementById('system-health');
+    healthElement.innerHTML = '<div class="d-flex align-items-center"><div class="spinner-border spinner-border-sm me-2" role="status"></div>Checking system health...</div>';
+    
+    fetch('/health')
+        .then(response => response.json())
+        .then(data => {
+            const uptimeFormatted = formatUptime(data.uptime);
+            let healthHtml = `
+                <div class="alert alert-success">
+                    <h5><i class="bi bi-check-circle"></i> System Running</h5>
+                </div>
+                <div class="mb-2"><strong>Uptime:</strong> ${uptimeFormatted}</div>
+                <div class="mb-2"><strong>Server Time:</strong> ${new Date(data.timestamp).toLocaleString()}</div>`;
+                
+            // Check visualization support
+            fetch('/api/visualization/status')
+                .then(response => response.json())
+                .then(vizData => {
+                    healthHtml += `
+                        <div class="mb-2"><strong>Visualization Engine:</strong> 
+                            <span class="badge ${vizData.pythonAvailable ? 'bg-success' : 'bg-warning'}">
+                                ${vizData.pythonAvailable ? 'Python Available' : 'JavaScript Mode'}
+                            </span>
+                        </div>`;
+                    
+                    if (vizData.engineDetails) {
+                        healthHtml += `<div class="mb-2"><strong>Engine Details:</strong> ${vizData.engineDetails}</div>`;
+                    }
+                    
+                    healthElement.innerHTML = healthHtml;
+                })
+                .catch(error => {
+                    healthHtml += `
+                        <div class="mb-2"><strong>Visualization Engine:</strong> 
+                            <span class="badge bg-danger">Status Unknown</span>
+                        </div>`;
+                    healthElement.innerHTML = healthHtml;
+                });
+        })
+        .catch(error => {
+            healthElement.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle"></i> Error checking system health: ${error.message}
+                </div>
+                <button class="btn btn-sm btn-outline-secondary" onclick="checkSystemHealth()">
+                    <i class="bi bi-arrow-repeat"></i> Try Again
+                </button>`;
+        });
+}
+
+/**
+ * Load API endpoints and test them
+ */
+function loadApiEndpoints() {
+    const tableBody = document.getElementById('api-endpoints-table');
+    tableBody.innerHTML = '<tr><td colspan="4" class="text-center"><div class="spinner-border spinner-border-sm me-2" role="status"></div>Loading endpoints...</td></tr>';
+    
+    const endpoints = [
+        { url: '/api/data/latest', description: 'Latest sensor readings' },
+        { url: '/api/data/recent', description: 'Recent data points' },
+        { url: '/api/data/stats', description: 'Statistical summary' },
+        { url: '/api/visualization/time_series', description: 'Time series visualization' },
+        { url: '/api/visualization/daily_pattern', description: 'Daily pattern visualization' },
+        { url: '/api/visualization/correlation', description: 'Correlation visualization' },
+        { url: '/api/channel/status', description: 'Channel status information' }
+    ];
+    
+    let tableHtml = '';
+    
+    // Test each endpoint sequentially
+    let promiseChain = Promise.resolve();
+    
+    endpoints.forEach((endpoint, index) => {
+        promiseChain = promiseChain
+            .then(() => {
+                tableHtml += `
+                    <tr id="endpoint-row-${index}">
+                        <td>${endpoint.url}</td>
+                        <td>${endpoint.description}</td>
+                        <td id="endpoint-status-${index}">
+                            <div class="spinner-border spinner-border-sm" role="status"></div> Testing...
+                        </td>
+                        <td>
+                            <a href="${endpoint.url}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
+                        </td>
+                    </tr>`;
+                
+                tableBody.innerHTML = tableHtml;
+                
+                const startTime = Date.now();
+                return fetch(endpoint.url)
+                    .then(response => {
+                        const endTime = Date.now();
+                        const duration = endTime - startTime;
+                        
+                        const statusCell = document.getElementById(`endpoint-status-${index}`);
+                        if (response.ok) {
+                            statusCell.innerHTML = `
+                                <span class="badge bg-success">OK (${duration}ms)</span>`;
+                        } else {
+                            statusCell.innerHTML = `
+                                <span class="badge bg-danger">Error ${response.status}</span>`;
+                        }
+                    })
+                    .catch(error => {
+                        const statusCell = document.getElementById(`endpoint-status-${index}`);
+                        statusCell.innerHTML = `
+                            <span class="badge bg-danger">Failed</span>`;
+                    });
+            });
+    });
+}
+
+/**
+ * Clear API cache
+ */
+function clearCache() {
+    const cacheStatus = document.getElementById('cache-status');
+    cacheStatus.innerHTML = '<div class="alert alert-info"><div class="spinner-border spinner-border-sm me-2" role="status"></div>Clearing cache...</div>';
+    
+    fetch('/api/admin/clear-cache', { method: 'POST' })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const health = data.health;
+                cacheStatus.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle"></i> Cache cleared successfully!
+                    </div>`;
                 
-                let statusClass = 'success';
-                if (health.status === 'warning' || health.status === 'notice') statusClass = 'warning';
-                if (health.status === 'critical' || health.status === 'error') statusClass = 'danger';
-                
-                const html = `
-                    <div class="alert alert-${statusClass}">
-                        <h5>System Status: ${health.status}</h5>
-                        <p>${health.message}</p>
-                        <p>Data source: ${health.name || 'Unknown'}</p>
-                        <p>Entry count: ${health.entryCount.toLocaleString()}</p>
-                        <p>Last updated: ${health.minutesSinceUpdate} minutes ago</p>
-                    </div>
-                `;
-                
-                document.getElementById('system-health').innerHTML = html;
+                // Refresh all status indicators
+                checkChannelStatus();
+                checkSystemHealth();
+                loadApiEndpoints();
             } else {
-                document.getElementById('system-health').innerHTML = `
-                    <div class="alert alert-danger">
-                        <h5>Unable to fetch system health</h5>
-                        <p>${data.error || 'Unknown error'}</p>
-                    </div>
-                `;
+                throw new Error(data.message || 'Unknown error');
             }
         })
         .catch(error => {
-            document.getElementById('system-health').innerHTML = `
+            cacheStatus.innerHTML = `
                 <div class="alert alert-danger">
-                    <h5>Connection Error</h5>
-                    <p>${error.message}</p>
-                </div>
-            `;
+                    <i class="bi bi-exclamation-triangle"></i> Error clearing cache: ${error.message}
+                </div>`;
         });
 }
 
 /**
- * Clear the API cache
+ * Format server uptime into human-readable form
  */
-function clearCache() {
-    const button = document.getElementById('clearCacheBtn');
-    button.disabled = true;
-    button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Clearing...';
+function formatUptime(uptime) {
+    const days = Math.floor(uptime / 86400);
+    const hours = Math.floor((uptime % 86400) / 3600);
+    const minutes = Math.floor((uptime % 3600) / 60);
+    const seconds = Math.floor(uptime % 60);
     
-    fetch('/api/cache/clear', {
-        method: 'POST'
-    })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('cache-status').innerHTML = `
-                <div class="alert alert-success">
-                    <p>${data.message}</p>
-                </div>
-            `;
-            
-            // Re-enable button after a delay
-            setTimeout(() => {
-                button.disabled = false;
-                button.innerHTML = '<i class="bi bi-trash"></i> Clear API Cache';
-            }, 2000);
-        })
-        .catch(error => {
-            document.getElementById('cache-status').innerHTML = `
-                <div class="alert alert-danger">
-                    <p>Failed to clear cache: ${error.message}</p>
-                </div>
-            `;
-            button.disabled = false;
-            button.innerHTML = '<i class="bi bi-trash"></i> Clear API Cache';
-        });
+    let result = '';
+    if (days > 0) result += `${days}d `;
+    if (hours > 0 || days > 0) result += `${hours}h `;
+    if (minutes > 0 || hours > 0 || days > 0) result += `${minutes}m `;
+    result += `${seconds}s`;
+    
+    return result;
 }
 
 /**
- * Load and test API endpoints
+ * Get a human-readable display of data age
  */
-function loadApiEndpoints() {
-    const endpoints = [
-        { url: '/api/data', description: 'Data API' },
-        { url: '/api/data-source', description: 'Data Source Info' },
-        { url: '/api/analysis?quick=true', description: 'Quick Analysis' },
-        { url: '/api/status', description: 'Channel Status' },
-        { url: '/api/health', description: 'System Health' },
-        { url: '/api/realtime?lastEntryId=0', description: 'Realtime Updates' }
-    ];
+function getDataAgeDisplay(ageInMinutes) {
+    if (!ageInMinutes && ageInMinutes !== 0) {
+        return 'Unknown';
+    }
     
-    const tableBody = document.getElementById('api-endpoints-table');
-    tableBody.innerHTML = '';
-    
-    endpoints.forEach(endpoint => {
-        const row = document.createElement('tr');
-        
-        row.innerHTML = `
-            <td><code>${endpoint.url}</code></td>
-            <td>${endpoint.description}</td>
-            <td id="status-${btoa(endpoint.url)}">Checking...</td>
-            <td>
-                <button class="btn btn-sm btn-primary test-endpoint" 
-                        data-url="${endpoint.url}">
-                    Test
-                </button>
-            </td>
-        `;
-        
-        tableBody.appendChild(row);
-        
-        // Test endpoint
-        testEndpoint(endpoint.url);
-    });
-    
-    // Add event listeners to test buttons
-    document.querySelectorAll('.test-endpoint').forEach(button => {
-        button.addEventListener('click', function() {
-            const url = this.getAttribute('data-url');
-            testEndpoint(url);
-        });
-    });
-}
-
-/**
- * Test an API endpoint
- */
-function testEndpoint(url) {
-    const statusId = `status-${btoa(url)}`;
-    const statusEl = document.getElementById(statusId);
-    
-    statusEl.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
-    
-    const startTime = performance.now();
-    
-    fetch(url)
-        .then(response => {
-            const endTime = performance.now();
-            const responseTime = Math.round(endTime - startTime);
-            
-            if (response.ok) {
-                statusEl.innerHTML = `<span class="badge bg-success">OK (${responseTime}ms)</span>`;
-            } else {
-                statusEl.innerHTML = `<span class="badge bg-danger">Error ${response.status}</span>`;
-            }
-        })
-        .catch(error => {
-            statusEl.innerHTML = `<span class="badge bg-danger">Failed</span>`;
-        });
+    if (ageInMinutes < 1) {
+        return 'Just now';
+    } else if (ageInMinutes < 60) {
+        return `${Math.round(ageInMinutes)} minutes ago`;
+    } else if (ageInMinutes < 1440) {
+        const hours = Math.floor(ageInMinutes / 60);
+        return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+    } else {
+        const days = Math.floor(ageInMinutes / 1440);
+        return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+    }
 }

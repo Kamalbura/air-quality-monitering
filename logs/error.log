@@ -519,3 +519,13 @@ TypeError: dataResult.data.forEach is not a function
     at C:\Users\burak\Desktop\iotprojects\air-quality-monitering\routes\api.js:136:25
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
 
+[2025-04-22T22:12:49.981Z] [ERR-m9t29fwd-bbgbw] API Route: python: can't open file 'C:\\Users\\burak\\Desktop\\projects\\theme-based\\air-quality-monitering\\python\\data_validator.py': [Errno 2] No such file or directory
+
+Error: python: can't open file 'C:\\Users\\burak\\Desktop\\projects\\theme-based\\air-quality-monitering\\python\\data_validator.py': [Errno 2] No such file or directory
+
+    at PythonShell.parseError (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\python-shell\index.js:311:21)
+    at terminateIfNeeded (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\python-shell\index.js:193:32)
+    at ChildProcess.<anonymous> (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\python-shell\index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+
