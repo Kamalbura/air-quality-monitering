@@ -78,6 +78,42 @@ router.post('/clear-cache', (req, res) => {
   }
 });
 
+// Clear all data endpoint
+router.post('/clear-data', (req, res) => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const nodeCache = require('node-cache');
+    
+    // Create a new cache instance to clear the current one
+    global.apiCache = new nodeCache({ stdTTL: 600 });
+    
+    // Clear temporary files
+    const tmpDir = path.join(__dirname, '..', 'public', 'images', 'tmp');
+    if (fs.existsSync(tmpDir)) {
+      const files = fs.readdirSync(tmpDir);
+      let count = 0;
+      
+      for (const file of files) {
+        if (file !== '.gitkeep') {
+          fs.unlinkSync(path.join(tmpDir, file));
+          count++;
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        message: `Cleared ${count} temporary files and reset cache.`
+      });
+    } else {
+      res.json({ success: true, message: 'Cache cleared successfully.' });
+    }
+  } catch (error) {
+    console.error('Error clearing data:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // API metrics
 router.get('/metrics', (req, res) => {
   const { apiMonitor } = require('../middleware/api-monitor');
@@ -85,7 +121,7 @@ router.get('/metrics', (req, res) => {
   res.json({ success: true, data: metrics });
 });
 
-// New ThingSpeak Info Endpoints
+// New ThingSpeak Info Endpoints/ Remove sensitive info like API keys for client-side
 router.get('/thingspeak/channel-details', async (req, res) => {
   try {
     const details = await thingspeakService.getDataSourceInfo();
@@ -112,6 +148,82 @@ router.get('/thingspeak/status', async (req, res) => {
     res.json(status);
   } catch (error) {
     debugHelper.log(`API Error /thingspeak/status: ${error.message}`, 'api');
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Configuration API endpoints
+router.get('/config', (req, res) => {
+  try {
+    const configService = require('../services/config-service');
+    const config = configService.getConfig();
+    
+    // Remove sensitive info like API keys for client-side
+    const safeConfig = JSON.parse(JSON.stringify(config)); // Deep clone
+    if (safeConfig.thingspeak && safeConfig.thingspeak.writeApiKey) {
+      safeConfig.thingspeak.writeApiKey = safeConfig.thingspeak.writeApiKey.replace(/./g, '*');
+    }
+    
+    res.json({ success: true, data: safeConfig });
+  } catch (error) {
+    console.error('Error fetching configuration:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+router.post('/config/update', (req, res) => {
+  try {
+    const configService = require('../services/config-service');
+    const { section, updates } = req.body;
+    
+    if (!section || !updates) {
+      return res.status(400).json({ success: false, error: 'Missing section or updates' });
+    }
+    
+    const result = configService.updateConfig(section, updates);
+    res.json({ success: result });
+  } catch (error) {
+    console.error('Error updating configuration:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+router.post('/config/reset', (req, res) => {
+  try {
+    const configService = require('../services/config-service');
+    const result = configService.resetConfig();
+    res.json({ success: result });
+  } catch (error) {
+    console.error('Error resetting configuration:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+router.get('/config/export', (req, res) => {
+  try {
+    const configService = require('../services/config-service');
+    const configStr = configService.exportConfig();
+    if (!configStr) {
+      return res.status(500).json({ success: false, error: 'Failed to export configuration' });
+    }
+    res.json({ success: true, data: configStr });
+  } catch (error) {
+    console.error('Error exporting configuration:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+router.post('/config/import', (req, res) => {
+  try {
+    const configService = require('../services/config-service');
+    const { config } = req.body;
+    if (!config) {
+      return res.status(400).json({ success: false, error: 'Missing configuration data' });
+    }
+    const result = configService.importConfig(config);
+    res.json({ success: result });
+  } catch (error) {
+    console.error('Error importing configuration:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });

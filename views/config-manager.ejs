@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration Manager - Air Quality Monitoring</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/">
+            <i class="bi bi-cloud-haze2"></i> Air Quality Monitor
+        </a>
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" 
+                data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="d-flex">
+            <button id="toggleTheme" class="btn btn-link text-white" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Toggle dark mode">
+                <i class="bi bi-moon-fill"></i>
+            </button>
+        </div>
+    </header>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">
+                                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/config">
+                                <i class="bi bi-gear me-1"></i> Configuration
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/status">
+                                <i class="bi bi-activity me-1"></i> System Status
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Configuration Sections</span>
+                    </h6>
+                    <ul class="nav flex-column mb-2">
+                        <li class="nav-item">
+                            <a class="nav-link config-section-link active" href="#thingspeak-section">
+                                <i class="bi bi-cloud-upload me-1"></i> ThingSpeak
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link config-section-link" href="#data-sources-section">
+                                <i class="bi bi-database me-1"></i> Data Sources
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link config-section-link" href="#system-section">
+                                <i class="bi bi-sliders me-1"></i> System
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link config-section-link" href="#diagnostics-section">
+                                <i class="bi bi-activity me-1"></i> Diagnostics
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2"><i class="bi bi-gear"></i> Configuration Manager</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button id="saveAllBtn" type="button" class="btn btn-sm btn-success">
+                                <i class="bi bi-save"></i> Save All Changes
+                            </button>
+                            <button id="resetConfigBtn" type="button" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-arrow-counterclockwise"></i> Reset to Defaults
+                            </button>
+                            <button id="exportConfigBtn" type="button" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-download"></i> Export Config
+                            </button>
+                            <button id="importConfigBtn" type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-upload"></i> Import Config
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ThingSpeak Configuration Section -->
+                <div id="thingspeak-section" class="config-section active">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="bi bi-cloud-upload"></i> ThingSpeak Configuration
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="thingspeakChannelId" class="form-label">Channel ID</label>
+                                    <input type="text" class="form-control config-input" id="thingspeakChannelId" 
+                                           name="thingspeak.channelId" placeholder="Enter ThingSpeak channel ID">
+                                    <div class="form-text">Your ThingSpeak channel identifier</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="thingspeakReadApiKey" class="form-label">Read API Key</label>
+                                    <input type="text" class="form-control config-input" id="thingspeakReadApiKey" 
+                                           name="thingspeak.readApiKey" placeholder="Enter read API key">
+                                    <div class="form-text">API key for reading data from ThingSpeak</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="thingspeakWriteApiKey" class="form-label">Write API Key (Optional)</label>
+                                    <input type="text" class="form-control config-input" id="thingspeakWriteApiKey" 
+                                           name="thingspeak.writeApiKey" placeholder="Enter write API key">
+                                    <div class="form-text">API key for writing data to ThingSpeak (optional)</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="thingspeakUpdateInterval" class="form-label">Update Interval (ms)</label>
+                                    <input type="number" class="form-control config-input" id="thingspeakUpdateInterval" 
+                                           name="thingspeak.updateInterval" min="5000" step="1000" placeholder="30000">
+                                    <div class="form-text">Time between data updates in milliseconds (min: 5000)</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <button id="testThingspeakBtn" class="btn btn-primary">
+                                        <i class="bi bi-lightning"></i> Test Connection
+                                    </button>
+                                    <div id="thingspeak-test-result" class="mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Sources Configuration Section -->
+                <div id="data-sources-section" class="config-section">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="bi bi-database"></i> Data Sources Configuration
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label for="defaultCsvPath" class="form-label">Default CSV Path</label>
+                                    <input type="text" class="form-control config-input" id="defaultCsvPath" 
+                                           name="dataSources.defaultCsvPath" placeholder="./data/feeds.csv">
+                                    <div class="form-text">Path to the default CSV data file</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="csvUploadDir" class="form-label">CSV Upload Directory</label>
+                                    <input type="text" class="form-control config-input" id="csvUploadDir" 
+                                           name="dataSources.csvUploadDir" placeholder="./data/uploads">
+                                    <div class="form-text">Directory where uploaded CSV files are stored</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="dataExportDir" class="form-label">Data Export Directory</label>
+                                    <input type="text" class="form-control config-input" id="dataExportDir" 
+                                           name="dataSources.dataExportDir" placeholder="./data/exports">
+                                    <div class="form-text">Directory where exported data is saved</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- System Configuration Section -->
+                <div id="system-section" class="config-section">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="bi bi-sliders"></i> System Configuration
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="serverPort" class="form-label">Server Port</label>
+                                    <input type="number" class="form-control config-input" id="serverPort" 
+                                           name="system.port" min="1" max="65535" placeholder="3000">
+                                    <div class="form-text">Port the server will run on (requires restart)</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="logLevel" class="form-label">Log Level</label>
+                                    <select class="form-select config-input" id="logLevel" name="system.logLevel">
+                                        <option value="debug">Debug</option>
+                                        <option value="info">Info</option>
+                                        <option value="warn">Warning</option>
+                                        <option value="error">Error</option>
+                                    </select>
+                                    <div class="form-text">Minimum level of logs to record</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="cacheTTL" class="form-label">Cache TTL (seconds)</label>
+                                    <input type="number" class="form-control config-input" id="cacheTTL" 
+                                           name="system.cacheTTL" min="0" placeholder="300">
+                                    <div class="form-text">Time-to-live for cached data in seconds</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch mt-4">
+                                        <input class="form-check-input config-checkbox" type="checkbox" id="debugMode" 
+                                               name="system.debugMode">
+                                        <label class="form-check-label" for="debugMode">Debug Mode</label>
+                                    </div>
+                                    <div class="form-text">Enable extended debugging features</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Diagnostics Section -->
+                <div id="diagnostics-section" class="config-section">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="bi bi-activity"></i> System Diagnostics
+                        </div>
+                        <div class="card-body">
+                            <!-- System Metrics -->
+                            <div class="diagnostics-panel mb-4">
+                                <h5><i class="bi bi-speedometer"></i> System Metrics</h5>
+                                <div id="system-metrics">
+                                    <div class="d-flex justify-content-center"></div>
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Error Rates -->
+                            <div class="diagnostics-panel mb-4">
+                                <h5><i class="bi bi-exclamation-triangle"></i> Error Summary</h5>
+                                <div id="error-metrics">
+                                    <div class="d-flex justify-content-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Data Quality -->
+                            <div class="diagnostics-panel mb-4">
+                                <h5><i class="bi bi-check-circle"></i> Data Quality</h5>
+                                <div id="data-quality-metrics">
+                                    <div class="d-flex justify-content-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- ThingSpeak Status -->
+                            <div class="diagnostics-panel">
+                                <h5><i class="bi bi-cloud"></i> ThingSpeak Connectivity</h5>
+                                <div id="thingspeak-metrics">
+                                    <div class="d-flex justify-content-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <button id="runDiagnosticsBtn" class="btn btn-primary">
+                                        <i class="bi bi-lightning"></i> Run Diagnostics
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- System Logs -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="bi bi-journal-text"></i> System Logs
+                            <div class="float-end">
+                                <select id="log-type-selector" class="form-select form-select-sm">
+                                    <option value="error">Error Logs</option>
+                                    <option value="access">Access Logs</option>
+                                    <option value="api">API Logs</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="logs-container" style="max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 0.85rem;">
+                                <div class="d-flex justify-content-center">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Toast container for notifications -->
+                <div id="toast-container" class="position-fixed bottom-0 end-0 p-3"></div>
+                
+                <!-- Config import hidden form -->
+                <form id="importConfigForm" style="display: none;">
+                    <input type="file" id="configFileInput" name="config" accept=".json">
+                </form>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/config-manager.js"></script>
+</body>
+</html>

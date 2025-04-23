@@ -1,0 +1,30 @@
+{
+  "thingspeak": {
+    "channelId": "12397",
+    "readApiKey": "RIXYDDDMXDBX9ALI",
+    "writeApiKey": "",
+    "updateInterval": 30000
+  },
+  "dataSources": {
+    "defaultCsvPath": "C:\\Users\\burak\\Desktop\\projects\\theme-based\\air-quality-monitering\\data\\feeds.csv",
+    "csvUploadDir": "C:\\Users\\burak\\Desktop\\projects\\theme-based\\air-quality-monitering\\data\\uploads",
+    "dataExportDir": "C:\\Users\\burak\\Desktop\\projects\\theme-based\\air-quality-monitering\\data\\exports"
+  },
+  "system": {
+    "port": "3000",
+    "logLevel": "info",
+    "cacheTTL": 300,
+    "debugMode": false
+  },
+  "visualization": {
+    "defaultEngine": "client",
+    "chartTheme": "light",
+    "autoRefresh": true,
+    "showExtendedViews": true
+  },
+  "security": {
+    "enableRateLimiting": true,
+    "maxRequestsPerMinute": 100,
+    "enableIPBlocking": false
+  }
+}

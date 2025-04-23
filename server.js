@@ -75,6 +75,13 @@ app.get('/thingspeak-info', (req, res) => {
   res.render('thingspeak-info');
 });
 
+// Add or update the route for the configuration page
+app.get('/config', (req, res) => {
+  res.render('config', { 
+    version: require('./package.json').version || '1.0.0'
+  });
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 

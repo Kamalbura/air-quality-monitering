@@ -330,11 +330,93 @@ function clearCache() {
     return apiCache.flushAll();
 }
 
+/**
+ * Test basic ThingSpeak connection
+ * @returns {Promise<Object>} Connection test result
+ */
+async function testConnection() {
+  try {
+    const response = await axios.get('https://api.thingspeak.com/channels.json', {
+      timeout: 5000
+    });
+    return { success: true, status: response.status };
+  } catch (error) {
+    console.error('ThingSpeak connection test failed:', error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Test access to the configured ThingSpeak channel
+ * @returns {Promise<Object>} Channel access test result
+ */
+async function testChannelAccess() {
+  try {
+    const config = getThingspeakConfig();
+    const url = `https://api.thingspeak.com/channels/${config.channelId}/feeds.json?api_key=${config.readApiKey}&results=1`;
+    
+    const response = await axios.get(url, { timeout: 5000 });
+    
+    if (response.data && response.data.feeds && response.data.feeds.length > 0) {
+      return { success: true, channelId: config.channelId };
+    } else {
+      return { success: false, message: 'No data found in channel' };
+    }
+  } catch (error) {
+    console.error('ThingSpeak channel access test failed:', error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Test data retrieval from ThingSpeak
+ * @returns {Promise<Object>} Data retrieval test result
+ */
+async function testDataRetrieval() {
+  try {
+    const config = getThingspeakConfig();
+    const startTime = Date.now();
+    
+    const data = await fetchLatestData();
+    const duration = Date.now() - startTime;
+    
+    return {
+      success: true,
+      responseTime: duration,
+      recordCount: data.length,
+      sample: data.slice(0, 1)
+    };
+  } catch (error) {
+    console.error('ThingSpeak data retrieval test failed:', error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+// Function to get ThingSpeak configuration
+function getThingspeakConfig() {
+  try {
+    // Try to import the config service
+    const configService = require('./config-service');
+    const config = configService.getConfig();
+    return config.thingspeak;
+  } catch (error) {
+    // Fallback to default config
+    return {
+      channelId: process.env.THINGSPEAK_CHANNEL_ID || '12397',
+      readApiKey: process.env.THINGSPEAK_READ_API_KEY || '',
+      updateInterval: parseInt(process.env.THINGSPEAK_UPDATE_INTERVAL || 30000)
+    };
+  }
+}
+
 module.exports = {
     getChannelData,
     getRealtimeUpdates,
     checkConnection,
     getDataSourceInfo,
     getChannelStatus,
-    clearCache
+    clearCache,
+    testConnection,
+    testChannelAccess,
+    testDataRetrieval
 };

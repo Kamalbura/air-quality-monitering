@@ -14,16 +14,24 @@ if (!fs.existsSync(dumpDir)) {
 
 // Function to check if a file is imported or required anywhere in the codebase
 function isFileReferenced(filename) {
-  // Get base filename without extension
   const baseFilename = path.basename(filename, path.extname(filename));
   
   try {
-    // Search for imports or requires of this file in the codebase
-    // Using grep on Unix or findstr on Windows
+    // More thorough check for references
+    const searchPatterns = [
+      `require.*${baseFilename}`,
+      `import.*${baseFilename}`,
+      `from.*${baseFilename}`,
+      `src=.*${baseFilename}`,
+      `href=.*${baseFilename}`
+    ];
+    
+    const pattern = searchPatterns.join('\\|');
     const isWindows = process.platform === 'win32';
+    
     const command = isWindows 
-      ? `findstr /s /i /m "require.*${baseFilename}|import.*${baseFilename}" *.js`
-      : `grep -r "require.*${baseFilename}\\|import.*${baseFilename}" --include="*.js" .`;
+      ? `findstr /s /i /m "${pattern}" *.js *.ejs *.html *.css`
+      : `grep -r "${pattern}" --include="*.js" --include="*.ejs" --include="*.html" --include="*.css" .`;
       
     execSync(command, { stdio: 'pipe' });
     return true;
@@ -35,27 +43,88 @@ function isFileReferenced(filename) {
 
 // List of files that are candidates for the dump folder
 const filesToAnalyze = [
-  // Debug and test files
-  'debug-visualization.js',
-  'test-visualization.js',
-  'test-visualizations.js',
-  
-  // Potentially duplicate visualization helpers
+  // Duplicate or potentially obsolete visualization helpers
   'helpers/js-visualization-helper.js',
   
   // Python scripts if JS alternatives exist
   'python/analysis.py',
+  'python/create_error_image.py',
+  'python/fix_encoding.py',
   
-  // Other potential unused files
-  'visualization_wrapper.js',
+  // Test and debug files
+  'debug-visualization.js',
+  'test-visualization.js',
+  'test-visualizations.js',
+  'test-thingspeak-connection.js',
+  'test.js',
   'making-report.py',
+  
+  // Deprecated firmware or setup scripts
   'sketch_mar5a/sketch_mar5a.ino',
   'setup_dirs.bat',
   'run.bat',
   'install.bat',
-  'test.js',
-  'test-thingspeak-connection.js'
+  
+  // Redundant configuration files
+  'create-dump-folder.js', // Now redundant with this script
+  
+  // Potentially unused service implementations
+  'visualization_wrapper.js',
 ];
+
+// Directories to check - automatically scan these for unused files
+const directoriesToScan = [
+  'helpers',
+  'public/js',
+  'public/css',
+  'services',
+  'python'
+];
+
+// Files that should never be moved to dump (protect critical files)
+const protectedFiles = [
+  'server.js',
+  'package.json',
+  'package-lock.json',
+  'setup.js',
+  'organize-files.js',
+  'routes/api.js',
+  'public/js/dashboard.js',
+  'public/css/style.css',
+  'helpers/debug-helper.js',
+  'helpers/analysis-helper.js'
+];
+
+console.log('Scanning for unused files...');
+
+// Find all JavaScript and Python files in specified directories
+let additionalFilesToCheck = [];
+directoriesToScan.forEach(dir => {
+  const dirPath = path.join(__dirname, dir);
+  if (fs.existsSync(dirPath)) {
+    try {
+      const files = fs.readdirSync(dirPath);
+      files.forEach(file => {
+        const filePath = path.join(dirPath, file);
+        const stats = fs.statSync(filePath);
+        if (stats.isFile() && (file.endsWith('.js') || file.endsWith('.py'))) {
+          const relativePath = path.relative(__dirname, filePath).replace(/\\/g, '/');
+          // Don't add if it's already in filesToAnalyze or protectedFiles
+          if (!filesToAnalyze.includes(relativePath) && 
+              !protectedFiles.includes(relativePath) &&
+              !protectedFiles.includes(file)) {
+            additionalFilesToCheck.push(relativePath);
+          }
+        }
+      });
+    } catch (err) {
+      console.error(`Error scanning directory ${dir}: ${err.message}`);
+    }
+  }
+});
+
+// Combine the manually specified files with automatically found ones
+const allFilesToCheck = [...filesToAnalyze, ...additionalFilesToCheck];
 
 // Check for required directories
 const requiredDirectories = [
@@ -78,11 +147,19 @@ requiredDirectories.forEach(dir => {
 let movedCount = 0;
 let skippedCount = 0;
 let notFoundCount = 0;
+let protectedCount = 0;
 
-filesToAnalyze.forEach(relativeFilePath => {
+allFilesToCheck.forEach(relativeFilePath => {
   const filePath = path.join(__dirname, relativeFilePath);
   const fileName = path.basename(filePath);
   const dumpPath = path.join(dumpDir, fileName);
+  
+  // Check if it's a protected file
+  if (protectedFiles.includes(relativeFilePath) || protectedFiles.includes(fileName)) {
+    console.log(`Protected file: ${relativeFilePath}`);
+    protectedCount++;
+    return;
+  }
   
   // Only proceed if file exists
   if (fs.existsSync(filePath)) {
@@ -106,11 +183,15 @@ filesToAnalyze.forEach(relativeFilePath => {
       }
       
       if (shouldMove) {
+        // Create backup version with timestamp to prevent name conflicts
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const backupPath = path.join(dumpDir, `${fileName}.${timestamp}.bak`);
+        
         // Read the original file
         const fileContent = fs.readFileSync(filePath);
         
-        // Write to the new location
-        fs.writeFileSync(dumpPath, fileContent);
+        // Write to the dump location
+        fs.writeFileSync(backupPath, fileContent);
         
         // Delete the original file
         fs.unlinkSync(filePath);
@@ -131,6 +212,7 @@ console.log(`\nOperation complete:`);
 console.log(`- ${movedCount} files moved to dump folder`);
 console.log(`- ${skippedCount} files skipped (are referenced in codebase)`);
 console.log(`- ${notFoundCount} files not found`);
+console.log(`- ${protectedCount} files protected from moving`);
 
 // Clean up empty directories
 console.log('\nChecking for empty directories...');
@@ -139,8 +221,8 @@ const checkEmptyDirs = (dir) => {
   
   const items = fs.readdirSync(dir);
   
-  // Skip node_modules and .git directories
-  if (dir.includes('node_modules') || dir.includes('.git')) return;
+  // Skip node_modules, .git directories and the dump directory
+  if (dir.includes('node_modules') || dir.includes('.git') || dir === dumpDir) return;
   
   if (items.length === 0) {
     console.log(`Removing empty directory: ${dir}`);

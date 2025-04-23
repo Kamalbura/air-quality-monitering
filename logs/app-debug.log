@@ -202,3 +202,83 @@
 2025-04-23T12:48:04.126Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
 2025-04-23T12:48:08.896Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
 2025-04-23T12:50:09.008Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:51:51.746Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T12:52:19.371Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_1_null_null_null
+2025-04-23T12:52:20.269Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T12:52:36.024Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T12:54:35.886Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:55:08.980Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:55:25.986Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:55:32.202Z [INFO] [config-service] Configuration saved to file
+2025-04-23T12:55:32.203Z [INFO] [config-service] Default configuration created
+2025-04-23T12:55:43.132Z [INFO] [config-service] Configuration loaded from file
+2025-04-23T12:57:08.320Z [INFO] [config-service] Configuration loaded from file
+2025-04-23T12:57:08.323Z [INFO] [config-service] Configuration saved to file
+2025-04-23T12:57:08.331Z [INFO] [config-service] Configuration loaded from file
+2025-04-23T12:57:10.504Z [INFO] [config-service] Configuration loaded from file
+2025-04-23T12:57:10.506Z [INFO] [config-service] Configuration saved to file
+2025-04-23T12:57:10.516Z [INFO] [config-service] Configuration loaded from file
+2025-04-23T12:57:28.402Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:57:31.059Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1
+2025-04-23T12:57:31.948Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T12:58:00.934Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T12:58:13.520Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:58:47.967Z [INFO] [config-service] Configuration loaded from file
+2025-04-23T12:58:57.357Z [INFO] [config-service] Configuration loaded from file
+2025-04-23T12:58:57.359Z [INFO] [config-service] Configuration saved to file
+2025-04-23T12:58:57.366Z [INFO] [config-service] Configuration loaded from file
+2025-04-23T12:59:01.941Z [INFO] [config-service] Configuration loaded from file
+2025-04-23T12:59:02.710Z [INFO] [config-service] Configuration loaded from file
+2025-04-23T12:59:02.944Z [INFO] [config-service] Configuration loaded from file
+2025-04-23T12:59:03.130Z [INFO] [config-service] Configuration loaded from file
+2025-04-23T12:59:03.302Z [INFO] [config-service] Configuration loaded from file
+2025-04-23T12:59:03.437Z [INFO] [config-service] Configuration loaded from file
+2025-04-23T12:59:20.943Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:59:21.917Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:59:22.654Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1
+2025-04-23T12:59:23.319Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T12:59:23.344Z [INFO] [config-service] Configuration loaded from file
+2025-04-23T13:00:50.414Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T13:00:53.140Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_1_null_null_null
+2025-04-23T13:00:53.993Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T13:01:02.878Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T13:02:39.232Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T13:09:14.731Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T13:15:40.852Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T13:15:43.434Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T13:15:53.355Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T13:15:54.218Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_2025-01-01_2025-01-31_1
+2025-04-23T13:16:04.602Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T13:16:13.484Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T13:32:09.007Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T13:32:13.732Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T13:32:16.409Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1
+2025-04-23T13:32:17.304Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T13:32:25.740Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T13:32:46.760Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T13:32:52.798Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T13:33:21.770Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T13:34:15.445Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T13:34:23.319Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T13:35:21.864Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1
+2025-04-23T13:35:22.758Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T13:35:33.032Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T13:46:16.307Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T13:46:19.583Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1
+2025-04-23T13:46:20.735Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T13:46:30.331Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T13:46:36.651Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T14:03:13.187Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T14:03:17.070Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T14:03:51.160Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1
+2025-04-23T14:03:52.093Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T14:04:00.095Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T14:05:07.086Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T14:05:07.779Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T14:06:18.740Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T14:06:21.486Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T14:06:59.221Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T14:07:07.498Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T14:07:11.696Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T14:07:18.089Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T14:08:30.069Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100

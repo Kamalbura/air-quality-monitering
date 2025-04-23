@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Configuration - Air Quality Monitoring</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/">
+            <i class="bi bi-cloud-haze2"></i> Air Quality Monitor
+        </a>
+        <div class="d-flex align-items-center text-white me-2">
+            <span class="status-indicator disconnected" id="status-indicator"></span>
+            <small id="status-text">Loading...</small>
+        </div>
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="d-flex">
+            <button id="toggleTheme" class="btn btn-link text-white" title="Toggle dark mode">
+                <i class="bi bi-moon-fill"></i>
+            </button>
+        </div>
+    </header>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">
+                                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/status">
+                                <i class="bi bi-activity me-1"></i> System Status
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/config">
+                                <i class="bi bi-gear me-1"></i> Configuration
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/thingspeak-info">
+                                <i class="bi bi-cloud me-1"></i> ThingSpeak Info
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Configuration Sections</span>
+                    </h6>
+                    <ul class="nav flex-column mb-2">
+                        <li class="nav-item">
+                            <a class="nav-link config-section-link active" href="#thingspeak-section">
+                                <i class="bi bi-cloud me-1"></i> ThingSpeak
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link config-section-link" href="#data-section">
+                                <i class="bi bi-database me-1"></i> Data Sources
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link config-section-link" href="#system-section">
+                                <i class="bi bi-gear-wide-connected me-1"></i> System
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link config-section-link" href="#viz-section">
+                                <i class="bi bi-graph-up me-1"></i> Visualization
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link config-section-link" href="#security-section">
+                                <i class="bi bi-shield-lock me-1"></i> Security
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link config-section-link" href="#backup-section">
+                                <i class="bi bi-file-earmark-arrow-up me-1"></i> Backup/Restore
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2"><i class="bi bi-gear"></i> System Configuration</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-success" id="saveAllConfigBtn">
+                                <i class="bi bi-save"></i> Save All Changes
+                            </button>
+                            <button type="button" class="btn btn-warning" id="resetConfigBtn">
+                                <i class="bi bi-arrow-counterclockwise"></i> Reset to Defaults
+                            </button>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-secondary" id="exportConfigBtn">
+                                <i class="bi bi-download"></i> Export
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" id="importConfigBtn">
+                                <i class="bi bi-upload"></i> Import
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="configStatus" class="alert alert-info d-none">
+                    <i class="bi bi-info-circle"></i> <span id="configStatusMsg"></span>
+                </div>
+                
+                <!-- ThingSpeak Configuration -->
+                <div id="thingspeak-section" class="config-section mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-cloud"></i> ThingSpeak Configuration
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="thingspeakForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="channelId" class="form-label">Channel ID</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                                            <input type="text" class="form-control" id="channelId" name="channelId">
+                                        </div>
+                                        <div class="form-text">ThingSpeak channel identifier</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="updateInterval" class="form-label">Update Interval (ms)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                            <input type="number" class="form-control" id="updateInterval" name="updateInterval" min="5000">
+                                        </div>
+                                        <div class="form-text">Time between data updates (min 5000ms)</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="readApiKey" class="form-label">Read API Key</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-key"></i></span>
+                                            <input type="text" class="form-control" id="readApiKey" name="readApiKey">
+                                        </div>
+                                        <div class="form-text">API key for reading data</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="writeApiKey" class="form-label">Write API Key</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                                            <input type="password" class="form-control" id="writeApiKey" name="writeApiKey">
+                                            <button class="btn btn-outline-secondary" type="button" id="toggleWriteKey">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                        <div class="form-text">API key for writing data (optional)</div>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <button type="button" class="btn btn-primary save-section" data-section="thingspeak">
+                                        <i class="bi bi-save"></i> Save ThingSpeak Settings
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Sources Configuration -->
+                <div id="data-section" class="config-section mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-database"></i> Data Sources Configuration
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="dataSourcesForm">
+                                <div class="mb-3">
+                                    <label for="defaultCsvPath" class="form-label">Default CSV Path</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
+                                        <input type="text" class="form-control" id="defaultCsvPath" name="defaultCsvPath">
+                                    </div>
+                                    <div class="form-text">Path to default CSV data file</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="csvUploadDir" class="form-label">CSV Upload Directory</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-folder"></i></span>
+                                        <input type="text" class="form-control" id="csvUploadDir" name="csvUploadDir">
+                                    </div>
+                                    <div class="form-text">Directory for uploaded CSV files</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="dataExportDir" class="form-label">Data Export Directory</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-folder-symlink"></i></span>
+                                        <input type="text" class="form-control" id="dataExportDir" name="dataExportDir">
+                                    </div>
+                                    <div class="form-text">Directory for exported data files</div>
+                                </div>
+                                <div class="text-end">
+                                    <button type="button" class="btn btn-primary save-section" data-section="dataSources">
+                                        <i class="bi bi-save"></i> Save Data Source Settings
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- System Settings -->
+                <div id="system-section" class="config-section mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-gear-wide-connected"></i> System Settings
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="systemForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label for="port" class="form-label">Server Port</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-hdd-network"></i></span>
+                                            <input type="number" class="form-control" id="port" name="port" min="1024" max="65535">
+                                        </div>
+                                        <div class="form-text">Port number for the server</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="logLevel" class="form-label">Log Level</label>
+                                        <select class="form-select" id="logLevel" name="logLevel">
+                                            <option value="debug">Debug</option>
+                                            <option value="info">Info</option>
+                                            <option value="warn">Warning</option>
+                                            <option value="error">Error</option>
+                                        </select>
+                                        <div class="form-text">Logging verbosity level</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="cacheTTL" class="form-label">Cache TTL (seconds)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-clock-history"></i></span>
+                                            <input type="number" class="form-control" id="cacheTTL" name="cacheTTL" min="10">
+                                        </div>
+                                        <div class="form-text">Time-to-live for cached data</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="debugMode" name="debugMode">
+                                            <label class="form-check-label" for="debugMode">Debug Mode</label>
+                                        </div>
+                                        <div class="form-text">Enable detailed debugging output</div>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <button type="button" class="btn btn-primary save-section" data-section="system">
+                                        <i class="bi bi-save"></i> Save System Settings
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Visualization Settings -->
+                <div id="viz-section" class="config-section mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-graph-up"></i> Visualization Settings
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="visualizationForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="defaultEngine" class="form-label">Default Visualization Engine</label>
+                                        <select class="form-select" id="defaultEngine" name="defaultEngine">
+                                            <option value="client">Client-side (Chart.js)</option>
+                                            <option value="server">Server-side</option>
+                                        </select>
+                                        <div class="form-text">Primary visualization rendering engine</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="chartTheme" class="form-label">Default Chart Theme</label>
+                                        <select class="form-select" id="chartTheme" name="chartTheme">
+                                            <option value="light">Light Theme</option>
+                                            <option value="dark">Dark Theme</option>
+                                            <option value="auto">Follow System Theme</option>
+                                        </select>
+                                        <div class="form-text">Default color scheme for charts</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="autoRefresh" name="autoRefresh">
+                                            <label class="form-check-label" for="autoRefresh">Auto-refresh Visualizations</label>
+                                        </div>
+                                        <div class="form-text">Automatically refresh visualizations with new data</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="showExtendedViews" name="showExtendedViews">
+                                            <label class="form-check-label" for="showExtendedViews">Show Extended Views by Default</label>
+                                        </div>
+                                        <div class="form-text">Show additional visualization views on dashboard load</div>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <button type="button" class="btn btn-primary save-section" data-section="visualization">
+                                        <i class="bi bi-save"></i> Save Visualization Settings
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security Settings -->
+                <div id="security-section" class="config-section mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-shield-lock"></i> Security Settings
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="securityForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="enableRateLimiting" name="enableRateLimiting">
+                                            <label class="form-check-label" for="enableRateLimiting">Enable Rate Limiting</label>
+                                        </div>
+                                        <div class="form-text">Limit number of requests per IP address</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="maxRequestsPerMinute" class="form-label">Max Requests Per Minute</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-speedometer2"></i></span>
+                                            <input type="number" class="form-control" id="maxRequestsPerMinute" name="maxRequestsPerMinute" min="10">
+                                        </div>
+                                        <div class="form-text">Maximum number of requests allowed per minute per IP</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="enableIPBlocking" name="enableIPBlocking">
+                                            <label class="form-check-label" for="enableIPBlocking">Enable IP Blocking</label>
+                                        </div>
+                                        <div class="form-text">Block IPs that exceed rate limits for a period of time</div>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <button type="button" class="btn btn-primary save-section" data-section="security">
+                                        <i class="bi bi-save"></i> Save Security Settings
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Backup/Restore Section -->
+                <div id="backup-section" class="config-section mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-file-earmark-arrow-up"></i> Configuration Backup/Restore
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="configJson" class="form-label">Configuration JSON</label>
+                                <textarea class="form-control" id="configJson" rows="10"></textarea>
+                                <div class="form-text">Edit this JSON directly or use the import/export functions</div>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <button type="button" class="btn btn-success me-2" id="applyJsonBtn">
+                                        <i class="bi bi-check-circle"></i> Apply JSON
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" id="copyJsonBtn">
+                                        <i class="bi bi-clipboard"></i> Copy to Clipboard
+                                    </button>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-danger" id="clearDataBtn">
+                                        <i class="bi bi-trash"></i> Clear All Data
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Toast container for notifications -->
+                <div id="toast-container" class="position-fixed bottom-0 end-0 p-3"></div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Import Config Modal -->
+    <div class="modal fade" id="importConfigModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Import Configuration</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="importConfigText" class="form-label">Paste Configuration JSON</label>
+                        <textarea class="form-control" id="importConfigText" rows="10"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmImportBtn">Import</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reset Confirmation Modal -->
+    <div class="modal fade" id="resetConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reset Configuration</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> This will reset ALL configuration settings to their default values. This action cannot be undone.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmResetBtn">Reset All Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Clear Data Modal -->
+    <div class="modal fade" id="clearDataModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Clear All Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle"></i> This will clear all cached data, including measurements, visualizations, and temporary files. This action cannot be undone.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmClearDataBtn">Clear All Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/config.js"></script>
+</body>
+</html>
