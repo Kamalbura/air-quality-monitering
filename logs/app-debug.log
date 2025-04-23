@@ -183,3 +183,22 @@
 2025-04-23T12:41:33.118Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1000
 2025-04-23T12:41:35.099Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1
 2025-04-23T12:41:35.929Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T12:42:02.513Z [INFO] [server] CSV data file exists: true
+2025-04-23T12:42:05.913Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1
+2025-04-23T12:42:07.034Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T12:42:08.205Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_1_null_null_null
+2025-04-23T12:42:08.668Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T12:42:19.124Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:43:05.321Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_1_null_null_null
+2025-04-23T12:43:06.219Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T12:43:36.655Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_1_null_null_null
+2025-04-23T12:43:49.988Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_1_null_null_null
+2025-04-23T12:43:50.861Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T12:44:06.249Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_1_null_null_null
+2025-04-23T12:44:12.488Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T12:44:39.756Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:48:01.372Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:48:03.230Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1
+2025-04-23T12:48:04.126Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T12:48:08.896Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T12:50:09.008Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100

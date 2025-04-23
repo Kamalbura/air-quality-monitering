@@ -1,18 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const thingspeakService = require('../services/thingspeak-service');
-const csvDataService = require('../services/csv-data-service');
 const debugHelper = require('../helpers/debug-helper');
 const analysisHelper = require('../helpers/analysis-helper');
-const ErrorHandler = require('../error-handler');
-const errorHandler = new ErrorHandler();
-
-// Cache control middleware
-const cacheControl = (req, res, next) => {
-  // Set cache control headers
-  res.setHeader('Cache-Control', 'private, max-age=300');
-  next();
-};
 
 // Data endpoints
 router.get('/data', async (req, res) => {
@@ -123,140 +113,6 @@ router.get('/thingspeak/status', async (req, res) => {
   } catch (error) {
     debugHelper.log(`API Error /thingspeak/status: ${error.message}`, 'api');
     res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-/**
- * @route GET /api/thingspeak/data
- * @desc Get data from ThingSpeak channel
- * @access Public
- */
-router.get('/thingspeak/data', cacheControl, async (req, res) => {
-  try {
-    const { results = 100, offset = 0 } = req.query;
-    const data = await thingspeakService.getChannelData({
-      results: parseInt(results),
-      offset: parseInt(offset)
-    });
-    res.json(data);
-  } catch (error) {
-    const errorResponse = await errorHandler.handleError(error, 'ThingSpeak API', req);
-    res.status(500).json(errorResponse);
-  }
-});
-
-/**
- * @route GET /api/thingspeak/status
- * @desc Get ThingSpeak service status
- * @access Public
- */
-router.get('/thingspeak/status', async (req, res) => {
-  try {
-    const status = await thingspeakService.getServiceStatus();
-    res.json(status);
-  } catch (error) {
-    const errorResponse = await errorHandler.handleError(error, 'ThingSpeak Status', req);
-    res.status(500).json(errorResponse);
-  }
-});
-
-/**
- * @route GET /api/csv/data
- * @desc Get data from local CSV file
- * @access Public
- */
-router.get('/csv/data', cacheControl, async (req, res) => {
-  try {
-    const { limit = 100, offset = 0 } = req.query;
-    const data = await csvDataService.getDefaultCsvData({
-      limit: parseInt(limit),
-      offset: parseInt(offset)
-    });
-    res.json(data);
-  } catch (error) {
-    const errorResponse = await errorHandler.handleError(error, 'CSV Data API', req);
-    res.status(500).json(errorResponse);
-  }
-});
-
-/**
- * @route GET /api/csv/info
- * @desc Get information about the CSV file
- * @access Public
- */
-router.get('/csv/info', async (req, res) => {
-  try {
-    const info = csvDataService.getCsvFileInfo();
-    res.json(info);
-  } catch (error) {
-    const errorResponse = await errorHandler.handleError(error, 'CSV Info API', req);
-    res.status(500).json(errorResponse);
-  }
-});
-
-/**
- * @route GET /api/data/stats
- * @desc Get statistical analysis of data
- * @access Public
- */
-router.get('/data/stats', async (req, res) => {
-  try {
-    const { source = 'thingspeak', extended = false } = req.query;
-    let data = [];
-    
-    if (source === 'csv') {
-      const csvData = await csvDataService.getDefaultCsvData({ limit: 500 });
-      data = csvData.success ? csvData.data : [];
-    } else {
-      const thingspeakData = await thingspeakService.getChannelData({ results: 500 });
-      data = thingspeakData.feeds || [];
-    }
-    
-    const stats = analysisHelper.calculateStatistics(data, { 
-      extended: extended === 'true' 
-    });
-    
-    res.json(stats);
-  } catch (error) {
-    const errorResponse = await errorHandler.handleError(error, 'Data Stats API', req);
-    res.status(500).json(errorResponse);
-  }
-});
-
-/**
- * @route GET /api/data/source-info
- * @desc Get information about available data sources
- * @access Public
- */
-router.get('/data/source-info', async (req, res) => {
-  try {
-    // Check CSV file availability
-    const csvInfo = csvDataService.getCsvFileInfo();
-    
-    // Check ThingSpeak availability
-    const thingspeakStatus = await thingspeakService.getServiceStatus();
-    
-    res.json({
-      sources: [
-        {
-          id: 'csv',
-          name: 'Local CSV File',
-          path: 'C:\\Users\\burak\\Desktop\\projects\\theme-based\\air-quality-monitering\\data\\feeds.csv',
-          available: csvInfo.exists,
-          info: csvInfo
-        },
-        {
-          id: 'thingspeak',
-          name: 'ThingSpeak IoT Platform',
-          available: thingspeakStatus.available,
-          info: thingspeakStatus
-        }
-      ],
-      recommendedSource: csvInfo.exists ? 'csv' : 'thingspeak'
-    });
-  } catch (error) {
-    const errorResponse = await errorHandler.handleError(error, 'Data Source Info API', req);
-    res.status(500).json(errorResponse);
   }
 });
 
