@@ -12,9 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set up cache clear button
     document.getElementById('clearCacheBtn').addEventListener('click', clearCache);
     
-    // Set up current air quality button
-    document.getElementById('currentAirQualityBtn').addEventListener('click', checkCurrentAirQuality);
-    
     // Set up auto-refresh
     setInterval(checkChannelStatus, 60000); // Check channel status every minute
     setInterval(checkSystemHealth, 30000);  // Check system health every 30 seconds
@@ -155,98 +152,6 @@ function checkSystemHealth() {
 }
 
 /**
- * Check current air quality
- */
-function checkCurrentAirQuality() {
-    const statusElement = document.getElementById('current-air-quality-data');
-    if (!statusElement) return;
-    
-    statusElement.innerHTML = '<div class="d-flex align-items-center"><div class="spinner-border spinner-border-sm me-2" role="status"></div>Checking current air quality...</div>';
-    
-    fetch('/api/thingspeak/latest-feed')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                const airData = data.data;
-                
-                // Determine AQI status based on PM2.5 levels
-                let aqiStatus = 'Good', badgeClass = 'bg-success';
-                const pm25 = parseFloat(airData.pm25);
-                
-                if (pm25 > 150) {
-                    aqiStatus = 'Hazardous';
-                    badgeClass = 'bg-dark';
-                } else if (pm25 > 55) {
-                    aqiStatus = 'Unhealthy';
-                    badgeClass = 'bg-danger';
-                } else if (pm25 > 35) {
-                    aqiStatus = 'Unhealthy for Sensitive Groups';
-                    badgeClass = 'bg-warning';
-                } else if (pm25 > 12) {
-                    aqiStatus = 'Moderate';
-                    badgeClass = 'bg-warning';
-                }
-                
-                statusElement.innerHTML = `
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            Current Air Quality
-                            <span class="badge ${badgeClass} float-end">${aqiStatus}</span>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="text-center">
-                                        <h5>PM2.5</h5>
-                                        <h2>${airData.pm25} μg/m³</h2>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="text-center">
-                                        <h5>PM10</h5>
-                                        <h2>${airData.pm10} μg/m³</h2>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="text-center">
-                                        <h5>Temperature</h5>
-                                        <h2>${airData.temperature} °C</h2>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="text-center">
-                                        <h5>Humidity</h5>
-                                        <h2>${airData.humidity} %</h2>
-                                    </div>
-                                </div>
-                            </div>
-                            <p class="mt-3 mb-0 text-muted">Last updated: ${new Date().toLocaleString()}</p>
-                        </div>
-                    </div>
-                `;
-            } else {
-                throw new Error(data.error || 'Failed to get air quality data');
-            }
-        })
-        .catch(error => {
-            console.error('Error checking air quality:', error);
-            statusElement.innerHTML = `
-                <div class="alert alert-danger">
-                    <i class="bi bi-exclamation-triangle"></i> Error getting current air quality: ${error.message}
-                </div>
-                <button class="btn btn-sm btn-outline-secondary" onclick="checkCurrentAirQuality()">
-                    <i class="bi bi-arrow-repeat"></i> Try Again
-                </button>
-            `;
-        });
-}
-
-/**
  * Load API endpoints and test them
  */
 function loadApiEndpoints() {
@@ -261,8 +166,7 @@ function loadApiEndpoints() {
         { url: '/api/visualization/daily_pattern', description: 'Daily pattern visualization' },
         { url: '/api/visualization/correlation', description: 'Correlation visualization' },
         { url: '/api/channel/status', description: 'Channel status information' },
-        { url: '/api/health', description: 'System health information' },
-        { url: '/api/thingspeak/latest-feed', description: 'Latest ThingSpeak feed' }
+        { url: '/api/health', description: 'System health information' }
     ];
     
     let tableHtml = '';
@@ -474,7 +378,8 @@ async function safeFetch(url, options = {}) {
         });
         
         if (!response.ok) {
-            throw new Error(`Request failed with status: ${response.status}`);
+            const errorText = await response.text();
+            throw new Error(`HTTP error ${response.status}: ${errorText}`);
         }
         
         return await response.json();

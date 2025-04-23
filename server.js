@@ -66,12 +66,8 @@ app.get('/', (req, res) => {
   });
 });
 
-// Add or update the route for the status page
 app.get('/status', (req, res) => {
-  res.render('status', { 
-    title: 'System Status',
-    version: require('./package.json').version || '1.0.0'
-  });
+  res.render('status');
 });
 
 // New route for ThingSpeak info page

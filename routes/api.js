@@ -135,10 +135,8 @@ router.get('/thingspeak/channel-details', async (req, res) => {
 router.get('/thingspeak/latest-feed', async (req, res) => {
   try {
     const latestData = await thingspeakService.getChannelData({ results: 1 });
-    
-    if (latestData && latestData.feeds && latestData.feeds.length > 0) {
+    if (latestData.feeds && latestData.feeds.length > 0) {
       const feed = latestData.feeds[0];
-      
       res.json({
         success: true,
         data: {
@@ -146,18 +144,14 @@ router.get('/thingspeak/latest-feed', async (req, res) => {
           pm10: feed.field4 || 'N/A',
           temperature: feed.field2 || 'N/A',
           humidity: feed.field1 || 'N/A',
-          timestamp: feed.created_at,
-          entry_id: feed.entry_id
-        }
+        },
       });
     } else {
       res.json({ success: false, error: 'No data available' });
     }
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message || 'Failed to fetch latest feed data'
-    });
+    console.error('Error fetching latest feed:', error);
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
