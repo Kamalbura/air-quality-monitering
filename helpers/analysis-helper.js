@@ -181,6 +181,181 @@ function calculateStatistics(data, options = {}) {
 }
 
 /**
+ * Perform seasonal analysis on air quality data
+ * @param {Array} data - Data array
+ * @returns {Object} - Seasonal analysis results
+ */
+function performSeasonalAnalysis(data) {
+  try {
+    // Group data by season
+    const seasonalData = {
+      winter: { pm25: [], pm10: [], temp: [], humidity: [] },
+      spring: { pm25: [], pm10: [], temp: [], humidity: [] },
+      summer: { pm25: [], pm10: [], temp: [], humidity: [] },
+      fall: { pm25: [], pm10: [], temp: [], humidity: [] }
+    };
+    
+    // Process each data point
+    data.forEach(entry => {
+      const date = new Date(entry.created_at);
+      const month = date.getMonth();
+      let season;
+      
+      // Determine season from month
+      if (month >= 2 && month <= 4) season = 'spring';
+      else if (month >= 5 && month <= 7) season = 'summer';
+      else if (month >= 8 && month <= 10) season = 'fall';
+      else season = 'winter';
+      
+      // Extract values with fallbacks
+      const pm25 = parseFloat(entry.pm25 || entry.field3) || 0;
+      const pm10 = parseFloat(entry.pm10 || entry.field4) || 0;
+      const temp = parseFloat(entry.temperature || entry.field2) || 0;
+      const humidity = parseFloat(entry.humidity || entry.field1) || 0;
+      
+      // Add to relevant season
+      seasonalData[season].pm25.push(pm25);
+      seasonalData[season].pm10.push(pm10);
+      seasonalData[season].temp.push(temp);
+      seasonalData[season].humidity.push(humidity);
+    });
+    
+    // Calculate averages for each season
+    const result = {};
+    
+    for (const [season, values] of Object.entries(seasonalData)) {
+      result[season] = {
+        pm25: calculateAverage(values.pm25),
+        pm10: calculateAverage(values.pm10),
+        temperature: calculateAverage(values.temp),
+        humidity: calculateAverage(values.humidity),
+        count: values.pm25.length
+      };
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('Error in seasonal analysis:', error);
+    return {};
+  }
+}
+
+/**
+ * Perform weekly comparison analysis
+ * @param {Array} data - Data array
+ * @returns {Object} - Weekly comparison results
+ */
+function performWeeklyComparison(data) {
+  try {
+    // Group data by day of week (0-6, where 0 is Sunday)
+    const weekdayData = {
+      0: { pm25: [], pm10: [], temp: [], humidity: [] }, // Sunday
+      1: { pm25: [], pm10: [], temp: [], humidity: [] },
+      2: { pm25: [], pm10: [], temp: [], humidity: [] },
+      3: { pm25: [], pm10: [], temp: [], humidity: [] },
+      4: { pm25: [], pm10: [], temp: [], humidity: [] },
+      5: { pm25: [], pm10: [], temp: [], humidity: [] },
+      6: { pm25: [], pm10: [], temp: [], humidity: [] }  // Saturday
+    };
+    
+    // Process each data point
+    data.forEach(entry => {
+      const date = new Date(entry.created_at);
+      const dayOfWeek = date.getDay(); // 0-6
+      
+      // Extract values with fallbacks
+      const pm25 = parseFloat(entry.pm25 || entry.field3) || 0;
+      const pm10 = parseFloat(entry.pm10 || entry.field4) || 0;
+      const temp = parseFloat(entry.temperature || entry.field2) || 0;
+      const humidity = parseFloat(entry.humidity || entry.field1) || 0;
+      
+      // Add to relevant day
+      weekdayData[dayOfWeek].pm25.push(pm25);
+      weekdayData[dayOfWeek].pm10.push(pm10);
+      weekdayData[dayOfWeek].temp.push(temp);
+      weekdayData[dayOfWeek].humidity.push(humidity);
+    });
+    
+    // Calculate hourly averages for each day
+    const result = {};
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    
+    for (let day = 0; day < 7; day++) {
+      const values = weekdayData[day];
+      const hourlyData = calculateHourlyAverages(data, day);
+      
+      result[dayNames[day]] = {
+        pm25: calculateAverage(values.pm25),
+        pm10: calculateAverage(values.pm10),
+        temperature: calculateAverage(values.temp),
+        humidity: calculateAverage(values.humidity),
+        hourly: hourlyData,
+        count: values.pm25.length
+      };
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('Error in weekly comparison:', error);
+    return {};
+  }
+}
+
+/**
+ * Calculate hourly averages for a specific day of week
+ * @param {Array} data - Data array
+ * @param {Number} dayOfWeek - Day of week (0-6)
+ * @returns {Array} - Hourly averages
+ */
+function calculateHourlyAverages(data, dayOfWeek) {
+  // Initialize arrays for each hour
+  const hours = Array(24).fill().map(() => ({
+    pm25: [],
+    pm10: [],
+    temp: [],
+    humidity: []
+  }));
+  
+  // Group data by hour
+  data.forEach(entry => {
+    const date = new Date(entry.created_at);
+    if (date.getDay() !== dayOfWeek) return;
+    
+    const hour = date.getHours();
+    
+    const pm25 = parseFloat(entry.pm25 || entry.field3) || 0;
+    const pm10 = parseFloat(entry.pm10 || entry.field4) || 0;
+    const temp = parseFloat(entry.temperature || entry.field2) || 0;
+    const humidity = parseFloat(entry.humidity || entry.field1) || 0;
+    
+    hours[hour].pm25.push(pm25);
+    hours[hour].pm10.push(pm10);
+    hours[hour].temp.push(temp);
+    hours[hour].humidity.push(humidity);
+  });
+  
+  // Calculate averages for each hour
+  return hours.map((hourData, hour) => ({
+    hour,
+    pm25: calculateAverage(hourData.pm25),
+    pm10: calculateAverage(hourData.pm10),
+    temperature: calculateAverage(hourData.temp),
+    humidity: calculateAverage(hourData.humidity)
+  }));
+}
+
+/**
+ * Calculate average of an array of numbers
+ * @param {Array} array - Array of numbers
+ * @returns {Number} - Average value
+ */
+function calculateAverage(array) {
+  if (!array.length) return 0;
+  const sum = array.reduce((a, b) => a + b, 0);
+  return parseFloat((sum / array.length).toFixed(2));
+}
+
+/**
  * Calculate correlation matrix between different measurements
  * @param {Array} data - Array of data points
  * @returns {Object} Correlation matrix
@@ -350,5 +525,7 @@ module.exports = {
   calculateStatistics,
   calculateCorrelation,
   calculateDailyPatterns,
-  processDataForAnalysis
+  processDataForAnalysis,
+  performSeasonalAnalysis,
+  performWeeklyComparison
 };

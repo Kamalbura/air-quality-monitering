@@ -150,6 +150,62 @@ class Dashboard {
     
     // Download data (window function)
     window.downloadData = () => this.downloadData();
+
+    // ThingSpeak direct load button
+    document.getElementById('loadThingspeakBtn').addEventListener('click', () => {
+        // Show the ThingSpeak modal
+        const thingspeakModal = new bootstrap.Modal(document.getElementById('thingspeakModal'));
+        thingspeakModal.show();
+    });
+    
+    // Load ThingSpeak data button in modal
+    document.getElementById('loadThingspeakDataBtn').addEventListener('click', () => {
+        // Get options from modal
+        const days = document.getElementById('thingspeakDays').value;
+        const results = document.getElementById('thingspeakResults').value;
+        const includeAnalysis = document.getElementById('thingspeakIncludeAnalysis').checked;
+        
+        // Hide the modal
+        bootstrap.Modal.getInstance(document.getElementById('thingspeakModal')).hide();
+        
+        // Load data
+        this.loadThingspeakDirectData(days, results, includeAnalysis);
+    });
+
+    const uploadBtn = document.getElementById('uploadDataBtn');
+    if (uploadBtn) {
+      uploadBtn.addEventListener('click', () => {
+        this.showToast('Upload CSV', 'CSV upload not yet implemented.', 'info');
+      });
+    }
+
+    const infoBtn = document.getElementById('thingspeakInfoBtn');
+    if (infoBtn) {
+      infoBtn.addEventListener('click', () => {
+        this.showToast('ThingSpeak Info', 'Channel details and usage instructions.', 'info');
+      });
+    }
+
+    const currentAirQualityBtn = document.getElementById('currentAirQualityBtn');
+    if (currentAirQualityBtn) {
+      currentAirQualityBtn.addEventListener('click', async () => {
+        try {
+          const response = await fetch('/api/thingspeak/latest-feed');
+          if (!response.ok) {
+            throw new Error('Failed to fetch current air quality data');
+          }
+          const data = await response.json();
+          if (data.success) {
+            this.showToast('Current Air Quality', `PM2.5: ${data.data.pm25}, PM10: ${data.data.pm10}`, 'success');
+          } else {
+            this.showToast('Error', 'Failed to fetch current air quality data', 'danger');
+          }
+        } catch (error) {
+          console.error('Error fetching current air quality:', error);
+          this.showToast('Error', 'Failed to fetch current air quality data', 'danger');
+        }
+      });
+    }
   }
   
   /**
@@ -173,48 +229,406 @@ class Dashboard {
   }
   
   /**
-   * Load data from API
+   * Load data from API or CSV
    */
   async loadData() {
     this.updateStatus('loading', 'Loading data...');
     
-    let url = `/api/data?results=${100}`;
-    
-    // Apply filters if they exist
-    if (this.filters.startDate) {
-      url += `&start=${this.filters.startDate}`;
-      if (this.filters.endDate) {
-        url += `&end=${this.filters.endDate}`;
-      }
-    }
-    
     try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`API returned ${response.status}`);
+      // Use DataLoader to get data with automatic fallback
+      let result;
+      
+      if (window.DataLoader) {
+        // Use the DataLoader utility
+        result = await window.DataLoader.loadData({
+          filters: this.filters,
+          preferredSource: 'api',  // Try API first, fall back to CSV
+          useCached: false
+        });
+        
+        this.data = result.data;
+        
+        // Update status with data source info
+        const sourceLabel = result.source === 'api' ? 'API' : 'Local CSV';
+        this.updateStatus(
+          result.source === 'api' ? 'connected' : 'warning',
+          `Data source: ${sourceLabel} (${this.formatTime(result.timestamp)})`
+        );
+        
+        // Show a toast if using fallback data
+        if (result.source === 'csv' && result.error) {
+          this.showToast(
+            'Using Offline Data', 
+            'Could not connect to API. Using local data instead.',
+            'warning'
+          );
+        }
+      } else {
+        // Fallback if DataLoader isn't available
+        // First try the API
+        try {
+          const response = await fetch('/api/data?results=100');
+          if (!response.ok) {
+            throw new Error(`API returned ${response.status}`);
+          }
+          const apiResult = await response.json();
+          
+          this.data = apiResult.data.data?.feeds || [];
+          this.updateStatus('connected', `Updated: ${this.formatTime(new Date())}`);
+        } catch (apiError) {
+          // API failed, try to load default CSV
+          console.warn('API failed, loading from CSV:', apiError);
+          try {
+            const csvResponse = await fetch('/data/feeds.csv');
+            if (!csvResponse.ok) {
+              throw new Error('CSV file not found');
+            }
+            
+            const csvText = await csvResponse.text();
+            const csvData = window.CsvParser ? 
+              window.CsvParser.parse(csvText) : 
+              this.parseSimpleCsv(csvText);
+            
+            // Format CSV data to match expected format
+            this.data = csvData.map((row, index) => {
+              return {
+                created_at: row.timestamp || new Date().toISOString(),
+                entry_id: row.entry_id || index + 1,
+                field1: row.humidity || row.field1 || null,
+                field2: row.temperature || row.field2 || null,
+                field3: row.pm25 || row.field3 || null,
+                field4: row.pm10 || row.field4 || null,
+                humidity: row.humidity || row.field1 || null,
+                temperature: row.temperature || row.field2 || null,
+                pm25: row.pm25 || row.field3 || null,
+                pm10: row.pm10 || row.field4 || null
+              };
+            });
+            
+            this.updateStatus('warning', `Using local data: ${this.formatTime(new Date())}`);
+            this.showToast('Using Offline Data', 'Could not connect to API. Using local data instead.', 'warning');
+          } catch (csvError) {
+            // Both API and CSV failed
+            console.error('Both API and CSV data sources failed', csvError);
+            throw new Error('Failed to load data from any source');
+          }
+        }
       }
       
-      const result = await response.json();
-      
-      if (!result.success || !result.data) {
-        throw new Error('Invalid data format received');
+      // Check if we have data
+      if (this.data.length === 0) {
+        this.showNoDataMessage();
+        this.updateStatus('warning', 'No data available');
+        return [];
       }
       
-      this.data = result.data.data || [];
       this.pagination.totalItems = this.data.length;
       this.lastEntryId = this.data[0]?.entry_id || 0;
       this.lastUpdated = new Date();
       
+      // Set the full dataset in VizLoader for all visualizations
+      if (window.VizLoader && this.data.length > 0) {
+        window.VizLoader.setFullDataset(this.data);
+      }
+      
       this.updateDataTable();
       this.updateStatistics();
-      this.updateStatus('connected', `Last updated: ${this.formatTime(this.lastUpdated)}`);
+      this.validateData();
+      
+      // If we're using DataLoader, update the data source indicator
+      if (window.DataLoader) {
+        this.updateDataSourceIndicator();
+      }
       
       return this.data;
     } catch (error) {
       console.error('Error loading data:', error);
-      this.updateStatus('error', 'Data loading error');
+      this.updateStatus('error', 'Error loading data');
+      
+      if (window.ErrorHandler) {
+        // Format and display the error with recovery options
+        const { message, details } = window.ErrorHandler.formatApiError(error);
+        window.ErrorHandler.showErrorToast(message, 'connection', {
+          details: details,
+          autoHide: false
+        });
+        
+        // Show error in the visualization container
+        window.ErrorHandler.showError(this.elements.vizContainer, message, 'data', {
+          retryFn: () => this.loadData(),
+          title: 'Data Loading Error'
+        });
+        
+        // Show error in the data table
+        this.elements.dataTableBody.innerHTML = `
+          <tr><td colspan="5" class="text-center">
+            ${window.ErrorHandler.createErrorHTML(message, 'data', {
+              retryFn: () => this.loadData()
+            })}
+          </td></tr>`;
+      } else {
+        // Fallback to simpler error handling
+        this.showToast('Error', `Failed to load data: ${error.message}`, 'danger');
+        this.elements.vizContainer.innerHTML = `
+          <div class="alert alert-danger">
+            <h5>Data Loading Error</h5>
+            <p>${error.message}</p>
+            <button class="btn btn-danger btn-sm" onclick="location.reload()">Retry</button>
+          </div>`;
+        this.elements.dataTableBody.innerHTML = `
+          <tr><td colspan="5" class="text-center text-danger">Failed to load data</td></tr>`;
+      }
+      
       throw error;
     }
+  }
+
+  /**
+   * Load data directly from ThingSpeak
+   */
+  async loadThingspeakDirectData(days, results, includeAnalysis) {
+    this.updateStatus('loading', 'Loading data from ThingSpeak...');
+    
+    try {
+        const url = `/api/thingspeak/direct?days=${days}&results=${results}&analysis=${includeAnalysis}`;
+        
+        // Use ErrorHandler if available
+        let response;
+        if (window.ErrorHandler) {
+            const fetchFn = (options) => fetch(url, options);
+            response = await window.ErrorHandler.handleFetchErrors(fetchFn);
+        } else {
+            const fetchResponse = await fetch(url);
+            if (!fetchResponse.ok) {
+                throw new Error(`API returned ${fetchResponse.status}`);
+            }
+            response = await fetchResponse.json();
+        }
+        
+        if (!response.success || !response.data) {
+            throw new Error(response.error || 'Invalid response from server');
+        }
+        
+        // Update data
+        this.data = response.data.data || [];
+        
+        if (this.data.length === 0) {
+            this.showNoDataMessage();
+            this.updateStatus('warning', 'No ThingSpeak data available');
+            return;
+        }
+        
+        this.pagination.totalItems = this.data.length;
+        this.lastEntryId = this.data[0]?.entry_id || 0;
+        this.lastUpdated = new Date();
+        
+        // Update VizLoader data if available
+        if (window.VizLoader) {
+            window.VizLoader.setFullDataset(this.data);
+        }
+        
+        // Update UI
+        this.updateStatus('connected', `ThingSpeak data loaded (${this.data.length} points)`);
+        this.updateDataTable();
+        this.updateStatistics();
+        this.loadVisualization(this.currentVizType);
+        
+        // Show success message
+        this.showToast('ThingSpeak Data', `Successfully loaded ${this.data.length} data points from ThingSpeak`, 'success');
+        
+        // Show analysis if available
+        if (response.data.analysis) {
+            this.showAnalysisResults(response.data.analysis);
+        }
+    } catch (error) {
+        console.error('Error loading ThingSpeak data:', error);
+        this.updateStatus('error', 'Error loading ThingSpeak data');
+        
+        // Show error message
+        if (window.ErrorHandler) {
+            window.ErrorHandler.showErrorToast('ThingSpeak Error', 'api', {
+                details: error.message,
+                autoHide: false
+            });
+        } else {
+            this.showToast('Error', `Failed to load ThingSpeak data: ${error.message}`, 'danger');
+        }
+    }
+  }
+
+  /**
+   * Show analysis results
+   */
+  showAnalysisResults(analysis) {
+    // Display analysis in validation section
+    const validationDetails = document.getElementById('validation-details');
+    const validationBadge = document.getElementById('validation-badge');
+    
+    if (validationDetails && analysis) {
+        let analysisHtml = `
+            <h5 class="mb-3">Data Analysis Results</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header">PM2.5 Analysis</div>
+                        <div class="card-body">
+                            <p><strong>Average:</strong> ${analysis.average_pm25 || analysis.averages?.pm25 || 'N/A'} μg/m³</p>
+                            <p><strong>Range:</strong> ${analysis.min_pm25 || analysis.min?.pm25 || 'N/A'} - ${analysis.max_pm25 || analysis.max?.pm25 || 'N/A'} μg/m³</p>
+                            <p><strong>Standard Deviation:</strong> ${analysis.stddev_pm25 || analysis.stdDev?.pm25 || 'N/A'}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header">PM10 Analysis</div>
+                        <div class="card-body">
+                            <p><strong>Average:</strong> ${analysis.average_pm10 || analysis.averages?.pm10 || 'N/A'} μg/m³</p>
+                            <p><strong>Range:</strong> ${analysis.min_pm10 || analysis.min?.pm10 || 'N/A'} - ${analysis.max_pm10 || analysis.max?.pm10 || 'N/A'} μg/m³</p>
+                            <p><strong>Standard Deviation:</strong> ${analysis.stddev_pm10 || analysis.stdDev?.pm10 || 'N/A'}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        validationDetails.innerHTML = analysisHtml;
+        
+        // Update badge based on PM2.5 levels (WHO guidelines)
+        const pm25Level = analysis.average_pm25 || analysis.averages?.pm25 || 0;
+        if (pm25Level <= 10) {
+            validationBadge.className = 'badge bg-success';
+            validationBadge.textContent = 'Good';
+        } else if (pm25Level <= 25) {
+            validationBadge.className = 'badge bg-warning';
+            validationBadge.textContent = 'Moderate';
+        } else if (pm25Level <= 50) {
+            validationBadge.className = 'badge bg-danger';
+            validationBadge.textContent = 'Unhealthy';
+        } else {
+            validationBadge.className = 'badge bg-dark';
+            validationBadge.textContent = 'Very Unhealthy';
+        }
+    }
+  }
+
+  /**
+   * Simple CSV parsing function (fallback if CsvParser not available)
+   * @param {string} csvText - Raw CSV text
+   * @returns {Array} Array of objects representing CSV rows
+   */
+  parseSimpleCsv(csvText) {
+    const lines = csvText.trim().split('\n');
+    const headers = lines[0].split(',').map(header => header.trim());
+    
+    return lines.slice(1).map(line => {
+      const values = line.split(',').map(val => val.trim());
+      const row = {};
+      
+      headers.forEach((header, index) => {
+        row[header] = values[index] || '';
+      });
+      
+      return row;
+    });
+  }
+
+  /**
+   * Update data source indicator in the UI
+   */
+  updateDataSourceIndicator() {
+    // Only proceed if DataLoader is available
+    if (!window.DataLoader) return;
+    
+    const sourceInfo = window.DataLoader.getDataSourceInfo();
+    const sourceLabel = sourceInfo.currentSource === 'api' ? 'API' : 'Local CSV';
+    const lastUpdate = sourceInfo.currentSource === 'api' ? 
+      sourceInfo.lastApiUpdate : sourceInfo.lastCsvUpdate;
+    
+    // Add or update the data source badge
+    if (!this.elements.dataSourceBadge) {
+      // Create the badge if it doesn't exist
+      const statusText = document.getElementById('status-text');
+      if (statusText && statusText.parentNode) {
+        const badge = document.createElement('span');
+        badge.className = `badge ms-2 ${sourceInfo.currentSource === 'api' ? 'bg-success' : 'bg-warning'}`;
+        badge.textContent = sourceLabel;
+        badge.style.fontSize = '0.75rem';
+        statusText.parentNode.appendChild(badge);
+        this.elements.dataSourceBadge = badge;
+        
+        // Add click handler to toggle data source
+        badge.style.cursor = 'pointer';
+        badge.setAttribute('title', 'Click to toggle data source');
+        badge.addEventListener('click', () => this.toggleDataSource());
+      }
+    } else {
+      // Update existing badge
+      this.elements.dataSourceBadge.className = `badge ms-2 ${sourceInfo.currentSource === 'api' ? 'bg-success' : 'bg-warning'}`;
+      this.elements.dataSourceBadge.textContent = sourceLabel;
+    }
+    
+    // Update status text with last update time
+    if (lastUpdate) {
+      document.getElementById('status-text').textContent = 
+        `Updated: ${this.formatTime(new Date(lastUpdate))}`;
+    }
+  }
+
+  /**
+   * Toggle between API and CSV data sources
+   */
+  toggleDataSource() {
+    if (!window.DataLoader) return;
+    
+    const sourceInfo = window.DataLoader.getDataSourceInfo();
+    const newSource = sourceInfo.currentSource === 'api' ? 'csv' : 'api';
+    
+    // Set the new source
+    window.DataLoader.setDataSource(newSource);
+    
+    // Reload data with the new source
+    this.loadData().catch(error => {
+      console.error('Error toggling data source:', error);
+      
+      // Show error
+      this.showToast('Error', `Failed to load data from ${newSource.toUpperCase()}`, 'danger');
+      
+      // Switch back to the previous source if the new one failed
+      window.DataLoader.setDataSource(sourceInfo.currentSource);
+    });
+  }
+
+  /**
+   * Show a message when no data is available
+   */
+  showNoDataMessage() {
+    // Display a helpful message in the visualization container
+    if (window.ErrorHandler) {
+      window.ErrorHandler.showError(this.elements.vizContainer, 
+        'No data is available for the selected filters.', 
+        'data',
+        {
+          title: 'No Data Available',
+          retryFn: () => {
+            // Clear filters and try again
+            this.filters.startDate = null;
+            this.filters.endDate = null;
+            this.loadData();
+          }
+        }
+      );
+    } else {
+      this.elements.vizContainer.innerHTML = `
+        <div class="alert alert-warning">
+          <h5>No Data Available</h5>
+          <p>No data is available for the selected filters.</p>
+          <button class="btn btn-warning btn-sm" onclick="location.reload()">Reset Filters</button>
+        </div>`;
+    }
+    
+    // Clear data table
+    this.elements.dataTable.innerHTML = `
+      <tr><td colspan="5" class="text-center">No data available</td></tr>`;
   }
   
   /**
@@ -414,33 +828,51 @@ class Dashboard {
   
   /**
    * Add Air Quality Index badges based on PM2.5 values
-   * @param {number} pm25 - PM2.5 value
+   * @param {number} pm25 - PM2.5 value to use for AQI calculation
    */
   updateAQIBadges(pm25) {
-    // Simple AQI classification based on PM2.5 (simplified scale)
-    let aqiClass = 'bg-good';
-    let aqiText = 'Good';
-    
+    // Simple AQI classification based on PM2.5 (expanded for UI integration)
+    let aqiClass = 'bg-success', aqiText = 'Good', progressPercent = 0, statusCardClass = '';
     if (pm25 <= 12) {
-      aqiClass = 'bg-good';
-      aqiText = 'Good';
+      aqiClass = 'bg-success'; aqiText = 'Good'; progressPercent = (pm25 / 12) * 20; statusCardClass = '';
     } else if (pm25 <= 35.4) {
-      aqiClass = 'bg-moderate';
-      aqiText = 'Moderate';
+      aqiClass = 'bg-warning'; aqiText = 'Moderate'; progressPercent = 20 + ((pm25 - 12) / (35.4 - 12)) * 20; statusCardClass = 'warning';
     } else if (pm25 <= 55.4) {
-      aqiClass = 'bg-unhealthy';
-      aqiText = 'Unhealthy';
+      aqiClass = 'bg-warning text-dark'; aqiText = 'Unhealthy for Sensitive Groups'; progressPercent = 40 + ((pm25 - 35.4) / (55.4 - 35.4)) * 20; statusCardClass = 'warning';
     } else if (pm25 <= 150.4) {
-      aqiClass = 'bg-very-unhealthy';
-      aqiText = 'Very Unhealthy';
+      aqiClass = 'bg-danger'; aqiText = 'Unhealthy'; progressPercent = 60 + ((pm25 - 55.4) / (150.4 - 55.4)) * 20; statusCardClass = 'danger';
     } else {
-      aqiClass = 'bg-hazardous';
-      aqiText = 'Hazardous';
+      aqiClass = 'bg-dark'; aqiText = 'Hazardous'; progressPercent = 80 + Math.min(20, ((pm25 - 150.4) / 100) * 20); statusCardClass = 'hazard';
     }
     
     // Add the badge near PM2.5 value
     const badge = `<span class="ms-2 badge ${aqiClass}">${aqiText}</span>`;
     this.elements.avgPM25.innerHTML = `${parseFloat(this.elements.avgPM25.textContent).toFixed(2)}${badge}`;
+    
+    // Update AQI status badge
+    const aqiStatusBadge = document.getElementById('aqi-status-badge');
+    if (aqiStatusBadge) {
+      aqiStatusBadge.className = `badge ${aqiClass}`;
+      aqiStatusBadge.textContent = aqiText;
+    }
+    
+    // Update AQI progress bar
+    const aqiProgressBar = document.getElementById('aqi-progress-bar');
+    if (aqiProgressBar) {
+      aqiProgressBar.style.width = `${progressPercent}%`;
+      aqiProgressBar.className = 'progress-bar';
+      if (aqiClass.includes('bg-success')) aqiProgressBar.classList.add('bg-success');
+      else if (aqiClass.includes('bg-warning')) aqiProgressBar.classList.add('bg-warning');
+      else if (aqiClass.includes('bg-danger')) aqiProgressBar.classList.add('bg-danger');
+      else aqiProgressBar.classList.add('bg-dark');
+    }
+    
+    // Update air quality status card border
+    const airQualityStatusCard = document.querySelector('.air-quality-status-card');
+    if (airQualityStatusCard) {
+      airQualityStatusCard.className = 'card air-quality-status-card';
+      if (statusCardClass) airQualityStatusCard.classList.add(statusCardClass);
+    }
   }
   
   /**
@@ -488,47 +920,94 @@ class Dashboard {
     
     // Set title and prepare container
     let title = 'Air Quality Visualization';
+    const containerId = 'visualization-container';
+    
+    // Clear previous chart if it exists
+    if (this.activeChart) {
+      if (typeof this.activeChart.destroy === 'function') {
+        this.activeChart.destroy();
+      }
+      this.activeChart = null;
+    }
+    
+    // Clear canvas and create a new one
+    this.elements.vizContainer.innerHTML = '';
+    const canvas = document.createElement('canvas');
+    canvas.id = `${type}-chart`;
+    this.elements.vizContainer.appendChild(canvas);
+    
     switch (type) {
       case 'time_series':
         title = 'Time Series Visualization';
         this.elements.vizDescription.textContent = 'Shows PM2.5, PM10, Temperature and Humidity measurements over time.';
-        this.elements.vizContainer.innerHTML = `<canvas id="timeSeriesChart"></canvas>`;
-        this.createTimeSeriesChart();
+        
+        // Use the VizLoader for lazy loading
+        this.activeChart = window.AirQualityViz.createTimeSeriesVisualization(
+          canvas.id,
+          this.data,
+          {theme: ThemeManager.getCurrentTheme()}
+        );
         break;
         
       case 'daily_pattern':
         title = 'Daily Pattern Analysis';
         this.elements.vizDescription.textContent = 'Shows average PM2.5 and PM10 levels by hour of day.';
-        this.elements.vizContainer.innerHTML = `<canvas id="dailyPatternChart"></canvas>`;
-        this.createDailyPatternChart();
+        
+        this.activeChart = window.AirQualityViz.createDailyPatternVisualization(
+          canvas.id,
+          this.data,
+          {theme: ThemeManager.getCurrentTheme()}
+        );
         break;
         
       case 'heatmap':
         title = 'Pollution Heatmap';
         this.elements.vizDescription.textContent = 'Visualizes PM2.5 pollution intensity over time.';
-        this.elements.vizContainer.innerHTML = `<canvas id="heatmapChart"></canvas>`;
-        this.createHeatmapChart();
+        
+        this.activeChart = window.AirQualityViz.createHeatmapVisualization(
+          canvas.id,
+          this.data,
+          {theme: ThemeManager.getCurrentTheme()}
+        );
         break;
         
       case 'correlation':
         title = 'Parameter Correlation';
         this.elements.vizDescription.textContent = 'Shows relationships between different air quality parameters.';
-        this.elements.vizContainer.innerHTML = `<canvas id="correlationChart"></canvas>`;
-        this.createCorrelationChart();
+        
+        this.activeChart = window.AirQualityViz.createCorrelationVisualization(
+          canvas.id,
+          this.data,
+          {theme: ThemeManager.getCurrentTheme()}
+        );
         break;
         
       default:
-        this.elements.vizContainer.innerHTML = `<div class="alert alert-danger">Unknown visualization type</div>`;
-        break;
+        title = 'Time Series Visualization';
+        this.elements.vizDescription.textContent = 'Shows PM2.5, PM10, Temperature and Humidity measurements over time.';
+        
+        this.activeChart = window.AirQualityViz.createTimeSeriesVisualization(
+          canvas.id,
+          this.data,
+          {theme: ThemeManager.getCurrentTheme()}
+        );
     }
     
     this.elements.vizTitle.textContent = title;
+    this.currentVizType = type;
   }
   
   /**
    * Show toast notification
    */
   showToast(title, message, type = 'info') {
+    // Use the ErrorHandler for consistent toast styling if available
+    if (window.ErrorHandler && type === 'danger') {
+      window.ErrorHandler.showErrorToast(message, 'default', { title });
+      return;
+    }
+    
+    // Original toast implementation
     const toastId = `toast-${Date.now()}`;
     
     const toastHtml = `
@@ -559,23 +1038,16 @@ class Dashboard {
    * Toggle theme between light and dark
    */
   toggleTheme() {
-    const currentTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
-    document.body.classList.toggle('dark-mode');
-    localStorage.setItem('theme', newTheme);
-    
-    // Update theme icon
-    const themeIcon = this.elements.toggleTheme.querySelector('i');
-    if (newTheme === 'dark') {
-      themeIcon.classList.replace('bi-moon-fill', 'bi-sun-fill');
-    } else {
-      themeIcon.classList.replace('bi-sun-fill', 'bi-moon-fill');
-    }
+    const newTheme = ThemeManager.toggleTheme();
     
     // If there's an active chart, recreate it with the new theme
     if (this.activeChart) {
       this.loadVisualization(this.currentVizType);
+    }
+    
+    // Update extended visualizations if they are displayed
+    if (!this.elements.vizGallery.classList.contains('d-none')) {
+      window.VizLoader.updateVisibility();
     }
   }
   
@@ -654,28 +1126,27 @@ class Dashboard {
     `;
     
     // Prepare gallery items
-    setTimeout(() => {
-      const galleryItems = [
-        { id: 'pm25-trend', title: 'PM2.5 Trend Analysis', type: 'line' },
-        { id: 'temp-humidity-correlation', title: 'Temperature vs. Humidity', type: 'scatter' },
-        { id: 'hourly-distribution', title: 'Hourly Distribution', type: 'bar' },
-        { id: 'daily-averages', title: 'Daily Averages', type: 'bar' }
-      ];
-      
-      this.elements.vizGallery.innerHTML = galleryItems.map(item => `
-        <div class="col-md-6 mb-4">
-          <div class="card">
-            <div class="card-header">${item.title}</div>
-            <div class="card-body" style="height: 300px;">
-              <canvas id="${item.id}-chart"></canvas>
-            </div>
+    const galleryItems = [
+      { id: 'pm25-trend', title: 'PM2.5 Trend Analysis', type: 'line' },
+      { id: 'temp-humidity-correlation', title: 'Temperature vs. Humidity', type: 'scatter' },
+      { id: 'hourly-distribution', title: 'Hourly Distribution', type: 'bar' },
+      { id: 'daily-averages', title: 'Daily Averages', type: 'bar' }
+    ];
+    
+    // Create gallery containers
+    this.elements.vizGallery.innerHTML = galleryItems.map(item => `
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-header">${item.title}</div>
+          <div class="card-body" style="height: 300px;">
+            <div id="${item.id}-chart" class="h-100"></div>
           </div>
         </div>
-      `).join('');
-      
-      // Render each extended visualization
-      this.renderExtendedViz();
-    }, 500);
+      </div>
+    `).join('');
+    
+    // Use lazy loading for the extended visualizations
+    this.renderExtendedViz();
   }
 
   /**
@@ -686,44 +1157,43 @@ class Dashboard {
     
     // Use the AirQualityViz global object if available
     if (window.AirQualityViz) {
-      const theme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
+      const theme = ThemeManager.getCurrentTheme();
       
-      // Create PM2.5 trend chart
-      try {
-        window.AirQualityViz.createTrendVisualization(
-          'pm25-trend-chart',
-          this.data,
-          { 
-            parameter: 'pm25',
-            title: 'PM2.5 Trend Analysis',
-            theme: theme
-          }
-        );
-      } catch (err) {
-        console.error('Error creating PM2.5 trend chart', err);
-      }
+      // Create PM2.5 trend chart using lazy loading
+      window.VizLoader.observeChart(
+        'pm25-trend-chart',
+        (canvasId, data) => window.AirQualityViz.createTrendVisualization(
+          canvasId,
+          data,
+          { parameter: 'pm25', title: 'PM2.5 Trend Analysis', theme }
+        ),
+        this.data
+      );
       
       // Create temperature vs humidity correlation chart
-      try {
-        window.AirQualityViz.createCorrelationVisualization(
-          'temp-humidity-correlation-chart',
-          this.data,
-          {
-            xAxis: 'temperature',
-            yAxis: 'humidity',
-            title: 'Temperature vs. Humidity',
-            theme: theme
-          }
-        );
-      } catch (err) {
-        console.error('Error creating temperature vs humidity chart', err);
-      }
+      window.VizLoader.observeChart(
+        'temp-humidity-correlation-chart',
+        (canvasId, data) => window.AirQualityViz.createCorrelationVisualization(
+          canvasId,
+          data,
+          { xAxis: 'temperature', yAxis: 'humidity', title: 'Temperature vs. Humidity', theme }
+        ),
+        this.data
+      );
       
       // Create hourly distribution chart
-      this.createHourlyDistributionChart();
+      window.VizLoader.observeChart(
+        'hourly-distribution-chart',
+        () => this.createHourlyDistributionChart(),
+        null
+      );
       
       // Create daily averages chart
-      this.createDailyAveragesChart();
+      window.VizLoader.observeChart(
+        'daily-averages-chart',
+        () => this.createDailyAveragesChart(),
+        null
+      );
     } else {
       console.error('AirQualityViz library not available');
       this.elements.vizGallery.innerHTML = `
@@ -735,670 +1205,7 @@ class Dashboard {
       `;
     }
   }
-  
-  /**
-   * Create hourly distribution chart for PM2.5
-   */
-  createHourlyDistributionChart() {
-    const hourlyDistributionCtx = document.getElementById('hourly-distribution-chart');
-    if (!hourlyDistributionCtx) return;
-    
-    // Group data by hour
-    const hourlyData = Array(24).fill(0);
-    const hourlyCount = Array(24).fill(0);
-    
-    this.data.forEach(d => {
-      const pm25 = parseFloat(d.pm25 || d.field3);
-      if (!isNaN(pm25)) {
-        const hour = new Date(d.created_at).getHours();
-        hourlyData[hour] += pm25;
-        hourlyCount[hour]++;
-      }
-    });
-    
-    // Calculate average for each hour
-    const hourlyAvg = hourlyData.map((sum, hour) => 
-      hourlyCount[hour] > 0 ? sum / hourlyCount[hour] : 0
-    );
-    
-    const hours = Array.from({length: 24}, (_, i) => i.toString().padStart(2, '0') + ':00');
-    
-    const chart = new Chart(hourlyDistributionCtx, {
-      type: 'bar',
-      data: {
-        labels: hours,
-        datasets: [{
-          label: 'Average PM2.5 by Hour',
-          data: hourlyAvg,
-          backgroundColor: 'rgba(54, 162, 235, 0.7)',
-          borderColor: 'rgba(54, 162, 235, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            title: {
-              display: true,
-              text: 'Average PM2.5 (μg/m³)'
-            },
-            beginAtZero: true
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Hour of Day'
-            }
-          }
-        }
-      }
-    });
-  }
-  
-  /**
-   * Create daily averages chart
-   */
-  createDailyAveragesChart() {
-    const dailyAvgCtx = document.getElementById('daily-averages-chart');
-    if (!dailyAvgCtx) return;
-    
-    // Group data by day
-    const dailyData = {};
-    
-    this.data.forEach(d => {
-      const date = new Date(d.created_at).toISOString().split('T')[0];
-      const pm25 = parseFloat(d.pm25 || d.field3);
-      const pm10 = parseFloat(d.pm10 || d.field4);
-      
-      if (!dailyData[date]) {
-        dailyData[date] = { pm25Sum: 0, pm10Sum: 0, count: 0 };
-      }
-      
-      if (!isNaN(pm25)) dailyData[date].pm25Sum += pm25;
-      if (!isNaN(pm10)) dailyData[date].pm10Sum += pm10;
-      dailyData[date].count++;
-    });
-    
-    // Calculate averages
-    const dates = Object.keys(dailyData).sort();
-    const pm25Avgs = dates.map(date => 
-      dailyData[date].count > 0 ? dailyData[date].pm25Sum / dailyData[date].count : 0
-    );
-    const pm10Avgs = dates.map(date => 
-      dailyData[date].count > 0 ? dailyData[date].pm10Sum / dailyData[date].count : 0
-    );
-    
-    const chart = new Chart(dailyAvgCtx, {
-      type: 'bar',
-      data: {
-        labels: dates.map(date => new Date(date).toLocaleDateString()),
-        datasets: [
-          {
-            label: 'Average PM2.5',
-            data: pm25Avgs,
-            backgroundColor: 'rgba(75, 192, 192, 0.7)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1
-          },
-          {
-            label: 'Average PM10',
-            data: pm10Avgs,
-            backgroundColor: 'rgba(255, 159, 64, 0.7)',
-            borderColor: 'rgba(255, 159, 64, 1)',
-            borderWidth: 1
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            title: {
-              display: true,
-              text: 'Concentration (μg/m³)'
-            },
-            beginAtZero: true
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Date'
-            }
-          }
-        }
-      }
-    });
-  }
 
-  /**
-   * Create time series chart
-   */
-  createTimeSeriesChart() {
-    if (this.data.length === 0) return;
-    
-    const ctx = document.getElementById('timeSeriesChart');
-    
-    if (!ctx) {
-      console.error('Canvas element not found for time series chart');
-      return;
-    }
-    
-    try {
-      // Process data for Chart.js
-      const timestamps = this.data.map(d => new Date(d.created_at));
-      const pm25Values = this.data.map(d => parseFloat(d.pm25 || d.field3));
-      const pm10Values = this.data.map(d => parseFloat(d.pm10 || d.field4));
-      const tempValues = this.data.map(d => parseFloat(d.temperature || d.field2));
-      const humidityValues = this.data.map(d => parseFloat(d.humidity || d.field1));
-      
-      // Create chart
-      const chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: timestamps,
-          datasets: [
-            {
-              label: 'PM2.5',
-              data: pm25Values,
-              borderColor: 'rgba(255, 99, 132, 1)',
-              backgroundColor: 'rgba(255, 99, 132, 0.1)',
-              yAxisID: 'y',
-              tension: 0.2,
-              pointRadius: 1
-            },
-            {
-              label: 'PM10',
-              data: pm10Values,
-              borderColor: 'rgba(255, 159, 64, 1)',
-              backgroundColor: 'rgba(255, 159, 64, 0.1)',
-              yAxisID: 'y',
-              tension: 0.2,
-              pointRadius: 1
-            },
-            {
-              label: 'Temperature',
-              data: tempValues,
-              borderColor: 'rgba(75, 192, 192, 1)',
-              backgroundColor: 'rgba(75, 192, 192, 0.1)',
-              yAxisID: 'y1',
-              tension: 0.2,
-              pointRadius: 1,
-              hidden: true
-            },
-            {
-              label: 'Humidity',
-              data: humidityValues,
-              borderColor: 'rgba(54, 162, 235, 1)',
-              backgroundColor: 'rgba(54, 162, 235, 0.1)',
-              yAxisID: 'y2',
-              tension: 0.2,
-              pointRadius: 1,
-              hidden: true
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: {
-            mode: 'index',
-            intersect: false
-          },
-          plugins: {
-            tooltip: {
-              enabled: true
-            },
-            zoom: {
-              pan: {
-                enabled: true,
-                mode: 'x'
-              },
-              zoom: {
-                wheel: {
-                  enabled: true,
-                },
-                pinch: {
-                  enabled: true
-                },
-                mode: 'x',
-              }
-            },
-            legend: {
-              position: 'top',
-            },
-            annotation: {
-              annotations: {
-                who_pm25: {
-                  type: 'line',
-                  yMin: 15,
-                  yMax: 15,
-                  borderColor: 'rgba(255, 99, 132, 0.6)',
-                  borderWidth: 1,
-                  borderDash: [5, 5],
-                  label: {
-                    content: 'WHO PM2.5 Limit',
-                    enabled: true,
-                    position: 'end'
-                  }
-                }
-              }
-            }
-          },
-          scales: {
-            x: {
-              type: 'time',
-              time: {
-                unit: 'hour'
-              },
-              title: {
-                display: true,
-                text: 'Date/Time'
-              }
-            },
-            y: {
-              type: 'linear',
-              display: true,
-              position: 'left',
-              title: {
-                display: true,
-                text: 'PM Concentration (μg/m³)'
-              },
-              min: 0
-            },
-            y1: {
-              type: 'linear',
-              display: true,
-              position: 'right',
-              title: {
-                display: true,
-                text: 'Temperature (°C)'
-              },
-              grid: {
-                drawOnChartArea: false
-              }
-            },
-            y2: {
-              type: 'linear',
-              display: true,
-              position: 'right',
-              title: {
-                display: true,
-                text: 'Humidity (%)'
-              },
-              grid: {
-                drawOnChartArea: false
-              },
-              min: 0,
-              max: 100
-            }
-          }
-        }
-      });
-      
-      // Save reference to current chart
-      this.activeChart = chart;
-    } catch (error) {
-      console.error('Error creating time series chart:', error);
-      const container = document.getElementById('timeSeriesChart').parentNode;
-      container.innerHTML = `<div class="alert alert-danger">Error creating chart: ${error.message}</div>`;
-    }
-  }
-
-  /**
-   * Create daily pattern chart
-   */
-  createDailyPatternChart() {
-    if (this.data.length === 0) return;
-    
-    const ctx = document.getElementById('dailyPatternChart');
-    
-    if (!ctx) {
-      console.error('Canvas element not found for daily pattern chart');
-      return;
-    }
-    
-    try {
-      // Group data by hour
-      const hourlyData = Array(24).fill().map(() => ({
-        pm25Sum: 0,
-        pm10Sum: 0,
-        count: 0
-      }));
-      
-      this.data.forEach(item => {
-        const date = new Date(item.created_at);
-        const hour = date.getHours();
-        const pm25 = parseFloat(item.pm25 || item.field3);
-        const pm10 = parseFloat(item.pm10 || item.field4);
-        
-        if (!isNaN(pm25)) {
-          hourlyData[hour].pm25Sum += pm25;
-          hourlyData[hour].count++;
-        }
-        
-        if (!isNaN(pm10)) {
-          hourlyData[hour].pm10Sum += pm10;
-        }
-      });
-      
-      // Calculate averages
-      const hourlyPM25Avg = hourlyData.map(data => 
-        data.count > 0 ? data.pm25Sum / data.count : 0
-      );
-      
-      const hourlyPM10Avg = hourlyData.map(data => 
-        data.count > 0 ? data.pm10Sum / data.count : 0
-      );
-      
-      // Create labels for hours
-      const hours = Array.from({length: 24}, (_, i) => i.toString().padStart(2, '0') + ':00');
-      
-      // Create chart
-      const chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: hours,
-          datasets: [
-            {
-              label: 'Average PM2.5',
-              data: hourlyPM25Avg,
-              backgroundColor: 'rgba(255, 99, 132, 0.7)',
-              borderColor: 'rgba(255, 99, 132, 1)',
-              borderWidth: 1
-            },
-            {
-              label: 'Average PM10',
-              data: hourlyPM10Avg,
-              backgroundColor: 'rgba(54, 162, 235, 0.7)',
-              borderColor: 'rgba(54, 162, 235, 1)',
-              borderWidth: 1
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'top',
-            },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  const label = context.dataset.label || '';
-                  const value = context.parsed.y.toFixed(2);
-                  const hourlyCount = hourlyData[context.dataIndex].count;
-                  return `${label}: ${value} μg/m³ (${hourlyCount} samples)`;
-                }
-              }
-            }
-          },
-          scales: {
-            y: {
-              title: {
-                display: true,
-                text: 'PM Concentration (μg/m³)'
-              },
-              beginAtZero: true
-            },
-            x: {
-              title: {
-                display: true,
-                text: 'Hour of Day'
-              }
-            }
-          }
-        }
-      });
-      
-      // Save reference to current chart
-      this.activeChart = chart;
-    } catch (error) {
-      console.error('Error creating daily pattern chart:', error);
-      const container = document.getElementById('dailyPatternChart').parentNode;
-      container.innerHTML = `<div class="alert alert-danger">Error creating chart: ${error.message}</div>`;
-    }
-  }
-  
-  /**
-   * Create heatmap chart
-   */
-  createHeatmapChart() {
-    if (this.data.length === 0) return;
-    
-    const ctx = document.getElementById('heatmapChart');
-    
-    if (!ctx) {
-      console.error('Canvas element not found for heatmap chart');
-      return;
-    }
-    
-    try {
-      // Group data by day and hour
-      const heatmapData = [];
-      const dayMap = new Map();
-      let dayIndex = 0;
-      
-      this.data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-      
-      this.data.forEach(item => {
-        const date = new Date(item.created_at);
-        const day = date.toISOString().split('T')[0];
-        const hour = date.getHours();
-        const pm25 = parseFloat(item.pm25 || item.field3) || 0;
-        
-        if (!dayMap.has(day)) {
-          dayMap.set(day, dayIndex++);
-        }
-        
-        const y = dayMap.get(day);
-        const existingPoint = heatmapData.find(p => p.x === hour && p.y === y);
-        
-        if (existingPoint) {
-          existingPoint.v += pm25;
-          existingPoint.count++;
-        } else {
-          heatmapData.push({
-            x: hour,
-            y: y,
-            v: pm25,
-            count: 1,
-            day: day
-          });
-        }
-      });
-      
-      // Calculate averages
-      heatmapData.forEach(point => {
-        point.v = point.v / point.count;
-      });
-      
-      // Create array of days for y-axis labels
-      const days = Array.from(dayMap.keys()).sort();
-      
-      // Create heatmap chart
-      const chart = new Chart(ctx, {
-        type: 'matrix',
-        data: {
-          datasets: [{
-            label: 'PM2.5 Heatmap',
-            data: heatmapData.map(point => ({
-              x: point.x,
-              y: point.y,
-              v: point.v
-            })),
-            backgroundColor(context) {
-              const value = context.dataset.data[context.dataIndex].v;
-              const alpha = Math.min(value / 50, 1); // Scale based on PM2.5 value
-              return `rgba(255, 99, 132, ${alpha})`;
-            },
-            borderColor: 'white',
-            borderWidth: 1,
-            width: ({ chart }) => (chart.chartArea || {}).width / 24 - 1,
-            height: ({ chart }) => (chart.chartArea || {}).height / days.length - 1
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            tooltip: {
-              callbacks: {
-                title() {
-                  return '';
-                },
-                label(context) {
-                  const data = heatmapData[context.dataIndex];
-                  const value = data.v.toFixed(2);
-                  const hour = data.x.toString().padStart(2, '0') + ':00';
-                  return [`Date: ${data.day}`, `Time: ${hour}`, `PM2.5: ${value} μg/m³`];
-                }
-              }
-            },
-            legend: {
-              display: false
-            }
-          },
-          scales: {
-            x: {
-              type: 'linear',
-              position: 'top',
-              min: 0,
-              max: 23,
-              ticks: {
-                stepSize: 1,
-                callback: value => value.toString().padStart(2, '0') + ':00'
-              },
-              title: {
-                display: true,
-                text: 'Hour of Day'
-              }
-            },
-            y: {
-              type: 'linear',
-              offset: true,
-              min: 0,
-              max: days.length - 1,
-              ticks: {
-                stepSize: 1,
-                callback: value => days[value]
-              },
-              title: {
-                display: true,
-                text: 'Date'
-              },
-              reverse: true
-            }
-          }
-        }
-      });
-      
-      // Save reference to current chart
-      this.activeChart = chart;
-    } catch (error) {
-      console.error('Error creating heatmap chart:', error);
-      const container = document.getElementById('heatmapChart').parentNode;
-      container.innerHTML = `<div class="alert alert-danger">Error creating chart: ${error.message}</div>`;
-    }
-  }
-  
-  /**
-   * Create correlation chart
-   */
-  createCorrelationChart() {
-    if (this.data.length === 0) return;
-    
-    const ctx = document.getElementById('correlationChart');
-    
-    if (!ctx) {
-      console.error('Canvas element not found for correlation chart');
-      return;
-    }
-    
-    try {
-      // Prepare data for correlation
-      const pm25Values = this.data.map(d => parseFloat(d.pm25 || d.field3)).filter(x => !isNaN(x));
-      const pm10Values = this.data.map(d => parseFloat(d.pm10 || d.field4)).filter(x => !isNaN(x));
-      const tempValues = this.data.map(d => parseFloat(d.temperature || d.field2)).filter(x => !isNaN(x));
-      const humidityValues = this.data.map(d => parseFloat(d.humidity || d.field1)).filter(x => !isNaN(x));
-      
-      // Get min length to ensure all arrays are same length
-      const minLength = Math.min(
-        pm25Values.length,
-        pm10Values.length,
-        tempValues.length,
-        humidityValues.length
-      );
-      
-      const scatterData = [];
-      for (let i = 0; i < minLength; i++) {
-        scatterData.push({
-          x: tempValues[i],
-          y: pm25Values[i]
-        });
-      }
-      
-      // Create chart
-      const chart = new Chart(ctx, {
-        type: 'scatter',
-        data: {
-          datasets: [
-            {
-              label: 'Temperature vs PM2.5',
-              data: scatterData,
-              backgroundColor: 'rgba(75, 192, 192, 0.6)',
-              pointRadius: 5
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            title: {
-              display: true,
-              text: 'Temperature vs PM2.5 Correlation'
-            },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  const x = context.parsed.x.toFixed(1);
-                  const y = context.parsed.y.toFixed(2);
-                  return `Temperature: ${x}°C, PM2.5: ${y} μg/m³`;
-                }
-              }
-            }
-          },
-          scales: {
-            x: {
-              title: {
-                display: true,
-                text: 'Temperature (°C)'
-              }
-            },
-            y: {
-              title: {
-                display: true,
-                text: 'PM2.5 (μg/m³)'
-              },
-              beginAtZero: true
-            }
-          }
-        }
-      });
-      
-      // Save reference to current chart
-      this.activeChart = chart;
-    } catch (error) {
-      console.error('Error creating correlation chart:', error);
-      const container = document.getElementById('correlationChart').parentNode;
-      container.innerHTML = `<div class="alert alert-danger">Error creating chart: ${error.message}</div>`;
-    }
-  }
-  
   /**
    * Update active chart with new data
    */
@@ -1439,7 +1246,7 @@ class Dashboard {
       console.error('Error updating chart with new data:', error);
     }
   }
-  
+
   /**
    * Validate data quality
    */
@@ -1552,47 +1359,9 @@ class Dashboard {
       `;
     } catch (error) {
       console.error('Error validating data:', error);
-      this.elements.validationBadge.className = 'badge bg-warning';
+      this.elements.validationBadge.className = 'badge bg-danger';
       this.elements.validationBadge.textContent = 'Validation Error';
-      this.elements.validationDetails.innerHTML = `<p class="text-center text-danger">Error validating data: ${error.message}</p>`;
+      this.elements.validationDetails.innerHTML = `<p class="text-center text-danger">Error validating data.</p>`;
     }
-  }
-  
-  /**
-   * Download current data as CSV
-   */
-  downloadData() {
-    if (!this.data || this.data.length === 0) {
-      this.showToast('Error', 'No data available to download', 'danger');
-      return;
-    }
-    
-    // Create CSV content
-    let csvContent = 'data:text/csv;charset=utf-8,';
-    csvContent += 'Timestamp,PM2.5,PM10,Temperature,Humidity\n';
-    
-    this.data.forEach(item => {
-      const row = [
-        item.created_at,
-        item.pm25 || item.field3 || '',
-        item.pm10 || item.field4 || '',
-        item.temperature || item.field2 || '',
-        item.humidity || item.field1 || ''
-      ].join(',');
-      csvContent += row + '\n';
-    });
-    
-    // Create download link
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `air_quality_data_${new Date().toISOString().slice(0,10)}.csv`);
-    document.body.appendChild(link);
-    
-    // Trigger download
-    link.click();
-    document.body.removeChild(link);
-    
-    this.showToast('Download', 'Data download started successfully', 'success');
   }
 }

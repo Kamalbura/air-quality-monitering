@@ -361,6 +361,140 @@ body.dark-mode .chartjs-tooltip {
   border-color: #444 !important;
 }
 
+/* New UI component styles */
+
+/* Air Quality Status Card */
+.air-quality-status-card {
+  border-left: 5px solid #28a745;
+  transition: border-color 0.3s, transform 0.2s;
+}
+
+.air-quality-status-card.warning {
+  border-left-color: #ffc107;
+}
+
+.air-quality-status-card.danger {
+  border-left-color: #dc3545;
+}
+
+.air-quality-status-card.hazard {
+  border-left-color: #6f42c1;
+}
+
+/* Quick Filter Card */
+.quick-filter-card {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.time-filter-btn.active {
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+}
+
+/* Enhanced Metric Cards */
+.metric-card {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+}
+
+.metric-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+.metric-card-primary {
+  border-left: 4px solid #0d6efd;
+}
+
+.metric-card-secondary {
+  border-left: 4px solid #6c757d;
+}
+
+.metric-card-success {
+  border-left: 4px solid #198754;
+}
+
+.metric-card-danger {
+  border-left: 4px solid #dc3545;
+}
+
+.metric-card .metric-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  color: #6c757d;
+}
+
+.metric-card .metric-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0;
+}
+
+.metric-card .metric-unit {
+  font-size: 0.8rem;
+  color: #6c757d;
+  font-weight: normal;
+  margin-top: -5px;
+  margin-bottom: 0;
+}
+
+.metric-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.metric-icon i {
+  font-size: 1.5rem;
+  color: white;
+}
+
+/* Visualization Card */
+.viz-card {
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.075);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.viz-card .card-header {
+  background-color: rgba(0,0,0,0.02);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  padding: 0.75rem 1rem;
+}
+
+/* Dark mode adjustments for new components */
+body.dark-mode .metric-card {
+  background-color: #1e1e1e;
+}
+
+body.dark-mode .metric-card .metric-title {
+  color: #adb5bd;
+}
+
+body.dark-mode .metric-card .metric-unit {
+  color: #adb5bd;
+}
+
+body.dark-mode .viz-card .card-header {
+  background-color: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+body.dark-mode .quick-filter-card,
+body.dark-mode .air-quality-status-card {
+  background-color: #1e1e1e;
+  border-color: #333;
+}
+
 /* Data validation section */
 #validation-details .progress {
   height: 5px;
@@ -374,5 +508,152 @@ body.dark-mode .chartjs-tooltip {
 
   .table-responsive {
     font-size: 0.75rem;
+  }
+
+  .row > .col-md-3, 
+  .row > .col-md-4, 
+  .row > .col-md-6 {
+    margin-bottom: 0.75rem;
+  }
+
+  .btn-group .btn {
+    padding: 0.25rem 0.5rem;
+  }
+
+  .viz-container {
+    min-height: 300px;
+  }
+
+  #visualization-container {
+    height: 300px;
+  }
+
+  .navbar-brand {
+    width: auto;
+    max-width: 50%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0.5rem 0.75rem;
+  }
+
+  #toast-container {
+    max-width: 90%;
+    bottom: 10px;
+    right: 10px;
+    left: 10px;
+    margin: 0 auto;
+  }
+
+  main {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  .form-control, .btn, .input-group-text {
+    min-height: 44px;
+  }
+
+  .metric-card {
+    margin-bottom: 1rem;
+  }
+  
+  .metric-card .metric-value {
+    font-size: 1.5rem;
+  }
+  
+  .metric-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .metric-icon i {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .viz-container {
+    min-height: 350px;
+  }
+
+  #visualization-container {
+    height: 350px;
+  }
+}
+
+@media (max-width: 399.98px) {
+  body {
+    font-size: 0.8rem;
+  }
+
+  h1, .h1 { font-size: 1.5rem; }
+  h2, .h2 { font-size: 1.25rem; }
+  h3, .h3 { font-size: 1rem; }
+
+  .card-title {
+    font-size: 1.25rem;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn-toolbar {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .btn-toolbar .btn-group {
+    margin-bottom: 0.5rem;
+  }
+
+  .viz-container {
+    min-height: 250px;
+  }
+
+  #visualization-container {
+    height: 250px;
+  }
+}
+
+@media (pointer: coarse) {
+  .status-indicator {
+    width: 16px;
+    height: 16px;
+  }
+
+  .nav-link {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .table td, .table th {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .sidebar-sticky {
+    height: calc(100vh - 40px);
+  }
+
+  .viz-container {
+    min-height: 200px;
+  }
+
+  #visualization-container {
+    height: 200px;
   }
 }

@@ -135,9 +135,22 @@ router.get('/thingspeak/channel-details', async (req, res) => {
 router.get('/thingspeak/latest-feed', async (req, res) => {
   try {
     const latestData = await thingspeakService.getChannelData({ results: 1 });
-    res.json(latestData);
+    if (latestData.feeds && latestData.feeds.length > 0) {
+      const feed = latestData.feeds[0];
+      res.json({
+        success: true,
+        data: {
+          pm25: feed.field3 || 'N/A',
+          pm10: feed.field4 || 'N/A',
+          temperature: feed.field2 || 'N/A',
+          humidity: feed.field1 || 'N/A',
+        },
+      });
+    } else {
+      res.json({ success: false, error: 'No data available' });
+    }
   } catch (error) {
-    debugHelper.log(`API Error /thingspeak/latest-feed: ${error.message}`, 'api');
+    console.error('Error fetching latest feed:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
@@ -148,6 +161,80 @@ router.get('/thingspeak/status', async (req, res) => {
     res.json(status);
   } catch (error) {
     debugHelper.log(`API Error /thingspeak/status: ${error.message}`, 'api');
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Simple ping endpoint for connection checking
+router.get('/ping', (req, res) => {
+  res.json({ success: true, timestamp: new Date().toISOString() });
+});
+
+// Direct ThingSpeak data loading
+router.get('/thingspeak/direct', async (req, res) => {
+  try {
+    const options = {
+      days: parseInt(req.query.days) || 7,
+      results: parseInt(req.query.results) || 500,
+      includeAnalysis: req.query.analysis === 'true'
+    };
+    
+    const data = await thingspeakService.getDirectThingspeakData(options);
+    
+    if (options.includeAnalysis) {
+      const analysis = analysisHelper.calculateStatistics(data.data || []);
+      data.analysis = analysis;
+    }
+    
+    res.json({ success: true, data });
+  } catch (error) {
+    debugHelper.log(`API Error /thingspeak/direct: ${error.message}`, 'api');
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Seasonal comparison endpoint (for new visualization)
+router.get('/analysis/seasonal', async (req, res) => {
+  try {
+    const options = {
+      results: parseInt(req.query.results) || 5000, // Need more data for seasonal analysis
+      start: req.query.start,
+      end: req.query.end
+    };
+    
+    const dataResponse = await thingspeakService.getChannelData(options);
+    
+    if (!dataResponse.success || !dataResponse.data) {
+      return res.status(500).json({ success: false, error: 'Failed to fetch data for seasonal analysis' });
+    }
+    
+    const seasonalData = analysisHelper.performSeasonalAnalysis(dataResponse.data.data || []);
+    res.json({ success: true, data: seasonalData });
+  } catch (error) {
+    debugHelper.log(`API Error /analysis/seasonal: ${error.message}`, 'api');
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Weekly comparison endpoint (for new visualization)
+router.get('/analysis/weekly', async (req, res) => {
+  try {
+    const options = {
+      results: parseInt(req.query.results) || 2000,
+      start: req.query.start,
+      end: req.query.end
+    };
+    
+    const dataResponse = await thingspeakService.getChannelData(options);
+    
+    if (!dataResponse.success || !dataResponse.data) {
+      return res.status(500).json({ success: false, error: 'Failed to fetch data for weekly analysis' });
+    }
+    
+    const weeklyData = analysisHelper.performWeeklyComparison(dataResponse.data.data || []);
+    res.json({ success: true, data: weeklyData });
+  } catch (error) {
+    debugHelper.log(`API Error /analysis/weekly: ${error.message}`, 'api');
     res.status(500).json({ success: false, error: error.message });
   }
 });
