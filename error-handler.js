@@ -3,14 +3,12 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { PythonShell } = require('python-shell');
 
 class ErrorHandler {
   constructor(options = {}) {
     this.logErrors = options.logErrors !== false;
     this.logFile = options.logFile || path.join(__dirname, 'logs', 'error.log');
     this.consoleOutput = options.consoleOutput !== false;
-    this.createErrorImages = options.createErrorImages !== false;
     
     // Ensure log directory exists
     const logDir = path.dirname(this.logFile);
@@ -58,61 +56,13 @@ class ErrorHandler {
       }
     }
     
-    // Create error image if needed
-    let errorImagePath = '/images/error.png';
-    let errorDescription = `Error: ${error.message}`;
-    
-    if (this.createErrorImages) {
-      try {
-        const imageResult = await this.createErrorImage(error.message);
-        if (imageResult) {
-          errorImagePath = imageResult.imagePath;
-          errorDescription = imageResult.description;
-        }
-      } catch (imageError) {
-        console.error('Failed to create error image:', imageError);
-      }
-    }
-    
+    // Use default error presentation
     return {
       error: true,
       errorId,
       message: error.message,
-      imagePath: errorImagePath,
-      description: errorDescription
+      timestamp
     };
-  }
-  
-  /**
-   * Create an error image using Python
-   */
-  createErrorImage(message) {
-    return new Promise((resolve, reject) => {
-      const errorScript = path.join(__dirname, 'python', 'create_error_image.py');
-      
-      // Check if error script exists
-      if (!fs.existsSync(errorScript)) {
-        return resolve(null);
-      }
-      
-      // Run error image creation
-      const options = {
-        mode: 'text',
-        scriptPath: path.dirname(errorScript),
-        args: [message]
-      };
-      
-      PythonShell.run(path.basename(errorScript), options, (err, results) => {
-        if (err || !results || results.length < 2) {
-          return resolve(null);
-        }
-        
-        resolve({
-          imagePath: results[0].trim(),
-          description: results[1].trim()
-        });
-      });
-    });
   }
 }
 
