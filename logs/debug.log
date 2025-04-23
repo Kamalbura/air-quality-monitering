@@ -1,0 +1,605 @@
+[2025-04-23T08:25:27.808Z] [INFO] [server] CSV data file exists: true
+[2025-04-23T08:25:50.159Z] [INFO] [server] ThingSpeak Channel ID: 2863798
+[2025-04-23T08:25:50.161Z] [INFO] [server] ThingSpeak API Key: Set
+[2025-04-23T08:25:50.162Z] [INFO] [server] CSV data file exists: true
+[2025-04-23T08:28:36.381Z] [INFO] [server] ThingSpeak Channel ID: 2863798
+[2025-04-23T08:28:36.383Z] [INFO] [server] ThingSpeak API Key: Set
+[2025-04-23T08:28:36.383Z] [INFO] [server] CSV data file exists: true
+[2025-04-23T08:28:37.665Z] [INFO] [server] ThingSpeak Channel ID: 2863798
+[2025-04-23T08:28:37.668Z] [INFO] [server] ThingSpeak API Key: Set
+[2025-04-23T08:28:37.669Z] [INFO] [server] CSV data file exists: true
+[2025-04-23T08:28:44.088Z] [INFO] [csv-data-service] CSV Data Service initialized with path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+[2025-04-23T08:28:44.093Z] [INFO] [csv-data-service] CSV file exists: true
+[2025-04-23T08:28:44.093Z] [INFO] [thingspeak-service] ThingSpeak Service initialized with Channel ID: 2863798
+[2025-04-23T08:28:44.094Z] [INFO] [thingspeak-service] ThingSpeak base URL: https://api.thingspeak.com/channels/2863798
+[2025-04-23T08:28:44.105Z] [INFO] [server] ThingSpeak Channel ID: 2863798
+[2025-04-23T08:28:44.105Z] [INFO] [server] ThingSpeak API Key: Set
+[2025-04-23T08:28:44.107Z] [INFO] [server] CSV data file exists: true
+[2025-04-23T08:28:48.085Z] [INFO] [api] API Request: GET /data/source-info
+[2025-04-23T08:28:48.086Z] [INFO] [api] Fetching data source info
+[2025-04-23T08:28:48.087Z] [INFO] [thingspeak-service] Checking ThingSpeak service status
+[2025-04-23T08:28:49.303Z] [INFO] [thingspeak-service] ThingSpeak status check: Connected
+[2025-04-23T08:28:52.072Z] [INFO] [api] API Request: GET /thingspeak/channel-details
+[2025-04-23T08:28:52.080Z] [INFO] [api] API Request: GET /thingspeak/latest-feed
+[2025-04-23T08:28:52.084Z] [INFO] [api] API Request: GET /thingspeak/status
+[2025-04-23T08:28:52.085Z] [INFO] [api] Checking ThingSpeak status
+[2025-04-23T08:28:52.086Z] [INFO] [thingspeak-service] Checking ThingSpeak service status
+[2025-04-23T08:28:52.089Z] [INFO] [api] API Request: GET /thingspeak/data
+[2025-04-23T08:28:52.091Z] [INFO] [api] Fetching ThingSpeak data with results=10, offset=0
+[2025-04-23T08:28:52.093Z] [INFO] [thingspeak-service] Fetching 10 results from ThingSpeak
+[2025-04-23T08:28:52.095Z] [INFO] [thingspeak-service] Request URL: https://api.thingspeak.com/channels/2863798/feeds.json?api_key=[HIDDEN]&results=10&offset=0
+[2025-04-23T08:28:52.102Z] [INFO] [api] API Request: GET /csv/info
+[2025-04-23T08:28:52.103Z] [INFO] [api] Fetching CSV file info
+[2025-04-23T08:28:52.353Z] [INFO] [thingspeak-service] ThingSpeak status check: Connected
+[2025-04-23T08:28:53.145Z] [INFO] [thingspeak-service] Successfully retrieved ThingSpeak data with 10 records
+[2025-04-23T08:28:53.146Z] [INFO] [api] ThingSpeak data fetch successful, returned 10 records
+[2025-04-23T08:29:06.122Z] [INFO] [api] API Request: GET /data/source-info
+[2025-04-23T08:29:06.123Z] [INFO] [api] Fetching data source info
+[2025-04-23T08:29:06.124Z] [INFO] [thingspeak-service] Checking ThingSpeak service status
+[2025-04-23T08:29:07.429Z] [INFO] [thingspeak-service] ThingSpeak status check: Connected
+[2025-04-23T08:30:06.613Z] [INFO] [api] API Request: GET /csv/data
+[2025-04-23T08:30:06.614Z] [INFO] [api] Fetching CSV data with limit=1000, offset=0
+[2025-04-23T08:30:06.614Z] [INFO] [csv-data-service] Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+[2025-04-23T08:30:06.914Z] [INFO] [csv-data-service] Successfully parsed 82099 rows from the CSV file
+[2025-04-23T08:30:06.915Z] [INFO] [csv-data-service] CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+[2025-04-23T08:30:06.915Z] [INFO] [csv-data-service] Found 82099 records in CSV file
+[2025-04-23T08:30:06.973Z] [INFO] [api] CSV data fetch successful, returned 1000 records
+[2025-04-23T08:30:14.226Z] [INFO] [api] API Request: GET /data/source-info
+[2025-04-23T08:30:14.228Z] [INFO] [api] Fetching data source info
+[2025-04-23T08:30:14.230Z] [INFO] [thingspeak-service] Checking ThingSpeak service status
+[2025-04-23T08:30:15.063Z] [INFO] [thingspeak-service] ThingSpeak status check: Connected
+[2025-04-23T08:30:26.525Z] [INFO] [csv-data-service] CSV Data Service initialized with path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+[2025-04-23T08:30:26.527Z] [INFO] [csv-data-service] CSV file exists: true
+[2025-04-23T08:30:26.528Z] [INFO] [thingspeak-service] ThingSpeak Service initialized with Channel ID: 2863798
+[2025-04-23T08:30:26.528Z] [INFO] [thingspeak-service] ThingSpeak base URL: https://api.thingspeak.com/channels/2863798
+[2025-04-23T08:30:26.539Z] [INFO] [server] ThingSpeak Channel ID: 2863798
+[2025-04-23T08:30:26.539Z] [INFO] [server] ThingSpeak API Key: Set
+[2025-04-23T08:30:26.540Z] [INFO] [server] CSV data file exists: true
+[2025-04-23T08:31:14.842Z] [INFO] [csv-data-service] CSV Data Service initialized with path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+[2025-04-23T08:31:14.844Z] [INFO] [csv-data-service] CSV file exists: true
+[2025-04-23T08:31:14.845Z] [INFO] [thingspeak-service] ThingSpeak Service initialized with Channel ID: 2863798
+[2025-04-23T08:31:14.845Z] [INFO] [thingspeak-service] ThingSpeak base URL: https://api.thingspeak.com/channels/2863798
+[2025-04-23T08:31:14.856Z] [INFO] [server] ThingSpeak Channel ID: 2863798
+[2025-04-23T08:31:14.856Z] [INFO] [server] ThingSpeak API Key: Set
+[2025-04-23T08:31:14.858Z] [INFO] [server] CSV data file exists: true
+[2025-04-23T08:34:35.976Z] [INFO] [csv-data-service] CSV Data Service initialized with path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+[2025-04-23T08:34:35.979Z] [INFO] [csv-data-service] CSV file exists: true
+[2025-04-23T08:34:35.979Z] [INFO] [thingspeak-service] ThingSpeak Service initialized with Channel ID: 2863798
+[2025-04-23T08:34:35.980Z] [INFO] [thingspeak-service] ThingSpeak base URL: https://api.thingspeak.com/channels/2863798
+[2025-04-23T08:34:35.990Z] [INFO] [server] ThingSpeak Channel ID: 2863798
+[2025-04-23T08:34:35.991Z] [INFO] [server] ThingSpeak API Key: Set
+[2025-04-23T08:34:35.992Z] [INFO] [server] CSV data file exists: true
+[2025-04-23T08:34:39.765Z] [INFO] [api] API Request: GET /data/source-info
+[2025-04-23T08:34:39.766Z] [INFO] [api] Fetching data source info
+[2025-04-23T08:34:39.767Z] [INFO] [thingspeak-service] Checking ThingSpeak service status
+[2025-04-23T08:34:40.941Z] [INFO] [thingspeak-service] ThingSpeak status check: Connected
+[2025-04-23T08:35:02.652Z] [INFO] [api] API Request: GET /data/source-info
+[2025-04-23T08:35:02.654Z] [INFO] [api] Fetching data source info
+[2025-04-23T08:35:02.655Z] [INFO] [thingspeak-service] Checking ThingSpeak service status
+[2025-04-23T08:35:03.585Z] [INFO] [thingspeak-service] ThingSpeak status check: Connected
+[2025-04-23T08:35:33.264Z] [INFO] [csv-data-service] CSV Data Service initialized with path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+[2025-04-23T08:35:33.267Z] [INFO] [csv-data-service] CSV file exists: true
+[2025-04-23T08:35:33.267Z] [INFO] [thingspeak-service] ThingSpeak Service initialized with Channel ID: 2863798
+[2025-04-23T08:35:33.268Z] [INFO] [thingspeak-service] ThingSpeak base URL: https://api.thingspeak.com/channels/2863798
+[2025-04-23T08:35:33.280Z] [INFO] [server] ThingSpeak Channel ID: 2863798
+[2025-04-23T08:35:33.280Z] [INFO] [server] ThingSpeak API Key: Set
+[2025-04-23T08:35:33.281Z] [INFO] [server] CSV data file exists: true
+[2025-04-23T08:35:40.624Z] [INFO] [csv-data-service] CSV Data Service initialized with path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+[2025-04-23T08:35:40.629Z] [INFO] [csv-data-service] CSV file exists: true
+[2025-04-23T08:35:40.629Z] [INFO] [thingspeak-service] ThingSpeak Service initialized with Channel ID: 2863798
+[2025-04-23T08:35:40.631Z] [INFO] [thingspeak-service] ThingSpeak base URL: https://api.thingspeak.com/channels/2863798
+[2025-04-23T08:35:40.649Z] [INFO] [server] ThingSpeak Channel ID: 2863798
+[2025-04-23T08:35:40.650Z] [INFO] [server] ThingSpeak API Key: Set
+[2025-04-23T08:35:40.651Z] [INFO] [server] CSV data file exists: true
+[2025-04-23T08:36:04.667Z] [INFO] [api] API Request: GET /data/source-info
+[2025-04-23T08:36:04.669Z] [INFO] [api] Fetching data source info
+[2025-04-23T08:36:04.670Z] [INFO] [thingspeak-service] Checking ThingSpeak service status
+[2025-04-23T08:36:05.602Z] [INFO] [thingspeak-service] ThingSpeak status check: Connected
+[2025-04-23T08:36:05.613Z] [INFO] [api] API Request: GET /csv/data
+[2025-04-23T08:36:05.614Z] [INFO] [api] Fetching CSV data with limit=1000, offset=0
+[2025-04-23T08:36:05.615Z] [INFO] [csv-data-service] Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+[2025-04-23T08:36:06.191Z] [INFO] [csv-data-service] Successfully parsed 82099 rows from the CSV file
+[2025-04-23T08:36:06.192Z] [INFO] [csv-data-service] CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+[2025-04-23T08:36:06.196Z] [INFO] [csv-data-service] Found 82099 records in CSV file
+[2025-04-23T08:36:06.345Z] [INFO] [api] CSV data fetch successful, returned 1000 records
+[2025-04-23T08:36:25.009Z] [INFO] [csv-data-service] CSV Data Service initialized with path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+[2025-04-23T08:36:25.015Z] [INFO] [csv-data-service] CSV file exists: true
+[2025-04-23T08:36:25.016Z] [INFO] [thingspeak-service] ThingSpeak Service initialized with Channel ID: 2863798
+[2025-04-23T08:36:25.018Z] [INFO] [thingspeak-service] ThingSpeak base URL: https://api.thingspeak.com/channels/2863798
+[2025-04-23T08:36:25.030Z] [INFO] [server] ThingSpeak Channel ID: 2863798
+[2025-04-23T08:36:25.031Z] [INFO] [server] ThingSpeak API Key: Set
+[2025-04-23T08:36:25.031Z] [INFO] [server] CSV data file exists: true
+[2025-04-23T08:36:39.868Z] [INFO] [csv-data-service] CSV Data Service initialized with path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+[2025-04-23T08:36:39.871Z] [INFO] [csv-data-service] CSV file exists: true
+[2025-04-23T08:36:39.872Z] [INFO] [thingspeak-service] ThingSpeak Service initialized with Channel ID: 2863798
+[2025-04-23T08:36:39.872Z] [INFO] [thingspeak-service] ThingSpeak base URL: https://api.thingspeak.com/channels/2863798
+[2025-04-23T08:36:39.886Z] [INFO] [server] ThingSpeak Channel ID: 2863798
+[2025-04-23T08:36:39.886Z] [INFO] [server] ThingSpeak API Key: Set
+[2025-04-23T08:36:39.887Z] [INFO] [server] CSV data file exists: true
+[2025-04-23T08:36:41.951Z] [INFO] [api] API Request: GET /data/source-info
+[2025-04-23T08:36:41.953Z] [INFO] [api] Fetching data source info
+[2025-04-23T08:36:41.955Z] [INFO] [thingspeak-service] Checking ThingSpeak service status
+[2025-04-23T08:36:42.903Z] [INFO] [thingspeak-service] ThingSpeak status check: Connected
+[2025-04-23T08:37:42.395Z] [INFO] [csv-data-service] CSV Data Service initialized with path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+[2025-04-23T08:37:42.397Z] [INFO] [csv-data-service] CSV file exists: true
+[2025-04-23T08:37:42.399Z] [INFO] [thingspeak-service] ThingSpeak Service initialized with Channel ID: 2863798
+[2025-04-23T08:37:42.400Z] [INFO] [thingspeak-service] ThingSpeak base URL: https://api.thingspeak.com/channels/2863798
+[2025-04-23T08:37:42.417Z] [INFO] [server] ThingSpeak Channel ID: 2863798
+[2025-04-23T08:37:42.417Z] [INFO] [server] ThingSpeak API Key: Set
+[2025-04-23T08:37:42.418Z] [INFO] [server] CSV data file exists: true
+[2025-04-23T08:37:49.883Z] [INFO] [csv-data-service] CSV Data Service initialized with path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+[2025-04-23T08:37:49.886Z] [INFO] [csv-data-service] CSV file exists: true
+[2025-04-23T08:37:49.887Z] [INFO] [thingspeak-service] ThingSpeak Service initialized with Channel ID: 2863798
+[2025-04-23T08:37:49.888Z] [INFO] [thingspeak-service] ThingSpeak base URL: https://api.thingspeak.com/channels/2863798
+[2025-04-23T08:37:49.902Z] [INFO] [server] ThingSpeak Channel ID: 2863798
+[2025-04-23T08:37:49.903Z] [INFO] [server] ThingSpeak API Key: Set
+[2025-04-23T08:37:49.904Z] [INFO] [server] CSV data file exists: true
+2025-04-23T08:37:52.199Z [INFO] [csv-data-service]: CSV Data Service initialized with path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T08:37:52.209Z [INFO] [csv-data-service]: CSV file exists: true
+2025-04-23T08:37:52.210Z [INFO] [thingspeak-service]: ThingSpeak Service initialized with Channel ID: 2863798
+2025-04-23T08:37:52.213Z [INFO] [thingspeak-service]: ThingSpeak base URL: https://api.thingspeak.com/channels/2863798
+2025-04-23T08:37:52.240Z [INFO] [server]: ThingSpeak Channel ID: 2863798
+2025-04-23T08:37:52.241Z [INFO] [server]: ThingSpeak API Key: Set
+2025-04-23T08:37:52.242Z [INFO] [server]: CSV data file exists: true
+2025-04-23T08:37:53.367Z [INFO] [api]: API Request: GET /data/source-info
+2025-04-23T08:37:53.369Z [INFO] [api]: Fetching data source info
+2025-04-23T08:37:53.371Z [INFO] [thingspeak-service]: Checking ThingSpeak service status
+2025-04-23T08:37:54.289Z [INFO] [thingspeak-service]: ThingSpeak status check: Connected
+2025-04-23T08:37:54.302Z [INFO] [api]: API Request: GET /thingspeak/data
+2025-04-23T08:37:54.303Z [INFO] [api]: Fetching ThingSpeak data with results=1000, offset=0
+2025-04-23T08:37:54.304Z [INFO] [thingspeak-service]: Fetching 1000 results from ThingSpeak
+2025-04-23T08:37:54.304Z [INFO] [thingspeak-service]: Request URL: https://api.thingspeak.com/channels/2863798/feeds.json?api_key=[HIDDEN]&results=1000&offset=0
+2025-04-23T08:37:55.394Z [INFO] [thingspeak-service]: Successfully retrieved ThingSpeak data with 1000 records
+2025-04-23T08:37:55.395Z [INFO] [api]: ThingSpeak data fetch successful, returned 1000 records
+2025-04-23T08:38:09.290Z [INFO] [api]: API Request: GET /data/source-info
+2025-04-23T08:38:09.291Z [INFO] [api]: Fetching data source info
+2025-04-23T08:38:09.292Z [INFO] [thingspeak-service]: Checking ThingSpeak service status
+2025-04-23T08:38:10.255Z [INFO] [thingspeak-service]: ThingSpeak status check: Connected
+2025-04-23T08:40:00.098Z [INFO] [api]: API Request: GET /data/source-info
+2025-04-23T08:40:00.099Z [INFO] [api]: Fetching data source info
+2025-04-23T08:40:00.101Z [INFO] [thingspeak-service]: Checking ThingSpeak service status
+2025-04-23T08:40:00.983Z [INFO] [thingspeak-service]: ThingSpeak status check: Connected
+2025-04-23T08:40:06.820Z [INFO] [api]: API Request: GET /data/source-info
+2025-04-23T08:40:06.822Z [INFO] [api]: Fetching data source info
+2025-04-23T08:40:06.823Z [INFO] [thingspeak-service]: Checking ThingSpeak service status
+2025-04-23T08:40:07.665Z [INFO] [thingspeak-service]: ThingSpeak status check: Connected
+2025-04-23T08:43:12.097Z [INFO] [csv-data-service]: CSV Data Service initialized with path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T08:43:12.104Z [INFO] [csv-data-service]: CSV file exists: true
+2025-04-23T08:43:12.105Z [INFO] [thingspeak-service]: ThingSpeak Service initialized with Channel ID: 2863798
+2025-04-23T08:43:12.107Z [INFO] [thingspeak-service]: ThingSpeak base URL: https://api.thingspeak.com/channels/2863798
+2025-04-23T08:43:12.131Z [INFO] [server]: ThingSpeak Channel ID: 2863798
+2025-04-23T08:43:12.133Z [INFO] [server]: ThingSpeak API Key: Set
+2025-04-23T08:43:12.136Z [INFO] [server]: CSV data file exists: true
+2025-04-23T08:48:22.430Z [INFO] [api]: API Request: GET /data/source-info
+2025-04-23T08:48:22.434Z [INFO] [api]: Fetching data source info
+2025-04-23T08:48:22.447Z [INFO] [thingspeak-service]: Checking ThingSpeak service status
+2025-04-23T08:48:23.719Z [INFO] [thingspeak-service]: ThingSpeak status check: Connected
+2025-04-23T08:48:23.736Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T08:48:23.737Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T08:48:23.740Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T08:48:23.745Z [INFO] [api]: API Request: GET /csv/data
+2025-04-23T08:48:23.746Z [INFO] [api]: Fetching CSV data with limit=20,1, offset=0
+2025-04-23T08:48:23.748Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T08:48:23.749Z [INFO] [api]: API Request: GET /csv/data
+2025-04-23T08:48:23.750Z [INFO] [api]: Fetching CSV data with limit=20, offset=0
+2025-04-23T08:48:23.753Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T08:48:24.870Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T08:48:24.871Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T08:48:24.872Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T08:48:24.953Z [INFO] [api]: CSV data fetch successful, returned 20 records
+2025-04-23T08:48:24.956Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T08:48:24.957Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T08:48:24.958Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T08:48:25.037Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T08:48:25.039Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T08:48:25.040Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T08:48:25.114Z [INFO] [api]: CSV data fetch successful, returned 20 records
+2025-04-23T08:48:55.189Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T08:48:55.190Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T08:48:55.191Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T08:48:55.611Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T08:48:55.612Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T08:48:55.613Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T08:48:58.727Z [INFO] [api]: API Request: GET /channel/status
+2025-04-23T08:48:58.737Z [INFO] [api]: API Request: GET /data/latest
+2025-04-23T08:48:58.745Z [INFO] [api]: API Request: GET /visualization/status
+2025-04-23T08:48:58.757Z [INFO] [api]: API Request: GET /data/recent
+2025-04-23T08:48:58.770Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T08:48:58.771Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T08:48:58.772Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T08:48:59.161Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T08:48:59.162Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T08:48:59.163Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T08:48:59.258Z [INFO] [api]: API Request: GET /visualization/time_series
+2025-04-23T08:48:59.264Z [INFO] [api]: API Request: GET /visualization/daily_pattern
+2025-04-23T08:48:59.275Z [INFO] [api]: API Request: GET /visualization/correlation
+2025-04-23T08:48:59.286Z [INFO] [api]: API Request: GET /channel/status
+2025-04-23T08:49:00.505Z [INFO] [api]: API Request: GET /data/source-info
+2025-04-23T08:49:00.506Z [INFO] [api]: Fetching data source info
+2025-04-23T08:49:00.507Z [INFO] [thingspeak-service]: Checking ThingSpeak service status
+2025-04-23T08:49:01.647Z [INFO] [thingspeak-service]: ThingSpeak status check: Connected
+2025-04-23T08:49:16.642Z [INFO] [api]: API Request: GET /data/source-info
+2025-04-23T08:49:16.643Z [INFO] [api]: Fetching data source info
+2025-04-23T08:49:16.643Z [INFO] [thingspeak-service]: Checking ThingSpeak service status
+2025-04-23T08:49:17.699Z [INFO] [thingspeak-service]: ThingSpeak status check: Connected
+2025-04-23T08:49:17.707Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T08:49:17.708Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T08:49:17.709Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T08:49:18.182Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T08:49:18.183Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T08:49:18.183Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T08:49:19.607Z [INFO] [api]: API Request: GET /thingspeak/data
+2025-04-23T08:49:19.608Z [INFO] [api]: Fetching ThingSpeak data with results=20, offset=0
+2025-04-23T08:49:19.609Z [INFO] [thingspeak-service]: Fetching 20 results from ThingSpeak
+2025-04-23T08:49:19.610Z [INFO] [thingspeak-service]: Request URL: https://api.thingspeak.com/channels/2863798/feeds.json?api_key=[HIDDEN]&results=20&offset=0
+2025-04-23T08:49:19.614Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T08:49:19.615Z [INFO] [api]: Fetching stats with source=thingspeak, extended=false
+2025-04-23T08:49:19.617Z [INFO] [thingspeak-service]: Fetching 500 results from ThingSpeak
+2025-04-23T08:49:19.618Z [INFO] [thingspeak-service]: Request URL: https://api.thingspeak.com/channels/2863798/feeds.json?api_key=[HIDDEN]&results=500&offset=0
+2025-04-23T08:49:19.622Z [INFO] [api]: API Request: GET /thingspeak/latest-feed
+2025-04-23T08:49:19.625Z [INFO] [api]: Fetching ThingSpeak latest feed
+2025-04-23T08:49:21.403Z [INFO] [thingspeak-service]: Successfully retrieved ThingSpeak data with 20 records
+2025-04-23T08:49:21.403Z [INFO] [api]: ThingSpeak data fetch successful, returned 20 records
+2025-04-23T08:49:22.659Z [INFO] [thingspeak-service]: Successfully retrieved ThingSpeak data with 500 records
+2025-04-23T12:19:00.772Z [INFO] [csv-data-service]: CSV Data Service initialized with path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:19:00.775Z [INFO] [csv-data-service]: CSV file exists: true
+2025-04-23T12:19:00.776Z [INFO] [thingspeak-service]: ThingSpeak Service initialized with Channel ID: 2863798
+2025-04-23T12:19:00.777Z [INFO] [thingspeak-service]: ThingSpeak base URL: https://api.thingspeak.com/channels/2863798
+2025-04-23T12:19:00.791Z [INFO] [server]: ThingSpeak Channel ID: 2863798
+2025-04-23T12:19:00.792Z [INFO] [server]: ThingSpeak API Key: Set
+2025-04-23T12:19:00.793Z [INFO] [server]: CSV data file exists: true
+2025-04-23T12:19:07.743Z [INFO] [api]: API Request: GET /data/source-info
+2025-04-23T12:19:07.745Z [INFO] [api]: Fetching data source info
+2025-04-23T12:19:07.747Z [INFO] [thingspeak-service]: Checking ThingSpeak service status
+2025-04-23T12:19:08.493Z [INFO] [thingspeak-service]: ThingSpeak status check: Connected
+2025-04-23T12:19:08.502Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:19:08.503Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:19:08.504Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:19:08.507Z [INFO] [api]: API Request: GET /csv/data
+2025-04-23T12:19:08.508Z [INFO] [api]: Fetching CSV data with limit=20, offset=0
+2025-04-23T12:19:08.510Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:19:08.511Z [INFO] [api]: API Request: GET /csv/data
+2025-04-23T12:19:08.512Z [INFO] [api]: Fetching CSV data with limit=20,1, offset=0
+2025-04-23T12:19:08.513Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:19:09.782Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:19:09.783Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:19:09.784Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:19:09.877Z [INFO] [api]: CSV data fetch successful, returned 20 records
+2025-04-23T12:19:09.879Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:19:09.880Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:19:09.881Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:19:09.983Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:19:09.985Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:19:09.986Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:19:10.094Z [INFO] [api]: CSV data fetch successful, returned 20 records
+2025-04-23T12:19:19.376Z [INFO] [api]: API Request: GET /thingspeak/latest-feed
+2025-04-23T12:19:19.379Z [INFO] [api]: Fetching ThingSpeak latest feed
+2025-04-23T12:19:19.395Z [INFO] [api]: API Request: GET /thingspeak/data
+2025-04-23T12:19:19.399Z [INFO] [api]: Fetching ThingSpeak data with results=20, offset=0
+2025-04-23T12:19:19.404Z [INFO] [thingspeak-service]: Fetching 20 results from ThingSpeak
+2025-04-23T12:19:19.407Z [INFO] [thingspeak-service]: Request URL: https://api.thingspeak.com/channels/2863798/feeds.json?api_key=[HIDDEN]&results=20&offset=0
+2025-04-23T12:19:19.417Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:19:19.418Z [INFO] [api]: Fetching stats with source=thingspeak, extended=false
+2025-04-23T12:19:19.419Z [INFO] [thingspeak-service]: Fetching 500 results from ThingSpeak
+2025-04-23T12:19:19.421Z [INFO] [thingspeak-service]: Request URL: https://api.thingspeak.com/channels/2863798/feeds.json?api_key=[HIDDEN]&results=500&offset=0
+2025-04-23T12:19:20.065Z [INFO] [thingspeak-service]: Successfully retrieved ThingSpeak data with 20 records
+2025-04-23T12:19:20.066Z [INFO] [api]: ThingSpeak data fetch successful, returned 20 records
+2025-04-23T12:19:20.495Z [INFO] [thingspeak-service]: Successfully retrieved ThingSpeak data with 500 records
+2025-04-23T12:19:36.633Z [INFO] [api]: API Request: GET /data/source-info
+2025-04-23T12:19:36.635Z [INFO] [api]: Fetching data source info
+2025-04-23T12:19:36.636Z [INFO] [thingspeak-service]: Checking ThingSpeak service status
+2025-04-23T12:19:37.321Z [INFO] [thingspeak-service]: ThingSpeak status check: Connected
+2025-04-23T12:19:37.328Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:19:37.329Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:19:37.330Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:19:37.788Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:19:37.790Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:19:37.792Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:20:06.791Z [INFO] [api]: API Request: GET /thingspeak/latest-feed
+2025-04-23T12:20:06.793Z [INFO] [api]: Fetching ThingSpeak latest feed
+2025-04-23T12:20:06.804Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:20:06.805Z [INFO] [api]: Fetching stats with source=thingspeak, extended=false
+2025-04-23T12:20:06.807Z [INFO] [thingspeak-service]: Returning cached ThingSpeak data
+2025-04-23T12:20:07.575Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:20:07.577Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:20:07.578Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:20:08.049Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:20:08.050Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:20:08.051Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:20:08.149Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:20:08.150Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:20:08.151Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:20:08.510Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:20:08.511Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:20:08.512Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:20:38.651Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:20:38.652Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:20:38.652Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:20:38.917Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:20:38.918Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:20:38.918Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:21:07.914Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:21:07.916Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:21:07.916Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:21:08.390Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:21:08.392Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:21:08.393Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:21:38.649Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:21:38.650Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:21:38.650Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:21:38.914Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:21:38.915Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:21:38.916Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:22:08.654Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:22:08.656Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:22:08.657Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:22:09.084Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:22:09.085Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:22:09.086Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:22:38.655Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:22:38.656Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:22:38.657Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:22:39.095Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:22:39.097Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:22:39.098Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:23:39.646Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:23:39.647Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:23:39.648Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:23:40.054Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:23:40.056Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:23:40.057Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:24:40.660Z [INFO] [api]: API Request: GET /csv/data
+2025-04-23T12:24:40.661Z [INFO] [api]: Fetching CSV data with limit=20,1, offset=0
+2025-04-23T12:24:40.661Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:24:40.663Z [INFO] [api]: API Request: GET /csv/data
+2025-04-23T12:24:40.663Z [INFO] [api]: Fetching CSV data with limit=20, offset=0
+2025-04-23T12:24:40.664Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:24:40.664Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:24:40.665Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:24:40.666Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:24:41.328Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:24:41.329Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:24:41.330Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:24:41.383Z [INFO] [api]: CSV data fetch successful, returned 20 records
+2025-04-23T12:24:41.385Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:24:41.385Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:24:41.386Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:24:41.440Z [INFO] [api]: CSV data fetch successful, returned 20 records
+2025-04-23T12:24:41.442Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:24:41.443Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:24:41.444Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:25:04.179Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:25:04.180Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:25:04.180Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:25:04.612Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:25:04.614Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:25:04.615Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:25:05.870Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:25:05.871Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:25:05.872Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:25:06.244Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:25:06.245Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:25:06.247Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:25:07.911Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:25:07.912Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:25:07.914Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:25:08.315Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:25:08.316Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:25:08.318Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:25:09.834Z [INFO] [api]: API Request: GET /thingspeak/latest-feed
+2025-04-23T12:25:09.835Z [INFO] [api]: Fetching ThingSpeak latest feed
+2025-04-23T12:25:09.849Z [INFO] [api]: API Request: GET /thingspeak/data
+2025-04-23T12:25:09.853Z [INFO] [api]: Fetching ThingSpeak data with results=20, offset=0
+2025-04-23T12:25:09.856Z [INFO] [thingspeak-service]: Fetching 20 results from ThingSpeak
+2025-04-23T12:25:09.858Z [INFO] [thingspeak-service]: Request URL: https://api.thingspeak.com/channels/2863798/feeds.json?api_key=[HIDDEN]&results=20&offset=0
+2025-04-23T12:25:09.865Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:25:09.866Z [INFO] [api]: Fetching stats with source=thingspeak, extended=false
+2025-04-23T12:25:09.867Z [INFO] [thingspeak-service]: Fetching 500 results from ThingSpeak
+2025-04-23T12:25:09.868Z [INFO] [thingspeak-service]: Request URL: https://api.thingspeak.com/channels/2863798/feeds.json?api_key=[HIDDEN]&results=500&offset=0
+2025-04-23T12:25:10.545Z [INFO] [thingspeak-service]: Successfully retrieved ThingSpeak data with 20 records
+2025-04-23T12:25:10.548Z [INFO] [api]: ThingSpeak data fetch successful, returned 20 records
+2025-04-23T12:25:11.389Z [INFO] [thingspeak-service]: Successfully retrieved ThingSpeak data with 500 records
+2025-04-23T12:25:32.970Z [INFO] [api]: API Request: GET /channel/status
+2025-04-23T12:25:32.979Z [INFO] [api]: API Request: GET /data/latest
+2025-04-23T12:25:32.987Z [INFO] [api]: API Request: GET /visualization/status
+2025-04-23T12:25:32.991Z [INFO] [api]: API Request: GET /data/recent
+2025-04-23T12:25:33.004Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:25:33.006Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:25:33.008Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:25:33.472Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:25:33.474Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:25:33.478Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:25:33.577Z [INFO] [api]: API Request: GET /visualization/time_series
+2025-04-23T12:25:33.589Z [INFO] [api]: API Request: GET /visualization/daily_pattern
+2025-04-23T12:25:33.595Z [INFO] [api]: API Request: GET /visualization/correlation
+2025-04-23T12:25:33.606Z [INFO] [api]: API Request: GET /channel/status
+2025-04-23T12:26:03.658Z [INFO] [api]: API Request: GET /visualization/status
+2025-04-23T12:26:33.102Z [INFO] [api]: API Request: GET /channel/status
+2025-04-23T12:26:33.114Z [INFO] [api]: API Request: GET /visualization/status
+2025-04-23T12:26:35.002Z [INFO] [api]: API Request: GET /channel/status
+2025-04-23T12:26:35.005Z [INFO] [api]: API Request: GET /data/latest
+2025-04-23T12:26:35.010Z [INFO] [api]: API Request: GET /visualization/status
+2025-04-23T12:26:35.012Z [INFO] [api]: API Request: GET /data/recent
+2025-04-23T12:26:35.020Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:26:35.022Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:26:35.023Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:26:35.315Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:26:35.316Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:26:35.318Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:26:35.377Z [INFO] [api]: API Request: GET /visualization/time_series
+2025-04-23T12:26:35.383Z [INFO] [api]: API Request: GET /visualization/daily_pattern
+2025-04-23T12:26:35.387Z [INFO] [api]: API Request: GET /visualization/correlation
+2025-04-23T12:26:35.392Z [INFO] [api]: API Request: GET /channel/status
+2025-04-23T12:26:36.390Z [INFO] [api]: API Request: GET /data/source-info
+2025-04-23T12:26:36.391Z [INFO] [api]: Fetching data source info
+2025-04-23T12:26:36.392Z [INFO] [thingspeak-service]: Checking ThingSpeak service status
+2025-04-23T12:26:37.059Z [INFO] [thingspeak-service]: ThingSpeak status check: Connected
+2025-04-23T12:26:37.064Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:26:37.065Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:26:37.065Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:26:37.320Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:26:37.321Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:26:37.321Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:26:45.506Z [INFO] [api]: API Request: GET /thingspeak/latest-feed
+2025-04-23T12:26:45.507Z [INFO] [api]: Fetching ThingSpeak latest feed
+2025-04-23T12:26:45.510Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:26:45.511Z [INFO] [api]: Fetching stats with source=thingspeak, extended=false
+2025-04-23T12:26:45.515Z [INFO] [thingspeak-service]: Returning cached ThingSpeak data
+2025-04-23T12:27:07.383Z [INFO] [api]: API Request: GET /thingspeak/latest-feed
+2025-04-23T12:27:07.384Z [INFO] [api]: Fetching ThingSpeak latest feed
+2025-04-23T12:27:07.387Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:27:07.388Z [INFO] [api]: Fetching stats with source=thingspeak, extended=false
+2025-04-23T12:27:07.390Z [INFO] [thingspeak-service]: Returning cached ThingSpeak data
+2025-04-23T12:27:20.962Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:27:20.963Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:27:20.964Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:27:21.406Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:27:21.407Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:27:21.407Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:27:37.653Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:27:37.654Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:27:37.654Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:27:37.922Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:27:37.923Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:27:37.923Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:28:07.656Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:28:07.657Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:28:07.658Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:28:07.935Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:28:07.936Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:28:07.937Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:28:37.646Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:28:37.647Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:28:37.648Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:28:37.932Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:28:37.933Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:28:37.934Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:29:07.649Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:29:07.650Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:29:07.650Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:29:07.913Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:29:07.914Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:29:07.915Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:29:55.654Z [INFO] [api]: API Request: GET /csv/data
+2025-04-23T12:29:55.655Z [INFO] [api]: Fetching CSV data with limit=20,1, offset=0
+2025-04-23T12:29:55.656Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:29:55.657Z [INFO] [api]: API Request: GET /csv/data
+2025-04-23T12:29:55.659Z [INFO] [api]: Fetching CSV data with limit=20, offset=0
+2025-04-23T12:29:55.659Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:29:55.660Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:29:55.661Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:29:55.661Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:29:56.377Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:29:56.378Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:29:56.378Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:29:56.440Z [INFO] [api]: CSV data fetch successful, returned 20 records
+2025-04-23T12:29:56.441Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:29:56.442Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:29:56.443Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:29:56.500Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:29:56.501Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:29:56.501Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:29:56.555Z [INFO] [api]: CSV data fetch successful, returned 20 records
+2025-04-23T12:30:39.853Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:30:39.854Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:30:39.855Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:30:40.140Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:30:40.141Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:30:40.141Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:31:07.660Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:31:07.661Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:31:07.661Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:31:07.920Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:31:07.921Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:31:07.922Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:31:37.652Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:31:37.653Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:31:37.654Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:31:38.002Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:31:38.003Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:31:38.004Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:31:54.174Z [INFO] [api]: API Request: GET /data/source-info
+2025-04-23T12:31:54.174Z [INFO] [api]: Fetching data source info
+2025-04-23T12:31:54.176Z [INFO] [thingspeak-service]: Checking ThingSpeak service status
+2025-04-23T12:31:54.863Z [INFO] [thingspeak-service]: ThingSpeak status check: Connected
+2025-04-23T12:31:54.869Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:31:54.870Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:31:54.870Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:31:55.136Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:31:55.137Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:31:55.138Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:31:55.731Z [INFO] [api]: API Request: GET /data/source-info
+2025-04-23T12:31:55.733Z [INFO] [api]: Fetching data source info
+2025-04-23T12:31:55.734Z [INFO] [thingspeak-service]: Checking ThingSpeak service status
+2025-04-23T12:31:55.958Z [INFO] [thingspeak-service]: ThingSpeak status check: Connected
+2025-04-23T12:31:55.963Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:31:55.964Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:31:55.965Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:31:56.332Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:31:56.333Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:31:56.335Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+2025-04-23T12:32:00.984Z [INFO] [api]: API Request: GET /thingspeak/latest-feed
+2025-04-23T12:32:00.985Z [INFO] [api]: Fetching ThingSpeak latest feed
+2025-04-23T12:32:00.990Z [INFO] [api]: API Request: GET /thingspeak/data
+2025-04-23T12:32:00.991Z [INFO] [api]: Fetching ThingSpeak data with results=20, offset=0
+2025-04-23T12:32:00.992Z [INFO] [thingspeak-service]: Fetching 20 results from ThingSpeak
+2025-04-23T12:32:00.992Z [INFO] [thingspeak-service]: Request URL: https://api.thingspeak.com/channels/2863798/feeds.json?api_key=[HIDDEN]&results=20&offset=0
+2025-04-23T12:32:00.996Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:32:00.997Z [INFO] [api]: Fetching stats with source=thingspeak, extended=false
+2025-04-23T12:32:00.997Z [INFO] [thingspeak-service]: Fetching 500 results from ThingSpeak
+2025-04-23T12:32:00.998Z [INFO] [thingspeak-service]: Request URL: https://api.thingspeak.com/channels/2863798/feeds.json?api_key=[HIDDEN]&results=500&offset=0
+2025-04-23T12:32:01.644Z [INFO] [thingspeak-service]: Successfully retrieved ThingSpeak data with 20 records
+2025-04-23T12:32:01.646Z [INFO] [api]: ThingSpeak data fetch successful, returned 20 records
+2025-04-23T12:32:02.113Z [INFO] [thingspeak-service]: Successfully retrieved ThingSpeak data with 500 records
+2025-04-23T12:32:11.742Z [INFO] [api]: API Request: GET /data/source-info
+2025-04-23T12:32:11.744Z [INFO] [api]: Fetching data source info
+2025-04-23T12:32:11.745Z [INFO] [thingspeak-service]: Checking ThingSpeak service status
+2025-04-23T12:32:12.382Z [INFO] [thingspeak-service]: ThingSpeak status check: Connected
+2025-04-23T12:32:12.389Z [INFO] [api]: API Request: GET /data/stats
+2025-04-23T12:32:12.390Z [INFO] [api]: Fetching stats with source=csv, extended=false
+2025-04-23T12:32:12.391Z [INFO] [csv-data-service]: Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:32:12.827Z [INFO] [csv-data-service]: Successfully parsed 82099 rows from the CSV file
+2025-04-23T12:32:12.829Z [INFO] [csv-data-service]: CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:32:12.830Z [INFO] [csv-data-service]: Found 82099 records in CSV file
+[2025-04-23T12:32:28.699Z] [INFO] [csv-data-service] CSV Data Service initialized with path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+[2025-04-23T12:32:28.701Z] [INFO] [csv-data-service] CSV file exists: true
+[2025-04-23T12:32:28.702Z] [INFO] [thingspeak-service] ThingSpeak Service initialized with Channel ID: 2863798
+[2025-04-23T12:32:28.704Z] [INFO] [thingspeak-service] ThingSpeak base URL: https://api.thingspeak.com/channels/2863798
+[2025-04-23T12:32:28.717Z] [INFO] [server] ThingSpeak Channel ID: 2863798
+[2025-04-23T12:32:28.717Z] [INFO] [server] ThingSpeak API Key: Set
+[2025-04-23T12:32:28.718Z] [INFO] [server] CSV data file exists: true
+[2025-04-23T12:32:29.679Z] [INFO] [api] API Request: GET /data/source-info
+[2025-04-23T12:32:29.681Z] [INFO] [api] Fetching data source info
+[2025-04-23T12:32:29.683Z] [INFO] [thingspeak-service] Checking ThingSpeak service status
+[2025-04-23T12:32:30.383Z] [INFO] [thingspeak-service] ThingSpeak status check: Connected
+[2025-04-23T12:32:30.393Z] [INFO] [api] API Request: GET /csv/data
+[2025-04-23T12:32:30.394Z] [INFO] [api] Fetching CSV data with limit=1000, offset=0
+[2025-04-23T12:32:30.395Z] [INFO] [csv-data-service] Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+[2025-04-23T12:32:30.761Z] [INFO] [csv-data-service] Successfully parsed 82099 rows from the CSV file
+[2025-04-23T12:32:30.762Z] [INFO] [csv-data-service] CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+[2025-04-23T12:32:30.763Z] [INFO] [csv-data-service] Found 82099 records in CSV file
+[2025-04-23T12:32:30.833Z] [INFO] [api] CSV data fetch successful, returned 1000 records
+2025-04-23T12:32:40.597Z [INFO] [csv-data-service]: CSV Data Service initialized with path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T12:32:40.599Z [INFO] [csv-data-service]: CSV file exists: true
+2025-04-23T12:32:40.600Z [INFO] [thingspeak-service]: ThingSpeak Service initialized with Channel ID: 2863798
+2025-04-23T12:32:40.601Z [INFO] [thingspeak-service]: ThingSpeak base URL: https://api.thingspeak.com/channels/2863798
+2025-04-23T12:32:40.615Z [INFO] [server]: ThingSpeak Channel ID: 2863798
+2025-04-23T12:32:40.615Z [INFO] [server]: ThingSpeak API Key: Set
+2025-04-23T12:32:40.616Z [INFO] [server]: CSV data file exists: true
+2025-04-23T12:32:40.902Z [INFO] [api]: API Request: GET /data/source-info
+2025-04-23T12:32:40.904Z [INFO] [api]: Fetching data source info
+2025-04-23T12:32:40.905Z [INFO] [thingspeak-service]: Checking ThingSpeak service status
+2025-04-23T12:32:41.611Z [INFO] [thingspeak-service]: ThingSpeak status check: Connected
+2025-04-23T12:32:41.624Z [INFO] [api]: API Request: GET /thingspeak/data
+2025-04-23T12:32:41.625Z [INFO] [api]: Fetching ThingSpeak data with results=1000, offset=0
+2025-04-23T12:32:41.626Z [INFO] [thingspeak-service]: Fetching 1000 results from ThingSpeak
+2025-04-23T12:32:41.627Z [INFO] [thingspeak-service]: Request URL: https://api.thingspeak.com/channels/2863798/feeds.json?api_key=[HIDDEN]&results=1000&offset=0
+2025-04-23T12:32:42.521Z [INFO] [thingspeak-service]: Successfully retrieved ThingSpeak data with 1000 records
+2025-04-23T12:32:42.524Z [INFO] [api]: ThingSpeak data fetch successful, returned 1000 records
+[2025-04-23T12:33:16.479Z] [INFO] [csv-data-service] CSV Data Service initialized with path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+[2025-04-23T12:33:16.481Z] [INFO] [csv-data-service] CSV file exists: true
+[2025-04-23T12:33:16.482Z] [INFO] [thingspeak-service] ThingSpeak Service initialized with Channel ID: 2863798
+[2025-04-23T12:33:16.483Z] [INFO] [thingspeak-service] ThingSpeak base URL: https://api.thingspeak.com/channels/2863798
+[2025-04-23T12:33:16.501Z] [INFO] [server] ThingSpeak Channel ID: 2863798
+[2025-04-23T12:33:16.501Z] [INFO] [server] ThingSpeak API Key: Set
+[2025-04-23T12:33:16.502Z] [INFO] [server] CSV data file exists: true

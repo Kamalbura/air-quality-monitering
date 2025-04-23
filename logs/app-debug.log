@@ -68,3 +68,118 @@
 2025-04-23T00:38:26.515Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
 2025-04-23T00:39:11.458Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
 2025-04-23T00:39:19.374Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T00:55:12.492Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T00:55:23.281Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T00:55:25.900Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_2025-04-01_2025-04-18_1
+2025-04-23T00:59:48.337Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T01:00:03.333Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T01:00:08.418Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_2025-04-01_2025-04-22_1
+2025-04-23T01:00:48.148Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T01:01:00.317Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T04:36:27.194Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T04:47:52.926Z [ERROR] [thingspeak] Error fetching realtime updates: getaddrinfo ENOTFOUND api.thingspeak.com
+2025-04-23T07:18:11.627Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T07:18:11.766Z [ERROR] [thingspeak] Error fetching ThingSpeak data: getaddrinfo ENOTFOUND api.thingspeak.com
+2025-04-23T07:19:00.267Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T07:19:12.862Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T07:19:22.584Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_2025-04-01_2025-04-19_1
+2025-04-23T07:20:34.771Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T07:20:53.446Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T07:20:57.932Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_2025-04-01_2025-04-22_1
+2025-04-23T07:21:03.024Z [ERROR] [thingspeak] Error fetching ThingSpeak data: read ECONNRESET
+2025-04-23T07:21:48.790Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_2025-04-01_2025-04-22_1
+2025-04-23T07:22:24.869Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T07:46:05.597Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T07:53:09.271Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T07:55:42.243Z [INFO] [server] CSV data file exists: true
+2025-04-23T07:55:43.944Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1000
+2025-04-23T07:55:49.934Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1
+2025-04-23T07:55:52.806Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T07:56:24.967Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_1_null_null_null
+2025-04-23T07:56:54.960Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_1_null_null_null
+2025-04-23T07:56:58.902Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_1_null_null_null
+2025-04-23T07:57:02.431Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T07:57:02.622Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=500
+2025-04-23T08:01:25.423Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1000
+2025-04-23T08:01:40.246Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1
+2025-04-23T08:01:41.672Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T08:01:46.412Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_1_null_null_null
+2025-04-23T08:01:46.982Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T08:01:48.100Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_1_null_null_null
+2025-04-23T08:01:48.830Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T08:02:04.998Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_500_null_null_null
+2025-04-23T08:03:46.721Z [INFO] [server] CSV data file exists: true
+2025-04-23T08:13:08.349Z [INFO] [server] CSV data file exists: true
+2025-04-23T08:13:13.238Z [INFO] [csv-data-service] Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T08:13:13.649Z [INFO] [csv-data-service] Successfully parsed 82099 rows from the CSV file
+2025-04-23T08:13:13.650Z [INFO] [csv-data-service] CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T08:13:37.228Z [INFO] [thingspeak-service] Fetching 10 results from ThingSpeak
+2025-04-23T08:13:37.240Z [INFO] [api] API Error /thingspeak/status: thingspeakService.getChannelStatus is not a function
+2025-04-23T08:13:37.245Z [INFO] [api] API Error /thingspeak/channel-details: thingspeakService.getDataSourceInfo is not a function
+2025-04-23T08:13:37.250Z [INFO] [thingspeak-service] Fetching 1 results from ThingSpeak
+2025-04-23T08:13:45.700Z [INFO] [api] API Error /thingspeak/channel-details: thingspeakService.getDataSourceInfo is not a function
+2025-04-23T08:13:45.702Z [INFO] [thingspeak-service] Returning cached ThingSpeak data
+2025-04-23T08:13:45.706Z [INFO] [api] API Error /thingspeak/status: thingspeakService.getChannelStatus is not a function
+2025-04-23T08:13:58.529Z [INFO] [server] CSV data file exists: true
+2025-04-23T08:14:00.759Z [INFO] [server] CSV data file exists: true
+2025-04-23T08:14:01.935Z [INFO] [server] CSV data file exists: true
+2025-04-23T08:14:02.831Z [INFO] [server] CSV data file exists: true
+2025-04-23T08:14:04.056Z [INFO] [server] CSV data file exists: true
+2025-04-23T08:14:19.748Z [INFO] [api] API Error /thingspeak/channel-details: thingspeakService.getDataSourceInfo is not a function
+2025-04-23T08:14:19.751Z [INFO] [thingspeak-service] Fetching 1 results from ThingSpeak
+2025-04-23T08:14:19.757Z [INFO] [api] API Error /thingspeak/status: thingspeakService.getChannelStatus is not a function
+2025-04-23T08:18:48.612Z [INFO] [csv-data-service] Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T08:18:48.945Z [INFO] [csv-data-service] Successfully parsed 82099 rows from the CSV file
+2025-04-23T08:18:48.946Z [INFO] [csv-data-service] CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T08:19:09.441Z [INFO] [api] API Error /thingspeak/channel-details: thingspeakService.getDataSourceInfo is not a function
+2025-04-23T08:19:09.445Z [INFO] [thingspeak-service] Returning cached ThingSpeak data
+2025-04-23T08:19:09.447Z [INFO] [api] API Error /thingspeak/status: thingspeakService.getChannelStatus is not a function
+2025-04-23T08:19:09.451Z [INFO] [thingspeak-service] Fetching 10 results from ThingSpeak
+2025-04-23T08:22:17.248Z [INFO] [server] CSV data file exists: true
+2025-04-23T08:22:37.335Z [INFO] [api] API Error /thingspeak/channel-details: thingspeakService.getDataSourceInfo is not a function
+2025-04-23T08:22:37.339Z [INFO] [thingspeak-service] Fetching 1 results from ThingSpeak
+2025-04-23T08:22:37.345Z [INFO] [api] API Error /thingspeak/status: thingspeakService.getChannelStatus is not a function
+2025-04-23T08:23:59.466Z [INFO] [api] API Error /thingspeak/channel-details: thingspeakService.getDataSourceInfo is not a function
+2025-04-23T08:23:59.470Z [INFO] [thingspeak-service] Returning cached ThingSpeak data
+2025-04-23T08:23:59.475Z [INFO] [api] API Error /thingspeak/status: thingspeakService.getChannelStatus is not a function
+2025-04-23T08:24:13.960Z [INFO] [thingspeak-service] Fetching 500 results from ThingSpeak
+2025-04-23T08:24:30.384Z [INFO] [csv-data-service] Reading CSV file from: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\data\feeds.csv
+2025-04-23T08:24:30.953Z [INFO] [csv-data-service] Successfully parsed 82099 rows from the CSV file
+2025-04-23T08:24:30.957Z [INFO] [csv-data-service] CSV file read successfully. First row sample: {"created_at":"2025-03-05T03:37:33+00:00","entry_id":1,"humidity":31.81915,"field1":31.81915,"temperature":33.39748,"field2":33.39748,"pm25":24.5,"field3":24.5,"pm10":69.7,"field4":69.7,"latitude":"","longitude":"","elevation":"","status":""}
+2025-04-23T12:33:24.347Z [INFO] [server] CSV data file exists: true
+2025-04-23T12:33:25.524Z [INFO] [api] API Error /thingspeak/channel-details: thingspeakService.getDataSourceInfo is not a function
+2025-04-23T12:33:25.528Z [INFO] [thingspeak-service] Fetching 1 results from ThingSpeak
+2025-04-23T12:33:25.605Z [INFO] [api] API Error /thingspeak/status: thingspeakService.getChannelStatus is not a function
+2025-04-23T12:33:25.612Z [INFO] [thingspeak-service] Fetching 10 results from ThingSpeak
+2025-04-23T12:33:31.427Z [INFO] [api] API Error /thingspeak/channel-details: thingspeakService.getDataSourceInfo is not a function
+2025-04-23T12:33:31.430Z [INFO] [thingspeak-service] Returning cached ThingSpeak data
+2025-04-23T12:33:31.433Z [INFO] [api] API Error /thingspeak/status: thingspeakService.getChannelStatus is not a function
+2025-04-23T12:33:37.978Z [INFO] [server] CSV data file exists: true
+2025-04-23T12:33:38.537Z [INFO] [api] API Error /thingspeak/channel-details: thingspeakService.getDataSourceInfo is not a function
+2025-04-23T12:33:38.541Z [INFO] [thingspeak-service] Fetching 1 results from ThingSpeak
+2025-04-23T12:33:38.611Z [INFO] [api] API Error /thingspeak/status: thingspeakService.getChannelStatus is not a function
+2025-04-23T12:33:40.301Z [INFO] [api] API Error /thingspeak/channel-details: thingspeakService.getDataSourceInfo is not a function
+2025-04-23T12:33:40.306Z [INFO] [thingspeak-service] Returning cached ThingSpeak data
+2025-04-23T12:33:40.310Z [INFO] [api] API Error /thingspeak/status: thingspeakService.getChannelStatus is not a function
+2025-04-23T12:33:42.778Z [INFO] [thingspeak-service] Fetching 500 results from ThingSpeak
+2025-04-23T12:35:02.711Z [INFO] [server] CSV data file exists: true
+2025-04-23T12:35:04.859Z [INFO] [server] CSV data file exists: true
+2025-04-23T12:35:08.844Z [INFO] [server] CSV data file exists: true
+2025-04-23T12:36:26.284Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:36:41.877Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T12:36:46.529Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:37:20.436Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:37:36.710Z [INFO] [server] CSV data file exists: true
+2025-04-23T12:37:42.698Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1
+2025-04-23T12:37:43.607Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404
+2025-04-23T12:38:14.659Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_1_null_null_null
+2025-04-23T12:38:43.678Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1
+2025-04-23T12:39:13.679Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_1_null_null_null
+2025-04-23T12:39:30.218Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:40:16.834Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:40:34.781Z [INFO] [thingspeak] Retrieved data from cache: channel_data_2863798_100_null_null_1
+2025-04-23T12:41:23.258Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=100
+2025-04-23T12:41:31.342Z [INFO] [server] CSV data file exists: true
+2025-04-23T12:41:33.118Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1000
+2025-04-23T12:41:35.099Z [INFO] [thingspeak] Fetching data from ThingSpeak: results=1
+2025-04-23T12:41:35.929Z [INFO] [thingspeak] Error fetching API usage info: Request failed with status code 404

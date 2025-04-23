@@ -529,3 +529,159 @@ Error: python: can't open file 'C:\\Users\\burak\\Desktop\\projects\\theme-based
     at ChildProcess.emit (node:events:518:28)
     at ChildProcess._handle.onexit (node:internal/child_process:293:12)
 
+[2025-04-23T00:58:52.322Z] [ERR-m9t86yw3-onexv] Express Middleware: app.use is not a function
+TypeError: app.use is not a function
+    at setupSecurityMiddleware (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\middleware\security-middleware.js:12:9)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:280:10)
+    at apiMonitor (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\middleware\api-monitor.js:26:12)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:286:9
+
+[2025-04-23T00:58:54.848Z] [ERR-m9t870u8-roda2] Express Middleware: app.use is not a function
+TypeError: app.use is not a function
+    at setupSecurityMiddleware (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\middleware\security-middleware.js:12:9)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:280:10)
+    at apiMonitor (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\middleware\api-monitor.js:26:12)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:286:9
+
+[2025-04-23T00:58:58.757Z] [ERR-m9t873ut-nu1xs] Express Middleware: app.use is not a function
+TypeError: app.use is not a function
+    at setupSecurityMiddleware (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\middleware\security-middleware.js:12:9)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:280:10)
+    at apiMonitor (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\middleware\api-monitor.js:58:3)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:286:9
+
+[2025-04-23T00:58:58.765Z] [ERR-m9t873v1-mjhnq] Express Middleware: app.use is not a function
+TypeError: app.use is not a function
+    at setupSecurityMiddleware (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\middleware\security-middleware.js:12:9)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:280:10)
+    at apiMonitor (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\middleware\api-monitor.js:26:12)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:286:9
+
+[2025-04-23T00:59:04.088Z] [ERR-m9t877yw-tl3d8] Express Middleware: app.use is not a function
+TypeError: app.use is not a function
+    at setupSecurityMiddleware (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\middleware\security-middleware.js:12:9)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:280:10)
+    at apiMonitor (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\middleware\api-monitor.js:26:12)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:286:9
+
+[2025-04-23T00:59:05.704Z] [ERR-m9t8797s-8m71a] Express Middleware: app.use is not a function
+TypeError: app.use is not a function
+    at setupSecurityMiddleware (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\middleware\security-middleware.js:12:9)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:280:10)
+    at apiMonitor (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\middleware\api-monitor.js:26:12)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:286:9
+
+[2025-04-23T07:55:43.929Z] [ERR-m9tn31yx-ozg27] Data Source Info API: thingspeakService.getServiceStatus is not a function
+TypeError: thingspeakService.getServiceStatus is not a function
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\routes\api.js:237:54
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:175:3)
+    at router (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:47:12)
+
+[2025-04-23T07:57:12.345Z] [ERR-m9tn4y6x-6dloi] Data Source Info API: thingspeakService.getServiceStatus is not a function
+TypeError: thingspeakService.getServiceStatus is not a function
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\routes\api.js:237:54
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:175:3)
+    at router (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:47:12)
+
+[2025-04-23T08:01:27.959Z] [ERR-m9tnaffb-04ljf] Data Source Info API: thingspeakService.getServiceStatus is not a function
+TypeError: thingspeakService.getServiceStatus is not a function
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\routes\api.js:237:54
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:175:3)
+    at router (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:47:12)
+
+[2025-04-23T08:02:15.374Z] [ERR-m9tnbg0e-0bayc] Data Source Info API: thingspeakService.getServiceStatus is not a function
+TypeError: thingspeakService.getServiceStatus is not a function
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\routes\api.js:237:54
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:175:3)
+    at router (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:47:12)
+
+[2025-04-23T12:37:38.475Z] [ERR-m9tx5lbf-tzt57] Data Source Info API: thingspeakService.getServiceStatus is not a function
+TypeError: thingspeakService.getServiceStatus is not a function
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\routes\api.js:237:54
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:175:3)
+    at router (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:47:12)
+
+[2025-04-23T12:41:33.104Z] [ERR-m9txamcw-zo18b] Data Source Info API: thingspeakService.getServiceStatus is not a function
+TypeError: thingspeakService.getServiceStatus is not a function
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\routes\api.js:237:54
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:175:3)
+    at router (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:47:12)
+
