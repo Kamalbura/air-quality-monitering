@@ -1,0 +1,7 @@
+{
+  "theme": "light",
+  "visualizationType": "time_series",
+  "refreshInterval": 30000,
+  "tableRowsPerPage": 10,
+  "showExtendedVisualization": false
+}

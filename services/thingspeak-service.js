@@ -418,5 +418,6 @@ module.exports = {
     clearCache,
     testConnection,
     testChannelAccess,
-    testDataRetrieval
+    testDataRetrieval,
+    getThingspeakConfig
 };
