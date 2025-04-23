@@ -19,8 +19,8 @@
   "visualization": {
     "defaultEngine": "client",
     "chartTheme": "light",
-    "autoRefresh": true,
-    "showExtendedViews": true
+    "autoRefresh": false,
+    "showExtendedViews": false
   },
   "security": {
     "enableRateLimiting": true,

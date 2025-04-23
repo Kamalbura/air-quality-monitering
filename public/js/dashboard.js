@@ -66,7 +66,17 @@ class Dashboard {
       applyTimeFilter: document.getElementById('applyTimeFilter'),
       refreshTable: document.getElementById('refreshTable'),
       validationBadge: document.getElementById('validation-badge'),
-      validationDetails: document.getElementById('validation-details')
+      validationDetails: document.getElementById('validation-details'),
+      aqiStatusBadge: document.getElementById('aqi-status-badge'),
+      aqiProgressBar: document.getElementById('aqi-progress-bar'),
+      lastUpdateTime: document.getElementById('last-update-time'),
+      pm25RangeBar: document.getElementById('pm25-range-bar'),
+      pm10RangeBar: document.getElementById('pm10-range-bar'),
+      timeFilterBtns: document.querySelectorAll('.time-filter-btn'),
+      airQualityStatusCard: document.querySelector('.air-quality-status-card'),
+      exportVizBtn: document.getElementById('exportVizBtn'),
+      printVizBtn: document.getElementById('printVizBtn'),
+      resetZoomBtn: document.getElementById('resetZoomBtn')
     };
     
     // Remove toggle viz mode button and functionality
