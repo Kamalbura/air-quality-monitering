@@ -1,30 +1,30 @@
 {
   "thingspeak": {
-    "channelId": "12397",
+    "channelId": "2863798",
     "readApiKey": "RIXYDDDMXDBX9ALI",
-    "writeApiKey": "",
-    "updateInterval": 30000
-  },
-  "dataSources": {
-    "defaultCsvPath": "C:\\Users\\burak\\Desktop\\projects\\theme-based\\air-quality-monitering\\data\\feeds.csv",
-    "csvUploadDir": "C:\\Users\\burak\\Desktop\\projects\\theme-based\\air-quality-monitering\\data\\uploads",
-    "dataExportDir": "C:\\Users\\burak\\Desktop\\projects\\theme-based\\air-quality-monitering\\data\\exports"
+    "updateInterval": 30000,
+    "fields": {
+      "humidity": "field1",
+      "temperature": "field2",
+      "pm25": "field3",
+      "pm10": "field4"
+    }
   },
   "system": {
-    "port": "3000",
+    "port": 3000,
     "logLevel": "info",
     "cacheTTL": 300,
     "debugMode": false
   },
+  "dataSources": {
+    "defaultCsvPath": "./data/air_quality_data.csv",
+    "csvUploadDir": "./data/uploads",
+    "dataExportDir": "./data/exports"
+  },
   "visualization": {
     "defaultEngine": "client",
     "chartTheme": "light",
-    "autoRefresh": false,
+    "autoRefresh": true,
     "showExtendedViews": false
-  },
-  "security": {
-    "enableRateLimiting": true,
-    "maxRequestsPerMinute": 100,
-    "enableIPBlocking": false
   }
 }

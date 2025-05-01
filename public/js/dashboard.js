@@ -400,69 +400,58 @@ class Dashboard {
     this.updateStatus('loading', 'Loading data from ThingSpeak...');
     
     try {
+      // Use ThingSpeakHelper if available
+      let response;
+      if (window.ThingSpeakHelper) {
+        response = await window.ThingSpeakHelper.fetchTimePeriod(days, results, includeAnalysis);
+      } else {
+        // Fallback to direct API call
         const url = `/api/thingspeak/direct?days=${days}&results=${results}&analysis=${includeAnalysis}`;
+        const fetchResponse = await fetch(url);
         
-        // Use ErrorHandler if available
-        let response;
-        if (window.ErrorHandler) {
-            const fetchFn = (options) => fetch(url, options);
-            response = await window.ErrorHandler.handleFetchErrors(fetchFn);
-        } else {
-            const fetchResponse = await fetch(url);
-            if (!fetchResponse.ok) {
-                throw new Error(`API returned ${fetchResponse.status}`);
-            }
-            response = await fetchResponse.json();
+        if (!fetchResponse.ok) {
+          throw new Error(`API returned ${fetchResponse.status}: ${fetchResponse.statusText}`);
         }
         
-        if (!response.success || !response.data) {
-            throw new Error(response.error || 'Invalid response from server');
-        }
-        
-        // Update data
-        this.data = response.data.data || [];
-        
-        if (this.data.length === 0) {
-            this.showNoDataMessage();
-            this.updateStatus('warning', 'No ThingSpeak data available');
-            return;
-        }
-        
-        this.pagination.totalItems = this.data.length;
-        this.lastEntryId = this.data[0]?.entry_id || 0;
-        this.lastUpdated = new Date();
-        
-        // Update VizLoader data if available
-        if (window.VizLoader) {
-            window.VizLoader.setFullDataset(this.data);
-        }
-        
-        // Update UI
-        this.updateStatus('connected', `ThingSpeak data loaded (${this.data.length} points)`);
-        this.updateDataTable();
-        this.updateStatistics();
-        this.loadVisualization(this.currentVizType);
-        
-        // Show success message
-        this.showToast('ThingSpeak Data', `Successfully loaded ${this.data.length} data points from ThingSpeak`, 'success');
-        
-        // Show analysis if available
-        if (response.data.analysis) {
-            this.showAnalysisResults(response.data.analysis);
-        }
+        response = await fetchResponse.json();
+      }
+      
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Invalid response from server');
+      }
+      
+      // Update data
+      this.data = response.data.data || [];
+      
+      if (this.data.length === 0) {
+        this.showNoDataMessage();
+        this.updateStatus('warning', 'No ThingSpeak data available');
+        return;
+      }
+      
+      this.pagination.totalItems = this.data.length;
+      this.lastEntryId = this.data[0]?.entry_id || 0;
+      this.lastUpdated = new Date();
+      
+      // Update UI
+      this.updateStatus('connected', `ThingSpeak data loaded (${this.data.length} points)`);
+      this.updateDataTable();
+      this.updateStatistics();
+      this.loadVisualization(this.currentVizType);
+      
+      // Show success message
+      this.showToast('ThingSpeak Data', `Successfully loaded ${this.data.length} data points from ThingSpeak channel ${response.data.channel?.id || '2863798'}`, 'success');
+      
+      // Show analysis if available
+      if (response.data.analysis) {
+        this.showAnalysisResults(response.data.analysis);
+      }
     } catch (error) {
-        console.error('Error loading ThingSpeak data:', error);
-        this.updateStatus('error', 'Error loading ThingSpeak data');
-        
-        // Show error message
-        if (window.ErrorHandler) {
-            window.ErrorHandler.showErrorToast('ThingSpeak Error', 'api', {
-                details: error.message,
-                autoHide: false
-            });
-        } else {
-            this.showToast('Error', `Failed to load ThingSpeak data: ${error.message}`, 'danger');
-        }
+      console.error('Error loading ThingSpeak data:', error);
+      this.updateStatus('error', 'Error loading ThingSpeak data');
+      
+      // Show error message
+      this.showToast('ThingSpeak Error', `Failed to load data: ${error.message}`, 'danger');
     }
   }
 

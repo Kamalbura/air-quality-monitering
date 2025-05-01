@@ -1,0 +1,279 @@
+/* Styling for ThingSpeak Info page */
+
+/* Visualization containers */
+.viz-container {
+    position: relative;
+    min-height: 300px;
+}
+
+.viz-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+/* Field items */
+.field-item {
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    background-color: rgba(0, 0, 0, 0.02);
+    border-left: 4px solid #ccc;
+    transition: all 0.3s ease;
+}
+
+.field-item:hover {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.field-item.field1 {
+    border-left-color: #28a745;
+}
+
+.field-item.field2 {
+    border-left-color: #0d6efd;
+}
+
+.field-item.field3 {
+    border-left-color: #dc3545;
+}
+
+.field-item.field4 {
+    border-left-color: #fd7e14;
+}
+
+/* Dark mode adjustments */
+body.dark-mode .field-item {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .viz-container canvas {
+    filter: brightness(0.9);
+}
+
+/* Connection status indicator */
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    display: inline-block;
+}
+
+.status-indicator.disconnected {
+    background-color: #dc3545;
+    box-shadow: 0 0 5px #dc3545;
+}
+
+.status-indicator.connected {
+    background-color: #28a745;
+    box-shadow: 0 0 5px #28a745;
+    animation: pulse-green 1.5s infinite;
+}
+
+.status-indicator.loading {
+    background-color: #0dcaf0;
+    animation: pulse 0.8s infinite;
+}
+
+.status-indicator.warning {
+    background-color: #fd7e14;
+    box-shadow: 0 0 5px #fd7e14;
+}
+
+.status-indicator.error {
+    background-color: #dc3545;
+    box-shadow: 0 0 5px #dc3545;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.95);
+        opacity: 0.6;
+    }
+}
+
+@keyframes pulse-green {
+    0% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(40, 167, 69, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+    }
+}
+
+/* Latest reading cards */
+.card-body .text-center h3 {
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.text-success h3 {
+    color: #28a745;
+}
+
+.text-warning h3 {
+    color: #fd7e14;
+}
+
+.text-danger h3 {
+    color: #dc3545;
+}
+
+/* CSV update section */
+#csvUpdateStatus {
+    font-weight: 500;
+}
+
+#csvUpdateBtn {
+    transition: all 0.3s ease;
+}
+
+#csvUpdateBtn:hover {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Channel details section */
+.channel-details-container .card {
+    height: 100%;
+}
+
+.channel-details-container .d-flex {
+    margin-bottom: 0.5rem;
+}
+
+.channel-details-container .d-flex:last-child {
+    margin-bottom: 0;
+}
+
+/* API usage container */
+.api-usage-container .progress {
+    height: 10px;
+}
+
+.api-usage-container .progress-bar {
+    transition: width 0.6s ease;
+}
+
+/* Dark mode chart adjustments */
+body.dark-mode .chart-container {
+    background-color: #1e1e1e;
+}
+
+/* Radar chart specific styles */
+#liveRadarChart {
+    max-height: 300px;
+    margin: 0 auto;
+}
+
+/* AQI gauge chart specific styles */
+#liveAQIGauge {
+    max-height: 300px;
+    margin: 0 auto;
+}
+
+/* Toast container */
+#toast-container {
+    z-index: 1050;
+}
+
+/* Links to ThingSpeak */
+.card a[target="_blank"] {
+    display: inline-flex;
+    align-items: center;
+}
+
+.card a[target="_blank"] i {
+    margin-right: 4px;
+}
+
+/* Button group for actions */
+.btn-group {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 0.25rem;
+}
+
+/* Status badge */
+#channel-status-badge {
+    font-weight: normal;
+    padding: 0.4em 0.6em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .viz-container {
+        min-height: 250px;
+    }
+    
+    .field-item {
+        padding: 10px;
+    }
+    
+    .card-header {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .card-body {
+        padding: 0.75rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 575.98px) {
+    .channel-details-container h4 {
+        font-size: 1.3rem;
+    }
+    
+    .btn-sm {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.785rem;
+    }
+    
+    .channel-details-container .mt-3 .btn {
+        margin-bottom: 0.5rem;
+        display: block;
+        width: 100%;
+    }
+    
+    .channel-details-container .mt-3 .btn + .btn {
+        margin-left: 0;
+    }
+    
+    .status-indicator {
+        width: 10px;
+        height: 10px;
+    }
+}
+
+/* Print styles */
+@media print {
+    .sidebar, .navbar, .btn, #refreshChannelData, .toast-container {
+        display: none !important;
+    }
+    
+    .viz-container {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    
+    main {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+        margin-left: 0 !important;
+    }
+}

@@ -4,11 +4,11 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
-// Remove PythonShell import
 const NodeCache = require('node-cache');
 const thingspeakService = require('./services/thingspeak-service');
 const { apiMonitor } = require('./middleware/api-monitor');
 const apiRoutes = require('./routes/api');
+const thingspeakRoutes = require('./routes/api/thingspeak');
 const ErrorHandler = require('./error-handler');
 const debugHelper = require('./helpers/debug-helper');
 
@@ -38,7 +38,9 @@ app.set('views', path.join(__dirname, 'views'));
 const requiredDirs = [
   path.join(__dirname, 'data'),
   path.join(__dirname, 'public', 'images'),
-  path.join(__dirname, 'logs')
+  path.join(__dirname, 'logs'),
+  path.join(__dirname, 'config'),
+  path.join(__dirname, 'dump') // Add the dump directory to required directories
 ];
 
 requiredDirs.forEach(dir => {
@@ -55,6 +57,7 @@ requiredDirs.forEach(dir => {
 
 // Routes
 app.use('/api', apiRoutes);
+app.use('/api/thingspeak', thingspeakRoutes); // Register dedicated ThingSpeak routes
 
 // Add route to serve CSV files directly
 app.use('/data', express.static(path.join(__dirname, 'data')));
@@ -70,7 +73,7 @@ app.get('/status', (req, res) => {
   res.render('status');
 });
 
-// New route for ThingSpeak info page
+// ThingSpeak info page
 app.get('/thingspeak-info', (req, res) => {
   res.render('thingspeak-info');
 });
@@ -115,6 +118,11 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`View dashboard at http://localhost:${PORT}/`);
+  
+  // Log ThingSpeak configuration
+  console.log('ThingSpeak Configuration:');
+  console.log(`- Channel ID: ${thingspeakService.config.channelId}`);
+  console.log(`- Read API Key: ${thingspeakService.config.readApiKey ? '***' + thingspeakService.config.readApiKey.slice(-4) : 'Not configured'}`);
 });
 
 // Handle graceful shutdown

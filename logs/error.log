@@ -737,3 +737,7 @@ TypeError: app.use is not a function
     at trim_prefix (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:328:13)
     at C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\node_modules\express\lib\router\index.js:286:9
 
+[2025-04-29T18:09:11.322Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:09:11.330Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:09:57.538Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:09:57.542Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''

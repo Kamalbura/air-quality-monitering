@@ -603,3 +603,27 @@
 [2025-04-23T12:33:16.501Z] [INFO] [server] ThingSpeak Channel ID: 2863798
 [2025-04-23T12:33:16.501Z] [INFO] [server] ThingSpeak API Key: Set
 [2025-04-23T12:33:16.502Z] [INFO] [server] CSV data file exists: true
+[2025-04-29T18:09:11.298Z] [INFO] [thingspeak-service] Loaded ThingSpeak configuration from app-config.json
+[2025-04-29T18:09:11.301Z] [INFO] [thingspeak-service] ThingSpeak configured: Channel ID 2863798, Read API Key ***9ALI
+[2025-04-29T18:09:11.312Z] [INFO] [config-service] Configuration path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\config\app-config.json
+[2025-04-29T18:09:11.313Z] [INFO] [config-service] Config directory exists and is writable: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\config
+[2025-04-29T18:09:11.314Z] [INFO] [config-service] Attempting to load configuration from file
+[2025-04-29T18:09:11.315Z] [INFO] [config-service] Config file found at: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\config\app-config.json
+[2025-04-29T18:09:11.319Z] [INFO] [config-service] Configuration loaded successfully
+[2025-04-29T18:09:11.321Z] [INFO] [config-service] Creating directory: 
+[2025-04-29T18:09:11.322Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:09:11.326Z] [INFO] [config-service] Creating directory: 
+[2025-04-29T18:09:11.330Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:09:11.992Z] [INFO] [general] ThingSpeak connection successful
+[2025-04-29T18:09:57.516Z] [INFO] [thingspeak-service] Loaded ThingSpeak configuration from app-config.json
+[2025-04-29T18:09:57.519Z] [INFO] [thingspeak-service] ThingSpeak configured: Channel ID 2863798, Read API Key ***9ALI
+[2025-04-29T18:09:57.529Z] [INFO] [config-service] Configuration path: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\config\app-config.json
+[2025-04-29T18:09:57.531Z] [INFO] [config-service] Config directory exists and is writable: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\config
+[2025-04-29T18:09:57.532Z] [INFO] [config-service] Attempting to load configuration from file
+[2025-04-29T18:09:57.534Z] [INFO] [config-service] Config file found at: C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\config\app-config.json
+[2025-04-29T18:09:57.535Z] [INFO] [config-service] Configuration loaded successfully
+[2025-04-29T18:09:57.537Z] [INFO] [config-service] Creating directory: 
+[2025-04-29T18:09:57.538Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:09:57.542Z] [INFO] [config-service] Creating directory: 
+[2025-04-29T18:09:57.542Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:09:58.204Z] [INFO] [general] ThingSpeak connection successful

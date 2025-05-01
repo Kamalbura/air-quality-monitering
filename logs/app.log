@@ -1,0 +1,34 @@
+[2025-04-29T17:26:10.415Z] [ERROR] [app] Failed to get realtime updates: timeout of 5000ms exceeded
+[2025-04-29T17:47:46.509Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T17:47:46.512Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T17:47:48.301Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T17:47:48.305Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T17:50:00.358Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T17:50:00.361Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T17:54:45.724Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T17:54:45.728Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:00:30.032Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:00:30.035Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:02:44.392Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:02:44.396Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:03:19.828Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:03:19.830Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:03:23.296Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:03:23.298Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:03:24.112Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:03:24.114Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:03:24.928Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:03:24.930Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:03:26.355Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:03:26.359Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:08:36.437Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-29T18:08:36.439Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-04-30T15:33:24.098Z] [ERROR] [app] Failed to get realtime updates: timeout of 5000ms exceeded
+[2025-05-01T07:01:20.032Z] [ERROR] [app] Failed to get realtime updates: timeout of 5000ms exceeded
+[2025-05-01T07:02:17.755Z] [ERROR] [app] Failed to get realtime updates: timeout of 5000ms exceeded
+[2025-05-01T07:03:17.751Z] [ERROR] [app] Failed to get realtime updates: timeout of 5000ms exceeded
+[2025-05-01T07:04:17.762Z] [ERROR] [app] Failed to get realtime updates: timeout of 5000ms exceeded
+[2025-05-01T07:05:17.744Z] [ERROR] [app] Failed to get realtime updates: timeout of 5000ms exceeded
+[2025-05-01T07:18:31.946Z] [ERROR] [app] Failed to get realtime updates: getaddrinfo ENOTFOUND api.thingspeak.com
+[2025-05-01T07:25:30.253Z] [ERROR] [app] Failed to get realtime updates: 
+[2025-05-01T09:35:57.885Z] [ERROR] [app] Failed to get realtime updates: getaddrinfo ENOTFOUND api.thingspeak.com

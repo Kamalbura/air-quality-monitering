@@ -23,7 +23,7 @@ class ConfigService {
       thingspeak: {
         channelId: process.env.THINGSPEAK_CHANNEL_ID || '2863798',
         readApiKey: process.env.THINGSPEAK_READ_API_KEY || 'RIXYDDDMXDBX9ALI',
-        writeApiKey: process.env.THINGSPEAK_WRITE_API_KEY || '',
+        writeApiKey: process.env.THINGSPEAK_WRITE_API_KEY || 'PV514C353A367A3J',
         updateInterval: 30000 // 30 seconds
       },
       dataSources: {

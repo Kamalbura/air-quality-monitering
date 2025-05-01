@@ -7,22 +7,34 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/thingspeak-info.css">
+    <script src="/js/theme.js"></script>
 </head>
 <body>
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
         <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/">
             <i class="bi bi-cloud-haze2"></i> Air Quality Monitor
         </a>
+        <div class="d-flex align-items-center text-white me-2">
+            <span class="status-indicator disconnected" id="status-indicator"></span>
+            <small id="status-text">Checking status...</small>
+        </div>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" 
                 data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
+        <div class="d-flex">
+            <button id="toggleTheme" class="btn btn-link text-white" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Toggle dark mode">
+                <i class="bi bi-moon-fill"></i>
+            </button>
+        </div>
     </header>
     
     <div class="container-fluid">
         <div class="row">
             <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
                 <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading px-3">Navigation</h6>
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a class="nav-link" href="/">
@@ -34,6 +46,16 @@
                                 <i class="bi bi-activity me-1"></i> System Status
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/thingspeak-info">
+                                <i class="bi bi-cloud me-1"></i> ThingSpeak Info
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/config">
+                                <i class="bi bi-gear me-1"></i> Configuration
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -41,70 +63,247 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2"><i class="bi bi-activity"></i> System Status</h1>
-                </div>
-                
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">ThingSpeak Channel Status</div>
-                            <div class="card-body">
-                                <div id="channel-status-info">Loading...</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">System Health</div>
-                            <div class="card-body">
-                                <div id="system-health">Loading...</div>
-                            </div>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="location.reload()">
+                                <i class="bi bi-arrow-clockwise"></i> Refresh
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="exportStatusBtn">
+                                <i class="bi bi-download"></i> Export Report
+                            </button>
                         </div>
                     </div>
                 </div>
                 
+                <!-- System Health Overview Card -->
                 <div class="row mb-4">
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-header">Cache Management</div>
-                            <div class="card-body">
-                                <button id="clearCacheBtn" class="btn btn-warning">
-                                    <i class="bi bi-trash"></i> Clear API Cache
+                    <div class="col-12">
+                        <div class="card air-quality-status-card">
+                            <div class="card-body p-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="badge bg-success" id="health-status-badge">System OK</span>
+                                        <h4 class="d-inline ms-2 mb-0">System Health Overview</h4>
+                                    </div>
+                                    <div>
+                                        <span class="small text-muted">Last checked: <span id="last-check-time">--</span></span>
+                                    </div>
+                                </div>
+                                <div class="progress mt-2" style="height: 10px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%" id="health-progress-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <!-- ThingSpeak Channel Status Card -->
+                    <div class="col-md-6">
+                        <div class="card viz-card mb-4 mb-md-0">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-cloud"></i> ThingSpeak Channel
+                                </div>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="checkChannelStatus()">
+                                    <i class="bi bi-arrow-repeat"></i>
                                 </button>
-                                <div id="cache-status" class="mt-3"></div>
+                            </div>
+                            <div class="card-body">
+                                <div id="channel-status-info" class="viz-container">
+                                    <div class="viz-loading">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">Checking channel status...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- System Health Card -->
+                    <div class="col-md-6">
+                        <div class="card viz-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-pc-display"></i> System Health
+                                </div>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="checkSystemHealth()">
+                                    <i class="bi bi-arrow-repeat"></i>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div id="system-health" class="viz-container">
+                                    <div class="viz-loading">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">Checking system health...</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
+                <!-- Cache Management and Resource Utilization -->
                 <div class="row mb-4">
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-header">API Endpoints</div>
+                    <div class="col-md-6">
+                        <div class="card viz-card mb-4 mb-md-0">
+                            <div class="card-header">
+                                <i class="bi bi-hdd-stack"></i> Cache Management
+                            </div>
                             <div class="card-body">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Endpoint</th>
-                                            <th>Description</th>
-                                            <th>Status</th>
-                                            <th>Test</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="api-endpoints-table">
-                                        <tr>
-                                            <td colspan="4" class="text-center">Loading endpoints...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>
+                                        <h5 class="mb-1">API Cache</h5>
+                                        <p class="text-muted mb-0">Temporary storage for API responses</p>
+                                    </div>
+                                    <button id="clearCacheBtn" class="btn btn-warning">
+                                        <i class="bi bi-trash"></i> Clear Cache
+                                    </button>
+                                </div>
+                                <div id="cache-status" class="mt-3"></div>
+                                
+                                <div class="mt-4">
+                                    <h6>Cache Statistics</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Hit Rate</td>
+                                                    <td><span id="cache-hit-rate">--</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Items</td>
+                                                    <td><span id="cache-items">--</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Last Cleared</td>
+                                                    <td><span id="cache-last-cleared">--</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card viz-card">
+                            <div class="card-header">
+                                <i class="bi bi-cpu"></i> Resource Utilization
+                            </div>
+                            <div class="card-body">
+                                <!-- Memory Usage -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Memory Usage</span>
+                                        <span id="memory-usage-text">--</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar" id="memory-usage-bar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- CPU Usage -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>CPU Usage</span>
+                                        <span id="cpu-usage-text">--</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-info" id="cpu-usage-bar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Disk Usage -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Disk Usage</span>
+                                        <span id="disk-usage-text">--</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-success" id="disk-usage-bar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <h6>System Information</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <tbody>
+                                                <tr>
+                                                    <td><i class="bi bi-clock-history me-1"></i>Uptime</td>
+                                                    <td id="system-uptime">--</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><i class="bi bi-hdd me-1"></i>Storage</td>
+                                                    <td id="system-storage">--</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><i class="bi bi-lightning-charge me-1"></i>Node.js Version</td>
+                                                    <td id="nodejs-version">--</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                
+                <!-- API Endpoints Card -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card viz-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-link"></i> API Endpoints
+                                </div>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="loadApiEndpoints()">
+                                    <i class="bi bi-arrow-repeat"></i> Test All
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Endpoint</th>
+                                                <th>Description</th>
+                                                <th>Status</th>
+                                                <th>Response Time</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="api-endpoints-table">
+                                            <tr>
+                                                <td colspan="5" class="text-center">
+                                                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                                    Loading endpoints...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Toast container for notifications -->
+                <div id="toast-container" class="position-fixed bottom-0 end-0 p-3"></div>
             </main>
         </div>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/error-handler.js"></script>
+    <script src="/js/connection-checker.js"></script>
     <script src="/js/status.js"></script>
 </body>
 </html>
