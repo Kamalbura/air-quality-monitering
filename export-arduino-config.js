@@ -1,30 +1,36 @@
-// Usage: node export-arduino-config.js
-const fs = require('fs');
+/**
+ * Export Arduino Configuration Script
+ * Generates a configuration header file for Arduino/ESP8266 firmware
+ * from the centralized configuration managed by ConfigService
+ * 
+ * Usage: node export-arduino-config.js [output-path]
+ */
 const path = require('path');
+const configService = require('./services/config-service');
 
-const configPath = path.join(__dirname, 'config', 'app-config.json');
-const outputPath = path.join(__dirname, 'sketch_mar5a', 'sketch_mar5a', 'thingspeak_config.h');
+// Get output path from command line or use default
+const outputPath = process.argv[2] || 
+  path.join(__dirname, 'sketch_mar5a', 'sketch_mar5a', 'thingspeak_config.h');
 
-if (!fs.existsSync(configPath)) {
-  console.error('Config file not found:', configPath);
+// Get ThingSpeak config from the service
+const thingspeakConfig = configService.getConfigSection('thingspeak');
+
+if (!thingspeakConfig) {
+  console.error('Could not retrieve ThingSpeak configuration from ConfigService');
   process.exit(1);
 }
 
-const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-const ts = config.thingspeak || {};
+console.log('Exporting ThingSpeak configuration to Arduino header file...');
+console.log(`Channel ID: ${thingspeakConfig.channelId}`);
+console.log(`Update Interval: ${thingspeakConfig.updateInterval}ms`);
 
-if (!ts.channelId || !ts.writeApiKey || !ts.readApiKey) {
-  console.error('Missing ThingSpeak configuration in app-config.json');
+// Generate and save the Arduino configuration file
+const success = configService.saveArduinoConfig(outputPath);
+
+if (success) {
+  console.log(`Successfully generated Arduino config at: ${outputPath}`);
+  console.log('You can now upload this configuration to your ESP8266/Arduino device');
+} else {
+  console.error('Failed to generate Arduino configuration');
   process.exit(1);
 }
-
-const header = `// Auto-generated from config/app-config.json
-#pragma once
-
-#define THINGSPEAK_CHANNEL_ID ${parseInt(ts.channelId, 10)}
-#define THINGSPEAK_WRITE_API_KEY "${ts.writeApiKey}"
-#define THINGSPEAK_READ_API_KEY "${ts.readApiKey}"
-`;
-
-fs.writeFileSync(outputPath, header, 'utf-8');
-console.log('Generated thingspeak_config.h from app-config.json');

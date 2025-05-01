@@ -114,7 +114,7 @@ class ThingSpeakInfoPage {
             this.setupEventListeners();
             
             // Load ThingSpeak configuration
-            const thingspeakConfig = await this.getThingSpeakConfig();
+            const thingspeakConfig = await thingspeakService.getChannelFields();
             
             // Update the app config with API settings
             this.config.channelId = thingspeakConfig.channelId;

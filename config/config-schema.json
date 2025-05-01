@@ -1,0 +1,146 @@
+{
+  "version": "2.0.0",
+  "properties": {
+    "thingspeak": {
+      "required": [
+        "channelId",
+        "readApiKey",
+        "fields"
+      ],
+      "properties": {
+        "channelId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "readApiKey": {
+          "type": "string",
+          "minLength": 1
+        },
+        "writeApiKey": {
+          "type": "string"
+        },
+        "updateInterval": {
+          "type": "number",
+          "minimum": 5000,
+          "maximum": 3600000
+        },
+        "fields": {
+          "required": [
+            "humidity",
+            "temperature",
+            "pm25",
+            "pm10"
+          ],
+          "properties": {
+            "humidity": {
+              "type": "string"
+            },
+            "temperature": {
+              "type": "string"
+            },
+            "pm25": {
+              "type": "string"
+            },
+            "pm10": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "dataSources": {
+      "required": [
+        "defaultCsvPath",
+        "csvUploadDir",
+        "dataExportDir"
+      ],
+      "properties": {
+        "defaultCsvPath": {
+          "type": "string"
+        },
+        "csvUploadDir": {
+          "type": "string"
+        },
+        "dataExportDir": {
+          "type": "string"
+        },
+        "syncWithCloud": {
+          "type": "boolean"
+        }
+      }
+    },
+    "system": {
+      "required": [
+        "port",
+        "logLevel",
+        "cacheTTL"
+      ],
+      "properties": {
+        "port": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "logLevel": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warn",
+            "info",
+            "debug",
+            "trace"
+          ]
+        },
+        "cacheTTL": {
+          "type": "number",
+          "minimum": 10,
+          "maximum": 86400
+        },
+        "debugMode": {
+          "type": "boolean"
+        }
+      }
+    },
+    "visualization": {
+      "properties": {
+        "defaultEngine": {
+          "type": "string",
+          "enum": [
+            "client",
+            "server",
+            "auto"
+          ]
+        },
+        "chartTheme": {
+          "type": "string",
+          "enum": [
+            "light",
+            "dark",
+            "auto"
+          ]
+        },
+        "autoRefresh": {
+          "type": "boolean"
+        },
+        "showExtendedViews": {
+          "type": "boolean"
+        }
+      }
+    },
+    "security": {
+      "properties": {
+        "enableRateLimiting": {
+          "type": "boolean"
+        },
+        "maxRequestsPerMinute": {
+          "type": "number",
+          "minimum": 10,
+          "maximum": 1000
+        },
+        "enableIPBlocking": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
