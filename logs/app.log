@@ -180,3 +180,141 @@
 [2025-05-01T18:13:03.479Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
 [2025-05-01T18:13:08.482Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
 [2025-05-01T18:13:13.484Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:16:29.912Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-01T18:16:30.136Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-01T18:17:59.528Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-01T18:17:59.529Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:18:04.538Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:18:09.541Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:18:14.555Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:20:21.249Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-01T18:20:21.250Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:20:25.606Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-01T18:20:25.607Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:20:30.609Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:20:35.613Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:20:40.620Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:21:52.558Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-01T18:21:52.596Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-01T18:22:55.092Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-01T18:22:55.108Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-01T18:24:25.138Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-01T18:25:26.575Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-01T18:25:26.576Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:25:31.592Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:25:36.607Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:25:41.609Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:26:50.086Z] [ERROR] [config-service] Imported configuration validation failed: Missing required sections: thingspeak, system, dataSources
+[2025-05-01T18:26:51.827Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-01T18:26:51.827Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:26:56.830Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:27:01.835Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:27:06.846Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:31:52.817Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-01T18:31:52.818Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:31:57.820Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:32:02.826Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-01T18:32:07.836Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T02:02:38.848Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T02:02:38.852Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T02:02:43.857Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T02:02:48.861Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T02:02:53.862Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T02:04:00.627Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T04:15:30.162Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T04:15:30.163Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:15:35.168Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:15:40.171Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:15:45.187Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:20:31.807Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T04:20:31.808Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:20:36.818Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:20:41.831Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:20:46.840Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:25:32.630Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T04:25:32.631Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:25:37.642Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:25:42.643Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:25:47.650Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:30:33.857Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T04:30:33.858Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:30:38.872Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:30:43.876Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:30:48.892Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:35:38.548Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T04:35:38.548Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:35:43.550Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:35:48.564Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:35:53.576Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:40:36.180Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T04:40:36.180Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:40:41.191Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:40:46.201Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:40:51.216Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:45:37.664Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T04:45:37.665Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:45:42.680Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:45:47.690Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:45:52.706Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:50:37.601Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T04:50:37.601Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:50:42.605Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:50:47.610Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:50:52.615Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:55:40.875Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T04:55:40.876Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:55:45.890Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:55:50.904Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T04:55:55.908Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:00:39.173Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T05:00:39.174Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:00:44.185Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:00:49.201Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:00:54.208Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:05:41.286Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T05:05:41.287Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:05:46.295Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:05:51.311Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:05:56.327Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:10:41.846Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T05:10:41.847Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:10:46.854Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:10:51.864Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:10:56.877Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:15:42.919Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T05:15:42.919Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:15:47.929Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:15:52.930Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:15:57.946Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:20:43.582Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T05:20:43.583Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:20:48.586Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:20:53.601Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:20:58.607Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:25:43.871Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T05:25:43.872Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:25:48.873Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:25:53.888Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:25:58.895Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:29:18.036Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T05:30:44.890Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T05:30:44.891Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:30:49.899Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:30:54.902Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:30:59.906Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:35:45.943Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T05:35:45.945Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:35:50.955Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:35:55.961Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:36:00.977Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:40:47.302Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T05:40:47.304Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:40:52.317Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:40:57.324Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:41:02.334Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:51:04.545Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
+[2025-05-02T05:51:04.547Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:51:09.552Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:51:14.563Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:51:19.572Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+[2025-05-02T05:53:51.466Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found

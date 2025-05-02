@@ -109,27 +109,20 @@ class ThingSpeakInfoPage {
         try {
             // Apply theme settings
             this.loadThemePreference();
-            
             // Set up event listeners
             this.setupEventListeners();
-            
-            // Load ThingSpeak configuration
-            const thingspeakConfig = await thingspeakService.getChannelFields();
-            
-            // Update the app config with API settings
+
+            // Always load ThingSpeak configuration from server first
+            const thingspeakConfig = await this.getThingSpeakConfig();
             this.config.channelId = thingspeakConfig.channelId;
             this.config.readApiKey = thingspeakConfig.readApiKey;
-            
             if (thingspeakConfig.updateInterval) {
                 this.config.updateInterval = thingspeakConfig.updateInterval;
             }
-            
             // Initial data load
             await this.refreshAllData();
-            
             // Start live updates
             this.startLiveUpdates();
-            
             // Setup extra UI elements
             this.setupExtraUI();
         } catch (error) {
@@ -191,11 +184,9 @@ class ThingSpeakInfoPage {
         if (this.elements.refreshButton) {
             this.elements.refreshButton.disabled = true;
         }
-        
         try {
             this.updateStatus('loading', 'Fetching data...');
             console.log('Starting data refresh...');
-            
             // Fetch all data in parallel
             const channelDetailsPromise = this.fetchWithRetry(`${this.config.apiBase}/thingspeak/channel-details`)
                 .then(r => r.json());
@@ -203,23 +194,26 @@ class ThingSpeakInfoPage {
                 .then(r => r.json());
             const statusPromise = this.fetchWithRetry(`${this.config.apiBase}/thingspeak/status`)
                 .then(r => r.json());
-            
             // Track success and failure
             let successCount = 0;
             let failureCount = 0;
             const errors = [];
-            
             // Process channel details
             try {
                 const channelDetailsResult = await channelDetailsPromise;
-                this.state.channelDetails = channelDetailsResult.data;
-                successCount++;
+                if (channelDetailsResult && channelDetailsResult.success && channelDetailsResult.data) {
+                    this.state.channelDetails = channelDetailsResult.data;
+                    successCount++;
+                } else {
+                    const errorMessage = channelDetailsResult?.error || 'Channel details not available';
+                    throw new Error(errorMessage);
+                }
             } catch (error) {
                 console.error('Error fetching channel details:', error);
                 errors.push({ type: 'channel', message: error.message });
                 failureCount++;
+                this.state.channelDetails = null;
             }
-            
             // Process latest feed
             try {
                 const latestFeedResult = await latestFeedPromise;
@@ -230,7 +224,6 @@ class ThingSpeakInfoPage {
                 errors.push({ type: 'feed', message: error.message });
                 failureCount++;
             }
-            
             // Process channel status
             try {
                 const statusResult = await statusPromise;
@@ -242,20 +235,16 @@ class ThingSpeakInfoPage {
                 errors.push({ type: 'status', message: error.message });
                 failureCount++;
             }
-            
             this.state.lastUpdated = new Date();
-            
             // Update UI with whatever data we have
             this.updateChannelDetails();
             this.updateLatestData();
             this.updateFieldMapping();
             this.updateApiUsage();
-            
             // Update visualizations if we have the necessary data
             if (this.state.latestData) {
                 this.updateVisualizations();
             }
-            
             // Update UI status based on partial or complete success
             if (failureCount === 0) {
                 this.updateStatus('connected', `Data updated: ${this.formatTime(new Date())}`);
@@ -264,8 +253,6 @@ class ThingSpeakInfoPage {
                 this.showToast('Partial Data Update', `Some data could not be retrieved. Check the console for details.`, 'warning');
             } else {
                 this.updateStatus('error', 'Failed to update data');
-                
-                // Show error with the first error message
                 if (errors.length > 0) {
                     const primaryError = errors[0];
                     this.showError(`${primaryError.type.charAt(0).toUpperCase() + primaryError.type.slice(1)} Error`, primaryError.message);

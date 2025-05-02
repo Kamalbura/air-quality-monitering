@@ -156,6 +156,7 @@ body.dark-mode .sidebar {
   border-radius: 50%;
   margin-right: 8px;
   display: inline-block;
+  transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .status-indicator.disconnected {
@@ -166,12 +167,12 @@ body.dark-mode .sidebar {
 .status-indicator.connected {
   background-color: #28a745;
   box-shadow: 0 0 5px #28a745;
-  animation: pulse-green 1.5s infinite;
+  animation: pulse-green 2s infinite;
 }
 
 .status-indicator.active {
   background-color: #17a2b8;
-  animation: pulse 0.8s infinite;
+  animation: pulse 1.2s infinite;
 }
 
 .status-indicator.warning {
@@ -182,7 +183,7 @@ body.dark-mode .sidebar {
 .status-indicator.error {
   background-color: #dc3545;
   box-shadow: 0 0 5px #dc3545;
-  animation: pulse 1.5s infinite;
+  animation: pulse-red 1.5s infinite;
 }
 
 @keyframes pulse {
@@ -191,7 +192,7 @@ body.dark-mode .sidebar {
     opacity: 0.6;
   }
   50% {
-    transform: scale(1.1);
+    transform: scale(1.2);
     opacity: 1;
   }
   100% {
@@ -205,10 +206,48 @@ body.dark-mode .sidebar {
     box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
   }
   70% {
-    box-shadow: 0 0 0 6px rgba(40, 167, 69, 0);
+    box-shadow: 0 0 0 8px rgba(40, 167, 69, 0);
   }
   100% {
     box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+  }
+}
+
+@keyframes pulse-red {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(220, 53, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+  }
+}
+
+/* Enhanced animation styles for better user experience */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translate3d(0, 20px, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
   }
 }
 
@@ -291,6 +330,65 @@ body.dark-mode .sidebar {
   transform: translate(-50%, -50%);
 }
 
+/* Improved skeleton loading state */
+.skeleton-loader {
+  position: relative;
+  background: #f0f0f0;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.skeleton-loader::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    rgba(255, 255, 255, 0) 100%);
+  animation: shimmer 1.5s infinite;
+}
+
+body.dark-mode .skeleton-loader {
+  background: #2a2a2a;
+}
+
+body.dark-mode .skeleton-loader::after {
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.1) 50%, 
+    rgba(255, 255, 255, 0) 100%);
+}
+
+/* Enhanced visualization loading state */
+.viz-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.viz-loading__spinner {
+  margin-bottom: 1rem;
+}
+
+.viz-loading__text {
+  text-align: center;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+body.dark-mode .viz-loading__text {
+  color: #adb5bd;
+}
+
 /* Air Quality Index badges */
 .badge.bg-good {
   background-color: #28a745 !important;
@@ -366,7 +464,7 @@ body.dark-mode .chartjs-tooltip {
 /* Air Quality Status Card */
 .air-quality-status-card {
   border-left: 5px solid #28a745;
-  transition: border-color 0.3s, transform 0.2s;
+  transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s;
 }
 
 .air-quality-status-card.warning {
@@ -401,7 +499,7 @@ body.dark-mode .chartjs-tooltip {
 
 .metric-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
 }
 
 .metric-card-primary {
@@ -500,6 +598,109 @@ body.dark-mode .air-quality-status-card {
   height: 5px;
 }
 
+/* Visualization Summary Styles */
+.viz-summary {
+  background-color: #f8f9fa;
+  border-left: 4px solid #17a2b8;
+  padding: 15px;
+  margin-top: 1rem;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+body.dark-mode .viz-summary {
+  background-color: #2a2d31;
+  border-left-color: #0dcaf0;
+}
+
+.viz-summary .insight-list {
+  padding-left: 20px;
+  margin-bottom: 0;
+}
+
+.viz-summary .insight-list li {
+  margin-bottom: 8px;
+}
+
+.viz-summary .insight-list li:last-child {
+  margin-bottom: 0;
+}
+
+.viz-summary .alerts-container {
+  margin-top: 10px;
+}
+
+.viz-summary .alerts-container .alert {
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+}
+
+/* Abnormal Notifications */
+.abnormal-notifications-container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  width: 350px;
+  max-width: 90vw;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.abnormal-notification {
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  overflow: hidden;
+  transform: translateX(0);
+  transition: all 0.3s ease;
+  animation: slideIn 0.3s forwards;
+}
+
+body.dark-mode .abnormal-notification {
+  background-color: #2a2d31;
+  color: #e9ecef;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.notification-hiding {
+  transform: translateX(120%);
+  opacity: 0;
+}
+
+.notification-header {
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notification-body {
+  padding: 15px;
+}
+
+.notification-close {
+  background: transparent;
+  color: white;
+  width: 24px;
+  height: 24px;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 /* Responsive improvements */
 @media (max-width: 767.98px) {
   .card-body {
@@ -576,6 +777,28 @@ body.dark-mode .air-quality-status-card {
   
   .metric-icon i {
     font-size: 1.25rem;
+  }
+  
+  /* Improved mobile touch targets */
+  .btn {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .nav-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Adjust toast position for mobile */
+  #toast-container {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    width: auto;
   }
 }
 

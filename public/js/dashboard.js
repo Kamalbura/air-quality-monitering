@@ -667,6 +667,9 @@ class Dashboard {
           if (this.activeChart) {
             this.updateActiveChart(newEntries);
           }
+
+          // Check for abnormal readings
+          newEntries.forEach(entry => this.checkAbnormalReadings(entry));
           
           if (newEntries.length > 0) {
             this.showToast('Data Updated', `Received ${newEntries.length} new data points`, 'success');
@@ -679,6 +682,152 @@ class Dashboard {
     }, 60000); // 1 minute refresh
   }
   
+  /**
+   * Check for abnormal readings and show notification
+   * @param {Object} data - New data point
+   */
+  checkAbnormalReadings(data) {
+    // WHO guidelines for reference
+    const thresholds = {
+      pm25: 25, // WHO threshold for PM2.5 (24-hour mean)
+      pm10: 50  // WHO threshold for PM10 (24-hour mean)
+    };
+    
+    const pm25 = parseFloat(data.pm25 || data.field3);
+    const pm10 = parseFloat(data.pm10 || data.field4);
+    
+    if (isNaN(pm25) && isNaN(pm10)) return;
+    
+    // Check PM2.5
+    if (!isNaN(pm25) && pm25 > thresholds.pm25) {
+      this.showAbnormalNotification('PM2.5', pm25, thresholds.pm25);
+    }
+    
+    // Check PM10
+    if (!isNaN(pm10) && pm10 > thresholds.pm10) {
+      this.showAbnormalNotification('PM10', pm10, thresholds.pm10);
+    }
+  }
+
+  /**
+   * Display notification for abnormal reading
+   * @param {string} parameter - Parameter name (PM2.5 or PM10)
+   * @param {number} value - Current value
+   * @param {number} threshold - Threshold value
+   */
+  showAbnormalNotification(parameter, value, threshold) {
+    // Create a more prominent notification
+    const notificationId = `notification-${Date.now()}`;
+    
+    const notificationHTML = `
+      <div id="${notificationId}" class="abnormal-notification">
+        <div class="notification-header">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          <strong>Abnormal ${parameter} Level Detected</strong>
+          <button type="button" class="btn-close notification-close" aria-label="Close"></button>
+        </div>
+        <div class="notification-body">
+          <p>Current ${parameter}: <strong>${value.toFixed(1)} μg/m³</strong></p>
+          <p>WHO guideline: ${threshold} μg/m³</p>
+          <div class="progress">
+            <div class="progress-bar bg-danger" role="progressbar" 
+                style="width: ${Math.min(100, (value / threshold * 100))}%" 
+                aria-valuenow="${value}" aria-valuemin="0" aria-valuemax="${threshold * 2}">
+            </div>
+          </div>
+          <p class="mt-2"><small>${this.getHealthRecommendation(parameter, value)}</small></p>
+        </div>
+      </div>
+    `;
+    
+    // Get or create notifications container
+    let notificationsContainer = document.getElementById('abnormal-notifications-container');
+    if (!notificationsContainer) {
+      notificationsContainer = document.createElement('div');
+      notificationsContainer.id = 'abnormal-notifications-container';
+      notificationsContainer.className = 'abnormal-notifications-container';
+      document.body.appendChild(notificationsContainer);
+    }
+    
+    // Add notification
+    notificationsContainer.insertAdjacentHTML('beforeend', notificationHTML);
+    
+    // Add close handler
+    const notificationElement = document.getElementById(notificationId);
+    const closeBtn = notificationElement.querySelector('.notification-close');
+    closeBtn.addEventListener('click', () => {
+      notificationElement.classList.add('notification-hiding');
+      setTimeout(() => {
+        notificationElement.remove();
+      }, 300);
+    });
+    
+    // Auto-hide after 15 seconds
+    setTimeout(() => {
+      if (notificationElement && notificationElement.parentNode) {
+        notificationElement.classList.add('notification-hiding');
+        setTimeout(() => {
+          if (notificationElement && notificationElement.parentNode) {
+            notificationElement.remove();
+          }
+        }, 300);
+      }
+    }, 15000);
+    
+    // Play audio alert if enabled
+    this.playAlertSound();
+  }
+
+  /**
+   * Get health recommendation based on parameter and value
+   * @param {string} parameter - PM2.5 or PM10
+   * @param {number} value - Current value
+   * @returns {string} Health recommendation
+   */
+  getHealthRecommendation(parameter, value) {
+    if (parameter === 'PM2.5') {
+      if (value > 100) {
+        return 'Health alert: Everyone may experience more serious health effects. Consider staying indoors and using air purifiers.';
+      } else if (value > 55.4) {
+        return 'Health warning: Everyone may begin to experience health effects. Limit prolonged outdoor exertion.';
+      } else if (value > 35.4) {
+        return 'People with respiratory or heart conditions should limit outdoor exertion.';
+      } else {
+        return 'Sensitive individuals should consider reducing prolonged outdoor activity.';
+      }
+    } else { // PM10
+      if (value > 150) {
+        return 'Health alert: Everyone may experience more serious health effects. Consider staying indoors.';
+      } else if (value > 100) {
+        return 'Health warning: Everyone may begin to experience health effects. Limit prolonged outdoor exertion.';
+      } else if (value > 50) {
+        return 'People with respiratory conditions should limit outdoor exertion.';
+      } else {
+        return 'Some people may experience minor respiratory symptoms.';
+      }
+    }
+  }
+
+  /**
+   * Play alert sound for notifications
+   */
+  playAlertSound() {
+    // Check user preference
+    const soundEnabled = localStorage.getItem('soundAlerts') !== 'disabled';
+    if (!soundEnabled) return;
+    
+    try {
+      // Try to use the Audio API
+      const audio = new Audio('/audio/alert.mp3');
+      audio.volume = 0.5; // 50% volume
+      audio.play().catch(err => {
+        console.warn('Could not play alert sound:', err);
+      });
+    } catch (error) {
+      console.warn('Audio playback not supported');
+    }
+  }
+
   /**
    * Toggle real-time updates
    */
@@ -994,6 +1143,10 @@ class Dashboard {
     
     this.elements.vizTitle.textContent = title;
     this.currentVizType = type;
+
+    // Generate and display visualization summary
+    const summary = this.generateVizSummary(this.data, type);
+    this.displayVizSummary(summary);
   }
   
   /**
@@ -1361,6 +1514,283 @@ class Dashboard {
       this.elements.validationBadge.className = 'badge bg-danger';
       this.elements.validationBadge.textContent = 'Validation Error';
       this.elements.validationDetails.innerHTML = `<p class="text-center text-danger">Error validating data.</p>`;
+    }
+  }
+
+  /**
+   * Generate visualization summary based on data and visualization type
+   * @param {Array} data - The data to analyze
+   * @param {string} vizType - Visualization type
+   * @returns {Object} Summary information including insights and alerts
+   */
+  generateVizSummary(data, vizType) {
+    if (!data || data.length === 0) return { insights: [], alerts: [] };
+    
+    const insights = [];
+    const alerts = [];
+    
+    // WHO guidelines for reference
+    const whoGuidelines = {
+      pm25: { daily: 15, annual: 5 },
+      pm10: { daily: 45, annual: 15 }
+    };
+    
+    // Calculate averages and other statistics
+    const pm25Values = data.map(item => parseFloat(item.pm25 || item.field3 || 0)).filter(v => !isNaN(v));
+    const pm10Values = data.map(item => parseFloat(item.pm10 || item.field4 || 0)).filter(v => !isNaN(v));
+    const tempValues = data.map(item => parseFloat(item.temperature || item.field2 || 0)).filter(v => !isNaN(v));
+    const humidityValues = data.map(item => parseFloat(item.humidity || item.field1 || 0)).filter(v => !isNaN(v));
+    
+    if (pm25Values.length === 0) return { insights: ['No valid data available for analysis.'], alerts: [] };
+    
+    // Calculate statistics
+    const pm25Avg = pm25Values.reduce((sum, v) => sum + v, 0) / pm25Values.length;
+    const pm10Avg = pm10Values.reduce((sum, v) => sum + v, 0) / pm10Values.length;
+    const pm25Max = Math.max(...pm25Values);
+    const pm10Max = Math.max(...pm10Values);
+    
+    // Check for abnormal values - values significantly above average
+    const pm25Threshold = Math.max(whoGuidelines.pm25.daily, pm25Avg * 1.5);
+    const pm10Threshold = Math.max(whoGuidelines.pm10.daily, pm10Avg * 1.5);
+    
+    const abnormalPM25Count = pm25Values.filter(v => v > pm25Threshold).length;
+    const abnormalPM10Count = pm10Values.filter(v => v > pm10Threshold).length;
+    
+    // Add basic insights based on WHO guidelines
+    if (pm25Avg > whoGuidelines.pm25.daily) {
+      insights.push(`Average PM2.5 (${pm25Avg.toFixed(1)} μg/m³) exceeds WHO daily guideline of ${whoGuidelines.pm25.daily} μg/m³.`);
+    } else {
+      insights.push(`Average PM2.5 (${pm25Avg.toFixed(1)} μg/m³) is within WHO daily guideline of ${whoGuidelines.pm25.daily} μg/m³.`);
+    }
+    
+    if (pm10Avg > whoGuidelines.pm10.daily) {
+      insights.push(`Average PM10 (${pm10Avg.toFixed(1)} μg/m³) exceeds WHO daily guideline of ${whoGuidelines.pm10.daily} μg/m³.`);
+    } else {
+      insights.push(`Average PM10 (${pm10Avg.toFixed(1)} μg/m³) is within WHO daily guideline of ${whoGuidelines.pm10.daily} μg/m³.`);
+    }
+    
+    // Add alerts for abnormal values
+    if (abnormalPM25Count > 0) {
+      const percentage = ((abnormalPM25Count / pm25Values.length) * 100).toFixed(1);
+      alerts.push({
+        type: 'warning',
+        message: `Detected ${abnormalPM25Count} abnormal PM2.5 readings (${percentage}% of data), with maximum of ${pm25Max.toFixed(1)} μg/m³.`,
+        parameter: 'pm25'
+      });
+    }
+    
+    if (abnormalPM10Count > 0) {
+      const percentage = ((abnormalPM10Count / pm10Values.length) * 100).toFixed(1);
+      alerts.push({
+        type: 'warning',
+        message: `Detected ${abnormalPM10Count} abnormal PM10 readings (${percentage}% of data), with maximum of ${pm10Max.toFixed(1)} μg/m³.`,
+        parameter: 'pm10'
+      });
+    }
+    
+    // Add visualization-specific insights
+    switch (vizType) {
+      case 'time_series':
+        // Analyze trends
+        const firstHalf = pm25Values.slice(0, Math.floor(pm25Values.length / 2));
+        const secondHalf = pm25Values.slice(Math.floor(pm25Values.length / 2));
+        
+        const firstHalfAvg = firstHalf.reduce((sum, v) => sum + v, 0) / firstHalf.length;
+        const secondHalfAvg = secondHalf.reduce((sum, v) => sum + v, 0) / secondHalf.length;
+        
+        const trend = secondHalfAvg - firstHalfAvg;
+        const trendPercentage = ((trend / firstHalfAvg) * 100).toFixed(1);
+        
+        if (Math.abs(trend) > 0.5) {
+          if (trend > 0) {
+            insights.push(`PM2.5 shows an increasing trend of ${trendPercentage}% over the time period.`);
+          } else {
+            insights.push(`PM2.5 shows a decreasing trend of ${Math.abs(trendPercentage)}% over the time period.`);
+          }
+        } else {
+          insights.push('PM2.5 levels appear relatively stable over the time period.');
+        }
+        break;
+        
+      case 'daily_pattern':
+        // Find peak hours
+        const hourlyData = Array(24).fill(0).map(() => ({ sum: 0, count: 0 }));
+        
+        // Group by hour
+        data.forEach(item => {
+          const date = new Date(item.created_at);
+          const hour = date.getHours();
+          const pm25 = parseFloat(item.pm25 || item.field3 || 0);
+          
+          if (!isNaN(pm25)) {
+            hourlyData[hour].sum += pm25;
+            hourlyData[hour].count++;
+          }
+        });
+        
+        // Calculate hourly averages
+        const hourlyAverages = hourlyData.map((h, i) => ({
+          hour: i,
+          average: h.count > 0 ? h.sum / h.count : 0
+        })).filter(h => h.average > 0);
+        
+        if (hourlyAverages.length > 0) {
+          // Find peak pollution hours
+          hourlyAverages.sort((a, b) => b.average - a.average);
+          const peakHours = hourlyAverages.slice(0, 2);
+          
+          insights.push(`Highest pollution levels typically occur around ${peakHours.map(h => `${h.hour}:00`).join(' and ')} hours.`);
+          
+          // Find cleanest hours
+          hourlyAverages.sort((a, b) => a.average - b.average);
+          const cleanestHours = hourlyAverages.slice(0, 2);
+          
+          insights.push(`Lowest pollution levels typically occur around ${cleanestHours.map(h => `${h.hour}:00`).join(' and ')} hours.`);
+        }
+        break;
+        
+      case 'correlation':
+        // Calculate correlation between temperature and PM2.5
+        if (tempValues.length > 0 && tempValues.length === pm25Values.length) {
+          const correlation = this.calculateCorrelation(tempValues, pm25Values);
+          
+          if (correlation > 0.5) {
+            insights.push(`Strong positive correlation (${correlation.toFixed(2)}) between temperature and PM2.5, suggesting higher temperatures may increase particulate matter.`);
+          } else if (correlation < -0.5) {
+            insights.push(`Strong negative correlation (${correlation.toFixed(2)}) between temperature and PM2.5, suggesting lower temperatures may increase particulate matter.`);
+          } else {
+            insights.push(`Weak correlation (${correlation.toFixed(2)}) between temperature and PM2.5, suggesting limited influence of temperature on air quality.`);
+          }
+        }
+        
+        // Check humidity correlation
+        if (humidityValues.length > 0 && humidityValues.length === pm25Values.length) {
+          const correlation = this.calculateCorrelation(humidityValues, pm25Values);
+          
+          if (Math.abs(correlation) > 0.3) {
+            insights.push(`Moderate correlation (${correlation.toFixed(2)}) detected between humidity and PM2.5 levels.`);
+          }
+        }
+        break;
+        
+      case 'air_quality_index':
+      case 'heatmap':
+      case 'trend_analysis':
+        // Add parameter-specific insights
+        const healthImplications = this.getHealthImplications(pm25Avg);
+        insights.push(healthImplications);
+        break;
+    }
+    
+    return { insights, alerts };
+  }
+
+  /**
+   * Calculate Pearson correlation coefficient between two arrays
+   * @param {Array} x - First array of numbers
+   * @param {Array} y - Second array of numbers
+   * @returns {number} Correlation coefficient (-1 to 1)
+   */
+  calculateCorrelation(x, y) {
+    const n = Math.min(x.length, y.length);
+    
+    // Calculate means
+    const xMean = x.reduce((sum, val) => sum + val, 0) / n;
+    const yMean = y.reduce((sum, val) => sum + val, 0) / n;
+    
+    // Calculate numerator and denominators
+    let numerator = 0;
+    let xDenominator = 0;
+    let yDenominator = 0;
+    
+    for (let i = 0; i < n; i++) {
+      const xDiff = x[i] - xMean;
+      const yDiff = y[i] - yMean;
+      
+      numerator += xDiff * yDiff;
+      xDenominator += xDiff * xDiff;
+      yDenominator += yDiff * yDiff;
+    }
+    
+    const denominator = Math.sqrt(xDenominator * yDenominator);
+    
+    return denominator === 0 ? 0 : numerator / denominator;
+  }
+
+  /**
+   * Get health implications based on PM2.5 levels
+   * @param {number} pm25 - PM2.5 value
+   * @returns {string} Health implication message
+   */
+  getHealthImplications(pm25) {
+    if (pm25 <= 12) {
+      return 'Current air quality is good with minimal health concern.';
+    } else if (pm25 <= 35.4) {
+      return 'Air quality is moderate. Unusually sensitive people should consider reducing prolonged outdoor exertion.';
+    } else if (pm25 <= 55.4) {
+      return 'Air quality is unhealthy for sensitive groups. People with respiratory or heart conditions should limit outdoor exertion.';
+    } else if (pm25 <= 150.4) {
+      return 'Air quality is unhealthy. Everyone may begin to experience health effects and should limit prolonged outdoor exertion.';
+    } else if (pm25 <= 250.4) {
+      return 'Air quality is very unhealthy. Health warnings of emergency conditions. Everyone should avoid outdoor activities.';
+    } else {
+      return 'Air quality is hazardous. Health alert: everyone may experience more serious health effects. Avoid all outdoor activities.';
+    }
+  }
+
+  /**
+   * Display visualization summary below chart
+   * @param {Object} summary - Summary object with insights and alerts
+   */
+  displayVizSummary(summary) {
+    const summaryContainer = document.createElement('div');
+    summaryContainer.className = 'viz-summary mt-3';
+    
+    // Add insights
+    if (summary.insights && summary.insights.length > 0) {
+      const insightsList = document.createElement('ul');
+      insightsList.className = 'insight-list';
+      
+      summary.insights.forEach(insight => {
+        const item = document.createElement('li');
+        item.textContent = insight;
+        insightsList.appendChild(item);
+      });
+      
+      summaryContainer.appendChild(insightsList);
+    }
+    
+    // Add alerts if any
+    if (summary.alerts && summary.alerts.length > 0) {
+      const alertsContainer = document.createElement('div');
+      alertsContainer.className = 'alerts-container mt-2';
+      
+      summary.alerts.forEach(alert => {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${alert.type} p-2 mb-2`;
+        alertDiv.innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i> ${alert.message}`;
+        alertsContainer.appendChild(alertDiv);
+      });
+      
+      summaryContainer.appendChild(alertsContainer);
+    }
+    
+    // Find or create the summary container
+    const existingSummary = document.getElementById('viz-summary-container');
+    if (existingSummary) {
+      existingSummary.innerHTML = '';
+      existingSummary.appendChild(summaryContainer);
+    } else {
+      const container = document.createElement('div');
+      container.id = 'viz-summary-container';
+      container.className = 'mt-3';
+      container.appendChild(summaryContainer);
+      
+      // Insert after viz-description
+      const vizDescription = document.getElementById('viz-description');
+      if (vizDescription && vizDescription.parentNode) {
+        vizDescription.parentNode.insertBefore(container, vizDescription.nextSibling);
+      }
     }
   }
 }

@@ -636,6 +636,7 @@ function testVisualization() {
 function updateHealthOverview(isHealthy = true, issue = null) {
     const badge = document.getElementById('health-status-badge');
     const progressBar = document.getElementById('health-progress-bar');
+    const healthStatusDetail = document.getElementById('health-status-detail');
     
     if (!badge || !progressBar) return;
     
@@ -645,22 +646,45 @@ function updateHealthOverview(isHealthy = true, issue = null) {
         
         progressBar.className = 'progress-bar bg-success';
         progressBar.style.width = '100%';
+        
+        if (healthStatusDetail) {
+            healthStatusDetail.innerHTML = '<i class="bi bi-check-circle-fill text-success me-1"></i> All systems operational';
+        }
     } else if (isHealthy && issue) {
         badge.className = 'badge bg-warning';
         badge.textContent = 'Minor Issue';
         
         progressBar.className = 'progress-bar bg-warning';
         progressBar.style.width = '75%';
+        
+        if (healthStatusDetail) {
+            healthStatusDetail.innerHTML = `<i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> ${issue}`;
+        }
     } else {
         badge.className = 'badge bg-danger';
         badge.textContent = 'System Error';
         
         progressBar.className = 'progress-bar bg-danger';
         progressBar.style.width = '25%';
+        
+        if (healthStatusDetail) {
+            healthStatusDetail.innerHTML = `<i class="bi bi-x-octagon-fill text-danger me-1"></i> ${issue || 'Critical system error detected'}`;
+        }
     }
     
     // Update last check time
-    document.getElementById('last-check-time').textContent = formatTime(new Date());
+    const lastCheckTime = document.getElementById('last-check-time');
+    if (lastCheckTime) {
+        lastCheckTime.textContent = formatTime(new Date());
+    }
+    
+    // Add pulse animation for visual indicator
+    if (badge) {
+        badge.classList.add('status-pulse');
+        setTimeout(() => {
+            badge.classList.remove('status-pulse');
+        }, 2000);
+    }
 }
 
 /**
