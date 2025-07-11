@@ -180,6 +180,7 @@
 [2025-05-01T18:13:03.479Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
 [2025-05-01T18:13:08.482Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
 [2025-05-01T18:13:13.484Z] [ERROR] [app] ThingSpeak connection failed: Channel not found
+<<<<<<< HEAD
 [2025-05-01T18:16:29.912Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
 [2025-05-01T18:16:30.136Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
 [2025-05-01T18:17:59.528Z] [ERROR] [app] ThingSpeak connection check failed: Channel not found
@@ -838,3 +839,5 @@ ModuleNotFoundError: No module named 'flask'
 [2025-05-24T11:19:11.681Z] [ERROR] [api] Error getting latest data: thingspeakService.getLatestData is not a function
 [2025-05-24T11:19:12.474Z] [ERROR] [api] Error getting latest data: thingspeakService.getLatestData is not a function
 [2025-05-24T11:19:14.563Z] [ERROR] [api] Error getting latest data: thingspeakService.getLatestData is not a function
+=======
+>>>>>>> c0f1212 (works-on-reload)

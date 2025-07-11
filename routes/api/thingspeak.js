@@ -11,6 +11,7 @@ const THINGSPEAK_CONFIG = require('../../config/thingspeak-consolidated');
  * GET /api/thingspeak/config
  * Get ThingSpeak configuration and channel info
  */
+<<<<<<< HEAD
 router.get('/config', (req, res) => {
     try {
         const config = thingspeakService.getConfigSummary();
@@ -32,6 +33,47 @@ router.get('/config', (req, res) => {
             error: error.message,
             timestamp: new Date().toISOString()
         });
+=======
+router.get('/channel-details', async (req, res) => {
+  try {
+    // Use getChannelInfo instead of getChannelFields which doesn't exist
+    const channelInfo = await thingspeakService.getChannelInfo();
+    
+    if (channelInfo.success) {
+      res.json({
+        success: true,
+        data: channelInfo.data
+      });
+    } else {
+      // If ThingSpeak API call fails, try an alternative approach
+      // Get channel details from public access which doesn't require API key
+      try {
+        const axios = require('axios');
+        const channelId = process.env.THINGSPEAK_CHANNEL_ID || '2863798';
+        
+        // Try public access - your channel is marked as public_flag: true
+        const response = await axios.get(`https://api.thingspeak.com/channels/${channelId}.json`, {
+          timeout: 5000
+        });
+        
+        if (response.status === 200 && response.data) {
+          res.json({
+            success: true,
+            data: response.data,
+            source: 'public-api'
+          });
+          return;
+        }
+      } catch (publicError) {
+        console.log('Failed to fetch channel details through public API:', publicError.message);
+      }
+      
+      res.json({
+        success: false,
+        error: channelInfo.error || 'Failed to get channel details',
+        data: null
+      });
+>>>>>>> c0f1212 (works-on-reload)
     }
 });
 

@@ -111,9 +111,17 @@ class ThingSpeakInfoPage {
             this.loadThemePreference();
             // Set up event listeners
             this.setupEventListeners();
+<<<<<<< HEAD
 
             // Always load ThingSpeak configuration from server first
             const thingspeakConfig = await this.getThingSpeakConfig();
+=======
+            
+            // Load ThingSpeak configuration
+            const thingspeakConfig = await thingspeakService.getChannelFields();
+            
+            // Update the app config with API settings
+>>>>>>> c0f1212 (works-on-reload)
             this.config.channelId = thingspeakConfig.channelId;
             this.config.readApiKey = thingspeakConfig.readApiKey;
             if (thingspeakConfig.updateInterval) {
