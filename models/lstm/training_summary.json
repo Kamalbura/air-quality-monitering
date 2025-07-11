@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-05-24T11:43:35.931024",
+  "model_type": "Enhanced LSTM",
+  "device": "cuda",
+  "features": [
+    "pm25",
+    "pm10",
+    "temperature",
+    "humidity"
+  ],
+  "sequence_length": 48,
+  "hidden_size": 128,
+  "pytorch_version": "2.5.1+cu121"
+}

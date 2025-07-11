@@ -1,0 +1,26 @@
+{
+  "config": {},
+  "state": {
+    "initialized": false,
+    "startTime": 1748085920161,
+    "lastUpdate": null,
+    "updateCount": 0,
+    "errors": [],
+    "performance": {
+      "avgResponseTime": 0,
+      "totalRequests": 0,
+      "errorRate": 0,
+      "requestHistory": []
+    },
+    "dataQuality": {
+      "completeness": 0,
+      "accuracy": 0,
+      "consistency": 0,
+      "timeliness": 0
+    }
+  },
+  "latestDataCount": 0,
+  "historicalDataCount": 0,
+  "services": [],
+  "savedAt": 1748085931294
+}

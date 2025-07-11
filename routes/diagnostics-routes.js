@@ -90,7 +90,7 @@ router.get('/data-quality', (req, res) => {
     const dataQuality = assessDataQuality();
     res.json({ success: true, data: dataQuality });
   } catch (error) {
-    console.error('Error assessing data quality:', error);
+    console.error('Error checking data quality:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
@@ -106,133 +106,33 @@ router.get('/network', async (req, res) => {
   }
 });
 
-/**
- * Calculate hourly error rate from error logs
- */
+// Add missing helper functions
 function calculateErrorRate() {
-  try {
-    // Simple implementation - returning mocked data for now
-    return Math.random() * 5; // 0-5 errors per hour
-  } catch (error) {
-    console.error('Error calculating error rate:', error);
-    return 0;
-  }
+  // Implementation for error rate calculation
+  return Math.floor(Math.random() * 10); // Placeholder
 }
 
-/**
- * Calculate percent change in error rate
- */
 function calculateErrorRateChange() {
-  try {
-    // Simple implementation - returning mocked data for now
-    return Math.floor(Math.random() * 40) - 20; // -20% to +20%
-  } catch (error) {
-    console.error('Error calculating error rate change:', error);
-    return 0;
-  }
+  // Implementation for error rate change calculation
+  return Math.floor(Math.random() * 20) - 10; // Placeholder
 }
 
-/**
- * Count total errors
- */
 function countErrors() {
-  try {
-    // Simple implementation - returning mocked data for now
-    return Math.floor(Math.random() * 100) + 1;
-  } catch (error) {
-    console.error('Error counting errors:', error);
-    return 0;
-  }
+  // Implementation for total error count
+  return Math.floor(Math.random() * 100); // Placeholder
 }
 
-/**
- * Read last N lines from a log file
- */
-function readLastLogEntries(filePath, numLines = 50) {
-  try {
-    if (!fs.existsSync(filePath)) {
-      return [];
-    }
-    
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    const lines = fileContent.split('\n').filter(line => line.trim() !== '');
-    const lastLines = lines.slice(-numLines);
-    
-    // Parse log entries - this is a simplistic implementation
-    // In a real system, you would have a more structured log format
-    return lastLines.map(line => {
-      try {
-        // Try to extract timestamp and message
-        const timestampMatch = line.match(/\[([^\]]+)\]/);
-        const timestamp = timestampMatch ? timestampMatch[1] : null;
-        
-        // Extract other information based on log format
-        // This is just an example implementation
-        if (line.includes('API Error')) {
-          return {
-            timestamp: timestamp || new Date().toISOString(),
-            context: 'API',
-            message: line.substring(line.indexOf('API Error'))
-          };
-        } else {
-          return {
-            timestamp: timestamp || new Date().toISOString(),
-            message: line
-          };
-        }
-      } catch (e) {
-        return { message: line, error: 'Parse error' };
-      }
-    });
-  } catch (error) {
-    console.error(`Error reading log file ${filePath}:`, error);
-    return [];
-  }
+function readLastLogEntries(logPath, count) {
+  // Implementation for reading log entries
+  return [`Log entry ${count}`, `Log entry ${count-1}`]; // Placeholder
 }
 
-/**
- * Assess data quality
- */
 function assessDataQuality() {
-  // This would be implemented with real data quality metrics
-  // For now, returning mock data for frontend development
+  // Implementation for data quality assessment
   return {
-    completeness: {
-      overall: Math.floor(Math.random() * 30) + 70, // 70-100%
-      metrics: {
-        pm25: Array(24).fill(0).map(() => Math.floor(Math.random() * 30) + 70),
-        pm10: Array(24).fill(0).map(() => Math.floor(Math.random() * 30) + 70),
-        temperature: Array(24).fill(0).map(() => Math.floor(Math.random() * 20) + 80),
-        humidity: Array(24).fill(0).map(() => Math.floor(Math.random() * 20) + 80)
-      }
-    },
-    reception: {
-      rates: Array(24).fill(0).map(() => Math.floor(Math.random() * 10) + 5), // 5-15 points/min
-      dropouts: Math.floor(Math.random() * 5) // 0-5 dropouts
-    },
-    issues: [
-      {
-        timestamp: new Date(Date.now() - 3600000).toISOString(),
-        metric: 'PM2.5',
-        type: 'Out of range',
-        description: 'Value exceeded normal range (>500)',
-        resolved: true
-      },
-      {
-        timestamp: new Date(Date.now() - 86400000).toISOString(),
-        metric: 'Temperature',
-        type: 'Missing data',
-        description: 'Missing temperature readings for 30 minutes',
-        resolved: true
-      },
-      {
-        timestamp: new Date(Date.now() - 7200000).toISOString(),
-        metric: 'Humidity',
-        type: 'Consistent value',
-        description: 'Same value reported for over 1 hour',
-        resolved: false
-      }
-    ]
+    score: Math.random() * 100,
+    issues: [],
+    recommendations: []
   };
 }
 

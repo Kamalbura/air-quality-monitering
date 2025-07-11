@@ -1,133 +1,279 @@
-require('dotenv').config(); // Make sure this is at the top to load environment variables
+// Load environment variables first
+require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
-const fs = require('fs');
-const NodeCache = require('node-cache');
-const thingspeakService = require('./services/thingspeak-service');
+const helmet = require('helmet');
+const compression = require('compression');
+
+// Import middleware
 const { apiMonitor } = require('./middleware/api-monitor');
-const apiRoutes = require('./routes/api');
-const thingspeakRoutes = require('./routes/api/thingspeak');
-const ErrorHandler = require('./error-handler');
-const debugHelper = require('./helpers/debug-helper');
 
-// Initialize error handler
-const errorHandler = new ErrorHandler();
+// Import services
+const pythonBackend = require('./services/python-backend-service');
+const apiCache = require('./services/api-cache-service');
+const dataProcessing = require('./services/data-processing-service');
+const thingspeakService = require('./services/thingspeak-service');
+const errorHandler = require('./error-handler');
+const appState = require('./services/app-state');
 
-// Configure cache with 10 minute TTL
-const apiCache = new NodeCache({ stdTTL: 600 });
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-// Change the static file handling to ignore index.html
-app.use(express.static(path.join(__dirname, 'public'), {
-  index: false  // Don't serve index.html automatically
+// Configuration
+const THINGSPEAK_CONFIG = require('./config/thingspeak-consolidated');
+
+// Initialize app state
+appState.setConfig(THINGSPEAK_CONFIG);
+appState.registerService('pythonBackend', pythonBackend);
+appState.registerService('apiCache', apiCache);
+appState.registerService('dataProcessing', dataProcessing);
+appState.registerService('thingspeakService', thingspeakService);
+appState.registerService('errorHandler', errorHandler);
+
+// Security and performance middleware
+app.use(helmet({
+  contentSecurityPolicy: false // Disable for development
 }));
-app.use(apiMonitor); // API monitoring middleware
+app.use(compression());
+app.use(cors());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Static file serving
+app.use(express.static(path.join(__dirname, 'public'), {
+  index: false
+}));
+app.use(apiMonitor);
 
 // Set up view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Create necessary directories if they don't exist
-const requiredDirs = [
-  path.join(__dirname, 'data'),
-  path.join(__dirname, 'public', 'images'),
-  path.join(__dirname, 'logs'),
-  path.join(__dirname, 'config'),
-  path.join(__dirname, 'dump') // Add the dump directory to required directories
-];
+// Create necessary directories
+async function createRequiredDirectories() {
+  const fs = require('fs');
+  
+  const requiredDirs = [
+    path.join(__dirname, 'data'),
+    path.join(__dirname, 'public', 'images'),
+    path.join(__dirname, 'logs'),
+    path.join(__dirname, 'config'),
+    path.join(__dirname, 'dump'),
+    path.join(__dirname, 'python-backend', 'models'),
+    path.join(__dirname, 'python-backend', 'data'),
+    path.join(__dirname, 'python-backend', 'logs')
+  ];
 
-requiredDirs.forEach(dir => {
-  try {
-    if (!fs.existsSync(dir)) {
-      console.log(`Creating directory: ${dir}`);
-      fs.mkdirSync(dir, { recursive: true });
+  for (const dir of requiredDirs) {
+    try {
+      if (!fs.existsSync(dir)) {
+        console.log(`Creating directory: ${dir}`);
+        fs.mkdirSync(dir, { recursive: true });
+      }
+    } catch (err) {
+      console.error(`Failed to create directory ${dir}:`, err.message);
     }
-  } catch (err) {
-    console.error(`Failed to create directory ${dir}:`, err.message);
-    // Don't exit - continue with startup and handle missing directories gracefully
   }
-});
+}
 
-// Routes
-app.use('/api', apiRoutes);
-app.use('/api/thingspeak', thingspeakRoutes); // Register dedicated ThingSpeak routes
+// Initialize all services
+async function initializeServices() {
+  console.log('🔧 Initializing services...');
+  
+  // Start Python backend
+  try {
+    await pythonBackend.start();
+  } catch (error) {
+    console.warn('Python backend failed to start:', error.message);
+  }
+    // Load historical data
+  try {
+    const historicalData = await dataProcessing.loadHistoricalData();
+    appState.setHistoricalData(historicalData);
+    console.log(`📊 Loaded ${historicalData.length} historical records`);
+  } catch (error) {
+    console.error('Failed to load historical data:', error.message);
+  }
+  
+  // Initial data fetch
+  await updateData();  
+  // Set up periodic data updates (every 5 minutes)
+  setInterval(updateData, 5 * 60 * 1000);
+  
+  // Register update function with app state
+  appState.setUpdateDataFunction(updateData);
+}
 
-// Add route to serve CSV files directly
-app.use('/data', express.static(path.join(__dirname, 'data')));
+// Main data update function
+async function updateData() {
+  try {
+    // Fetch fresh data from ThingSpeak
+    const rawData = await thingspeakService.fetchData(200);
+    
+    if (rawData.length > 0) {
+      // Process the data
+      const processedData = dataProcessing.processThingSpeakData(rawData);
+      
+      // Update app state
+      appState.setLatestData(processedData);
+      
+      // Merge with historical data
+      const currentHistorical = appState.getHistoricalData();
+      const mergedData = dataProcessing.mergeData(currentHistorical, processedData);
+      appState.setHistoricalData(mergedData);
+      
+      console.log(`📈 Updated data. Total records: ${mergedData.length}`);
+      
+      // Save updated data
+      await dataProcessing.saveDataToCsv(mergedData);
+    } else {
+      console.log('⚠️ No data received from ThingSpeak');
+    }
+  } catch (error) {
+    console.error('❌ Error updating data:', error);
+  }
+}
 
-// Dashboard routes
-app.get('/', (req, res) => {
-  res.render('dashboard', { 
-    version: require('./package.json').version || '1.0.0'
+// Setup all routes
+function setupRoutes() {
+  // Import route modules
+  const apiRoutes = require('./routes/api');
+  const thingspeakApiRoutes = require('./routes/api/thingspeak');
+  const dataRoutes = require('./routes/data');
+  const dashboardRoutes = require('./routes/dashboard');
+
+  // API Routes
+  app.use('/api', apiRoutes);
+  app.use('/api/thingspeak', thingspeakApiRoutes);
+  app.use('/api/data', dataRoutes);
+  app.use('/dashboard', dashboardRoutes);
+
+  // Dashboard routes
+  app.get('/', (req, res) => {
+    res.render('dashboard', { 
+      version: require('./package.json').version || '1.0.0'
+    });
   });
-});
 
-app.get('/status', (req, res) => {
-  res.render('status');
-});
-
-// ThingSpeak info page
-app.get('/thingspeak-info', (req, res) => {
-  res.render('thingspeak-info');
-});
-
-// Add or update the route for the configuration page
-app.get('/config', (req, res) => {
-  res.render('config', { 
-    version: require('./package.json').version || '1.0.0'
+  app.get('/status', (req, res) => {
+    res.render('status');
   });
-});
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok',
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString() 
+  app.get('/thingspeak-info', (req, res) => {
+    res.render('thingspeak-info');
   });
-});
 
-// Custom 404 handler
-app.use((req, res, next) => {
-  res.status(404).render('error', { 
-    title: '404 - Not Found',
-    message: `The page ${req.path} was not found.` 
+  app.get('/config', (req, res) => {
+    res.render('config', { 
+      version: require('./package.json').version || '1.0.0'
+    });
   });
-});
 
-// Error handler
-app.use((err, req, res, next) => {
-  errorHandler.handleError(err, 'Express', req)
-    .then(errorResult => {
+  app.get('/lstm', (req, res) => {
+    res.render('lstm-dashboard', { 
+      version: require('./package.json').version || '1.0.0'
+    });
+  });
+  // Note: API endpoints are now handled by route modules
+}
+
+// Setup error handling
+function setupErrorHandling() {
+  // Custom 404 handler
+  app.use((req, res, next) => {
+    res.status(404).render('error', { 
+      title: '404 - Not Found',
+      message: `The page ${req.path} was not found.` 
+    });
+  });
+
+  // Global error handler
+  app.use(async (err, req, res, next) => {
+    try {
+      const errorResult = await errorHandler.handleError(err, 'Express', req);
       res.status(err.status || 500).render('error', {
         title: 'Error',
         message: errorResult.message,
         errorId: errorResult.errorId
       });
-    });
+    } catch (handlerError) {
+      console.error('Error handler failed:', handlerError);
+      res.status(500).render('error', {
+        title: 'Error',
+        message: 'An unexpected error occurred'
+      });
+    }
+  });
+}
+
+// Initialize application
+async function initializeApp() {
+  console.log('🚀 Initializing Air Quality Monitoring Server...');
+  
+  // Create necessary directories
+  await createRequiredDirectories();
+  
+  // Initialize services
+  await initializeServices();
+  
+  // Setup routes
+  setupRoutes();
+  
+  // Setup error handling
+  setupErrorHandling();
+}
+
+// Handle graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('SIGINT signal received: shutting down gracefully');
+  try {
+    await pythonBackend.stop();
+    console.log('Python backend stopped successfully');
+  } catch (error) {
+    console.error('Error stopping Python backend:', error.message);
+  }
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM signal received: shutting down gracefully');
+  try {
+    await pythonBackend.stop();
+    console.log('Python backend stopped successfully');
+  } catch (error) {
+    console.error('Error stopping Python backend:', error.message);
+  }
+  process.exit(0);
+});
+
+// Error handling
+process.on('uncaughtException', (error) => {
+  console.error('❌ Uncaught Exception:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
 });
 
 // Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`View dashboard at http://localhost:${PORT}/`);
+app.listen(PORT, async () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📊 View dashboard at http://localhost:${PORT}/`);
+  console.log(`🔧 API endpoints:`);
+  console.log(`  - GET /api/latest - Latest readings`);
+  console.log(`  - GET /api/historical - Historical data`);
+  console.log(`  - GET /api/stats - Data statistics`);
+  console.log(`  - POST /api/refresh - Manual refresh`);
+  console.log(`  - GET /api/health - Health check`);
+  console.log(`  - GET /api/config - Configuration`);
+  console.log(`  - GET /api/metrics - API metrics`);
   
-  // Log ThingSpeak configuration
-  console.log('ThingSpeak Configuration:');
-  console.log(`- Channel ID: ${thingspeakService.config.channelId}`);
-  console.log(`- Read API Key: ${thingspeakService.config.readApiKey ? '***' + thingspeakService.config.readApiKey.slice(-4) : 'Not configured'}`);
-});
-
-// Handle graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received: shutting down gracefully');
-  // Perform any cleanup operations here
-  process.exit(0);
+  // Initialize the application
+  await initializeApp();
+  
+  console.log('✅ Server initialization complete');
 });

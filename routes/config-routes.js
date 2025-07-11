@@ -118,7 +118,7 @@ router.post('/import', upload.single('config'), (req, res) => {
     }
   } catch (error) {
     debugHelper.log(`API Error /config/import: ${error.message}`, 'config-routes', 'error');
-    res.status(500).json({ success: false, error: 'Invalid configuration file' });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 

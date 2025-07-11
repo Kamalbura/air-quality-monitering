@@ -399,21 +399,54 @@ class Dashboard {
   async loadThingspeakDirectData(days, results, includeAnalysis) {
     this.updateStatus('loading', 'Loading data from ThingSpeak...');
     
+    // Show progress indicator for large data loads
+    const isLargeLoad = days === 'all' || results === 'unlimited';
+    if (isLargeLoad) {
+      this.showProgressModal('Loading all available data from ThingSpeak...', 'This may take several minutes for channels with large amounts of data.');
+    }
+    
     try {
-      // Use ThingSpeakHelper if available
       let response;
-      if (window.ThingSpeakHelper) {
-        response = await window.ThingSpeakHelper.fetchTimePeriod(days, results, includeAnalysis);
-      } else {
-        // Fallback to direct API call
-        const url = `/api/thingspeak/direct?days=${days}&results=${results}&analysis=${includeAnalysis}`;
-        const fetchResponse = await fetch(url);
+      
+      // Use different approach for comprehensive data fetching
+      if (isLargeLoad) {
+        console.log('Loading all available ThingSpeak data...');
         
-        if (!fetchResponse.ok) {
-          throw new Error(`API returned ${fetchResponse.status}: ${fetchResponse.statusText}`);
+        if (window.ThingSpeakHelper) {
+          response = await window.ThingSpeakHelper.fetchAllChannelData({
+            includeAnalysis: includeAnalysis
+          });
+        } else {
+          // Fallback to server endpoint
+          const fetchResponse = await fetch('/api/thingspeak/fetch-all', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              includeAnalysis: includeAnalysis,
+              chunkSize: 8000
+            })
+          });
+          
+          if (!fetchResponse.ok) {
+            throw new Error(`API returned ${fetchResponse.status}: ${fetchResponse.statusText}`);
+          }
+          
+          response = await fetchResponse.json();
         }
-        
-        response = await fetchResponse.json();
+      } else {
+        // Use existing method for smaller data loads
+        if (window.ThingSpeakHelper) {
+          response = await window.ThingSpeakHelper.fetchTimePeriod(days, results, includeAnalysis);
+        } else {
+          const url = `/api/thingspeak/direct?days=${days}&results=${results}&analysis=${includeAnalysis}`;
+          const fetchResponse = await fetch(url);
+          
+          if (!fetchResponse.ok) {
+            throw new Error(`API returned ${fetchResponse.status}: ${fetchResponse.statusText}`);
+          }
+          
+          response = await fetchResponse.json();
+        }
       }
       
       if (!response.success || !response.data) {
@@ -439,74 +472,158 @@ class Dashboard {
       this.updateStatistics();
       this.loadVisualization(this.currentVizType);
       
-      // Show success message
-      this.showToast('ThingSpeak Data', `Successfully loaded ${this.data.length} data points from ThingSpeak channel ${response.data.channel?.id || '2863798'}`, 'success');
+      // Show success message with data range info
+      const dataRange = response.data.analysis?.dateRange;
+      let successMessage = `Successfully loaded ${this.data.length} data points from ThingSpeak channel ${response.data.channel?.id || '2863798'}`;
       
-      // Show analysis if available
-      if (response.data.analysis) {
-        this.showAnalysisResults(response.data.analysis);
+      if (dataRange) {
+        const startDate = new Date(dataRange.start).toLocaleDateString();
+        const endDate = new Date(dataRange.end).toLocaleDateString();
+        successMessage += ` (${startDate} to ${endDate})`;
       }
+      
+      this.showToast('ThingSpeak Data', successMessage, 'success');
+      
+      // Show comprehensive analysis if available
+      if (response.data.analysis) {
+        this.showComprehensiveAnalysis(response.data.analysis);
+      }
+      
     } catch (error) {
       console.error('Error loading ThingSpeak data:', error);
       this.updateStatus('error', 'Error loading ThingSpeak data');
       
       // Show error message
       this.showToast('ThingSpeak Error', `Failed to load data: ${error.message}`, 'danger');
+    } finally {
+      // Hide progress modal if it was shown
+      if (isLargeLoad) {
+        this.hideProgressModal();
+      }
     }
   }
 
   /**
-   * Show analysis results
+   * Show progress modal for long operations
    */
-  showAnalysisResults(analysis) {
-    // Display analysis in validation section
+  showProgressModal(title, message) {
+    const modalHtml = `
+      <div class="modal fade" id="progressModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">${title}</h5>
+            </div>
+            <div class="modal-body text-center">
+              <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p>${message}</p>
+              <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                     role="progressbar" style="width: 100%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Remove existing modal if present
+    const existingModal = document.getElementById('progressModal');
+    if (existingModal) {
+      existingModal.remove();
+    }
+    
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    const modal = new bootstrap.Modal(document.getElementById('progressModal'));
+    modal.show();
+  }
+
+  /**
+   * Hide progress modal
+   */
+  hideProgressModal() {
+    const modal = document.getElementById('progressModal');
+    if (modal) {
+      const bsModal = bootstrap.Modal.getInstance(modal);
+      if (bsModal) {
+        bsModal.hide();
+      }
+      setTimeout(() => {
+        modal.remove();
+      }, 500);
+    }
+  }
+
+  /**
+   * Show comprehensive analysis results
+   */
+  showComprehensiveAnalysis(analysis) {
     const validationDetails = document.getElementById('validation-details');
     const validationBadge = document.getElementById('validation-badge');
     
     if (validationDetails && analysis) {
-        let analysisHtml = `
-            <h5 class="mb-3">Data Analysis Results</h5>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card mb-3">
-                        <div class="card-header">PM2.5 Analysis</div>
-                        <div class="card-body">
-                            <p><strong>Average:</strong> ${analysis.average_pm25 || analysis.averages?.pm25 || 'N/A'} μg/m³</p>
-                            <p><strong>Range:</strong> ${analysis.min_pm25 || analysis.min?.pm25 || 'N/A'} - ${analysis.max_pm25 || analysis.max?.pm25 || 'N/A'} μg/m³</p>
-                            <p><strong>Standard Deviation:</strong> ${analysis.stddev_pm25 || analysis.stdDev?.pm25 || 'N/A'}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card mb-3">
-                        <div class="card-header">PM10 Analysis</div>
-                        <div class="card-body">
-                            <p><strong>Average:</strong> ${analysis.average_pm10 || analysis.averages?.pm10 || 'N/A'} μg/m³</p>
-                            <p><strong>Range:</strong> ${analysis.min_pm10 || analysis.min?.pm10 || 'N/A'} - ${analysis.max_pm10 || analysis.max?.pm10 || 'N/A'} μg/m³</p>
-                            <p><strong>Standard Deviation:</strong> ${analysis.stddev_pm10 || analysis.stdDev?.pm10 || 'N/A'}</p>
-                        </div>
-                    </div>
-                </div>
+      let analysisHtml = `
+        <h5 class="mb-3">Comprehensive Data Analysis</h5>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card mb-3">
+              <div class="card-header">PM2.5 Statistics</div>
+              <div class="card-body">
+                <p><strong>Average:</strong> ${analysis.pm25?.avg || 'N/A'} μg/m³</p>
+                <p><strong>Range:</strong> ${analysis.pm25?.min || 'N/A'} - ${analysis.pm25?.max || 'N/A'} μg/m³</p>
+                <p><strong>Std Deviation:</strong> ${analysis.pm25?.stdDev || 'N/A'}</p>
+                <p><strong>Data Completeness:</strong> ${analysis.completeness?.pm25 || 'N/A'}%</p>
+              </div>
             </div>
-        `;
-        
-        validationDetails.innerHTML = analysisHtml;
-        
-        // Update badge based on PM2.5 levels (WHO guidelines)
-        const pm25Level = analysis.average_pm25 || analysis.averages?.pm25 || 0;
-        if (pm25Level <= 10) {
-            validationBadge.className = 'badge bg-success';
-            validationBadge.textContent = 'Good';
-        } else if (pm25Level <= 25) {
-            validationBadge.className = 'badge bg-warning';
-            validationBadge.textContent = 'Moderate';
-        } else if (pm25Level <= 50) {
-            validationBadge.className = 'badge bg-danger';
-            validationBadge.textContent = 'Unhealthy';
-        } else {
-            validationBadge.className = 'badge bg-dark';
-            validationBadge.textContent = 'Very Unhealthy';
-        }
+          </div>
+          <div class="col-md-6">
+            <div class="card mb-3">
+              <div class="card-header">PM10 Statistics</div>
+              <div class="card-body">
+                <p><strong>Average:</strong> ${analysis.pm10?.avg || 'N/A'} μg/m³</p>
+                <p><strong>Range:</strong> ${analysis.pm10?.min || 'N/A'} - ${analysis.pm10?.max || 'N/A'} μg/m³</p>
+                <p><strong>Std Deviation:</strong> ${analysis.pm10?.stdDev || 'N/A'}</p>
+                <p><strong>Data Completeness:</strong> ${analysis.completeness?.pm10 || 'N/A'}%</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">Dataset Overview</div>
+              <div class="card-body">
+                <p><strong>Total Data Points:</strong> ${analysis.dataPoints?.toLocaleString() || 'N/A'}</p>
+                <p><strong>Date Range:</strong> ${analysis.dateRange?.start ? new Date(analysis.dateRange.start).toLocaleDateString() : 'N/A'} to ${analysis.dateRange?.end ? new Date(analysis.dateRange.end).toLocaleDateString() : 'N/A'}</p>
+                <p><strong>Temperature Range:</strong> ${analysis.temperature?.min || 'N/A'}°C to ${analysis.temperature?.max || 'N/A'}°C (avg: ${analysis.temperature?.avg || 'N/A'}°C)</p>
+                <p><strong>Humidity Range:</strong> ${analysis.humidity?.min || 'N/A'}% to ${analysis.humidity?.max || 'N/A'}% (avg: ${analysis.humidity?.avg || 'N/A'}%)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      validationDetails.innerHTML = analysisHtml;
+      
+      // Update badge based on data quality
+      const pm25Avg = analysis.pm25?.avg || 0;
+      const completeness = parseFloat(analysis.completeness?.pm25 || 0);
+      
+      if (completeness > 95 && pm25Avg <= 15) {
+        validationBadge.className = 'badge bg-success';
+        validationBadge.textContent = 'Excellent';
+      } else if (completeness > 80 && pm25Avg <= 35) {
+        validationBadge.className = 'badge bg-warning';
+        validationBadge.textContent = 'Good';
+      } else if (completeness > 60) {
+        validationBadge.className = 'badge bg-danger';
+        validationBadge.textContent = 'Fair';
+      } else {
+        validationBadge.className = 'badge bg-dark';
+        validationBadge.textContent = 'Poor';
+      }
     }
   }
 

@@ -741,3 +741,17 @@ TypeError: app.use is not a function
 [2025-04-29T18:09:11.330Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
 [2025-04-29T18:09:57.538Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
 [2025-04-29T18:09:57.542Z] [ERROR] [config-service] Failed to create directory : ENOENT: no such file or directory, mkdir ''
+[2025-05-24T11:37:04.305Z] [ERR-mb25n3u9-4eeln] [Data Error] DataUpdate: dataProcessingService.processThingSpeakData is not a function
+TypeError: dataProcessingService.processThingSpeakData is not a function
+    at AirQualityServer.updateData (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\server-main.js:584:61)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-05-24T11:37:27.706Z] [ERR-mb25nlwa-a2x26] [Data Error] DataUpdate: dataProcessingService.processThingSpeakData is not a function
+TypeError: dataProcessingService.processThingSpeakData is not a function
+    at AirQualityServer.updateData (C:\Users\burak\Desktop\projects\theme-based\air-quality-monitering\server-main.js:584:61)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+[2025-05-24T11:37:58.489Z] [ERR-mb25o9nd-t6lm4] [Data Error] DataUpdate: dataProcessingService.processThingSpeakData is not a function (repeated 2x)
+[2025-05-24T11:38:28.484Z] [ERR-mb25owsk-041s2] [Data Error] DataUpdate: dataProcessingService.processThingSpeakData is not a function (repeated 3x)
+[2025-05-24T11:38:58.468Z] [ERR-mb25pjxg-cv1d1] [Data Error] DataUpdate: dataProcessingService.processThingSpeakData is not a function (repeated 4x)
+[2025-05-24T11:39:28.525Z] [ERR-mb25q74d-5j3sq] [Data Error] DataUpdate: dataProcessingService.processThingSpeakData is not a function (repeated 5x)

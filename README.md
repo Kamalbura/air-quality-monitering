@@ -10,6 +10,7 @@ A comprehensive web-based dashboard for monitoring, analyzing, and visualizing P
 - **Comprehensive Dashboard**: User-friendly interface with key statistics and visualizations
 - **Advanced Visualizations**: Time series, daily patterns, heatmaps, and correlation analysis
 - **Data Analysis**: Statistical analysis of air quality trends
+- **AI-Powered Predictions**: LSTM neural networks for forecasting future air quality
 - **Flexible Data Sources**: ThingSpeak API integration with local CSV fallback
 - **Responsive Design**: Works on desktop and mobile devices
 - **Offline Capability**: Fallback to local data when cloud services are unavailable
@@ -21,14 +22,19 @@ A comprehensive web-based dashboard for monitoring, analyzing, and visualizing P
   - Node.js with Express
   - Python for advanced data analysis and visualization
   - RESTful API design
+  - Flask microservice for LSTM model serving
   
 - **Frontend**:
   - Bootstrap 5 for responsive UI
-  - Chart.js for client-side fallback visualizations
+  - Chart.js for client-side visualizations
   - EJS templating
   
 - **Data Management**:
   - ThingSpeak IoT platform integration
+  
+- **Machine Learning**:
+  - TensorFlow/Keras for LSTM model implementation
+  - Time-series forecasting for air quality prediction
   - Local CSV storage
   - Node-Cache for optimization
   

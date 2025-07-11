@@ -119,19 +119,24 @@ router.get('/check-all', async (req, res) => {
           path: route.path,
           method: route.method,
           status: 'error',
-          error: error.message,
-          success: false
+          success: false,
+          error: error.message
         });
       }
     }
     
     res.json({
       success: true,
-      results
+      results: results,
+      totalRoutes: discoveredRoutes.length,
+      timestamp: new Date().toISOString()
     });
   } catch (error) {
     debugHelper.log(`Error checking all routes: ${error.message}`, 'routes-manager', 'error');
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
   }
 });
 
@@ -146,10 +151,17 @@ router.post('/reset-cache', (req, res) => {
   }
 });
 
-// Helper function to update route status
+// Add missing updateRouteStatus function
 function updateRouteStatus(path, method, status) {
+  const routeKey = `${method} ${path}`;
+  if (!routesCache[routeKey]) {
+    routesCache[routeKey] = {};
+  }
+  routesCache[routeKey].status = status;
+  routesCache[routeKey].lastChecked = new Date().toISOString();
+
+  // Also update in discoveredRoutes array
   const route = discoveredRoutes.find(r => r.path === path && r.method === method);
-  
   if (route) {
     route.status = status;
   }

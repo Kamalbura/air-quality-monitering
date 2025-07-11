@@ -4,12 +4,12 @@
  */
 
 const ThingSpeakHelper = (function() {
-    // Private variables
+    // Configuration
     let config = {
-        channelId: null,
-        readApiKey: null,
-        writeApiKey: null,
-        updateInterval: 30000,
+        channelId: '2863798',
+        readApiKey: 'RIXYDDDMXDBX9ALI',
+        writeApiKey: '',
+        apiBase: 'https://api.thingspeak.com',
         fields: {
             humidity: 'field1',
             temperature: 'field2',
@@ -18,65 +18,270 @@ const ThingSpeakHelper = (function() {
         }
     };
     
-    let configListeners = [];
+    // State tracking
     let connectionStatus = false;
     let lastError = null;
+    const configListeners = [];
     
     /**
-     * Initialize ThingSpeak Helper
+     * Initialize configuration from server
      */
     async function init() {
         try {
-            // Try to fetch config from server
-            const response = await fetch('/api/config');
-            if (!response.ok) {
-                throw new Error(`Server returned ${response.status}`);
-            }
-            
-            const data = await response.json();
-            if (data.success && data.data && data.data.thingspeak) {
-                config = { ...config, ...data.data.thingspeak };
-                console.log('Loaded ThingSpeak config from server');
-            }
-        } catch (error) {
-            console.warn('Failed to load ThingSpeak config from server:', error);
-            console.log('Using default ThingSpeak config');
-            
-            // Try localStorage as fallback
-            const storedConfig = localStorage.getItem('thingspeak_config');
-            if (storedConfig) {
-                try {
-                    const parsedConfig = JSON.parse(storedConfig);
-                    config = { ...config, ...parsedConfig };
-                    console.log('Loaded ThingSpeak config from localStorage');
-                } catch (e) {
-                    console.warn('Failed to parse ThingSpeak config from localStorage');
+            const response = await fetch('/api/thingspeak/config');
+            if (response.ok) {
+                const serverConfig = await response.json();
+                if (serverConfig.success && serverConfig.config) {
+                    config = { ...config, ...serverConfig.config };
+                    console.log('ThingSpeak helper initialized with server config');
                 }
             }
+        } catch (error) {
+            console.warn('Could not load server config, using defaults:', error);
         }
         
-        // Check if we have minimum config
-        if (!config.channelId) {
-            console.warn('No ThingSpeak channel ID configured');
+        // Load from localStorage as fallback
+        const savedConfig = localStorage.getItem('thingspeak_config');
+        if (savedConfig) {
+            try {
+                const parsed = JSON.parse(savedConfig);
+                config = { ...config, ...parsed };
+            } catch (error) {
+                console.warn('Invalid saved config in localStorage');
+            }
         }
         
         return config;
     }
     
     /**
-     * Get ThingSpeak API URL
-     * @param {string} endpoint - API endpoint
-     * @returns {string} Full API URL
+     * Get API URL for endpoint
      */
     function getApiUrl(endpoint) {
-        return `https://api.thingspeak.com/${endpoint}`;
+        return `${config.apiBase}/${endpoint}`;
     }
     
     /**
-     * Get channel feed URL
-     * @param {Object} options - Options for the feed
-     * @returns {string} Channel feed URL
+     * Fetch all available data from ThingSpeak channel with progress reporting
+     * @param {Object} options - Fetch options
+     * @returns {Promise<Object>} All channel data
      */
+    async function fetchAllChannelData(options = {}) {
+        try {
+            console.log('Fetching all available ThingSpeak data...');
+            
+            // Show progress if callback provided
+            const onProgress = options.onProgress || (() => {});
+            
+            // Use server-side endpoint for comprehensive data fetching
+            const response = await fetch('/api/thingspeak/fetch-all', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    includeAnalysis: options.includeAnalysis !== false,
+                    chunkSize: options.chunkSize || 8000
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+            }
+            
+            const result = await response.json();
+            
+            if (!result.success) {
+                throw new Error(result.error || 'Failed to fetch all data');
+            }
+            
+            connectionStatus = true;
+            onProgress(100, result.data.total_records);
+            return result;
+            
+        } catch (error) {
+            connectionStatus = false;
+            lastError = error;
+            console.error('Error fetching all ThingSpeak data:', error);
+            
+            // Fallback to direct API with progress
+            return await fetchAllDataWithPagination({ ...options, onProgress });
+        }
+    }
+    
+    /**
+     * Fallback method to fetch all data using pagination with progress
+     */
+    async function fetchAllDataWithPagination(options = {}) {
+        console.log('Using fallback pagination method...');
+        
+        const onProgress = options.onProgress || (() => {});
+        let allData = [];
+        let lastEntryId = null;
+        let hasMoreData = true;
+        let pageCount = 0;
+        const maxPages = 50; // Safety limit
+        
+        while (hasMoreData && pageCount < maxPages) {
+            try {
+                onProgress((pageCount / maxPages) * 90, allData.length); // Max 90% until complete
+                
+                const params = new URLSearchParams({
+                    api_key: config.readApiKey,
+                    results: '8000'
+                });
+                
+                if (lastEntryId) {
+                    params.append('start', lastEntryId);
+                }
+                
+                const url = getApiUrl(`channels/${config.channelId}/feeds.json?${params.toString()}`);
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`ThingSpeak API returned ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.feeds || data.feeds.length === 0) {
+                    hasMoreData = false;
+                    break;
+                }
+                
+                // Process and add data in chunks to avoid memory issues
+                const processedChunk = [];
+                for (let i = 0; i < data.feeds.length; i += 1000) {
+                    const chunk = data.feeds.slice(i, i + 1000);
+                    const processedData = chunk.map(feed => ({
+                        entry_id: feed.entry_id,
+                        created_at: feed.created_at,
+                        field1: feed.field1,
+                        field2: feed.field2,
+                        field3: feed.field3,
+                        field4: feed.field4,
+                        humidity: feed[config.fields.humidity],
+                        temperature: feed[config.fields.temperature],
+                        pm25: feed[config.fields.pm25],
+                        pm10: feed[config.fields.pm10]
+                    }));
+                    processedChunk.push(...processedData);
+                }
+                
+                allData = allData.concat(processedChunk);
+                
+                // Set up for next iteration
+                lastEntryId = data.feeds[data.feeds.length - 1].entry_id;
+                pageCount++;
+                
+                // If we got less than the max results, we've reached the end
+                if (data.feeds.length < 8000) {
+                    hasMoreData = false;
+                }
+                
+                console.log(`Fetched page ${pageCount}, total records: ${allData.length}`);
+                
+                // Memory management - limit client-side processing
+                if (allData.length > 100000) {
+                    console.log('Large dataset detected, stopping client-side fetch');
+                    hasMoreData = false;
+                }
+                
+            } catch (error) {
+                console.error(`Error fetching page ${pageCount + 1}:`, error);
+                hasMoreData = false;
+            }
+        }
+        
+        onProgress(100, allData.length);
+        
+        return {
+            success: true,
+            data: {
+                data: allData,
+                totalRecords: allData.length,
+                pagesLoaded: pageCount,
+                channel: { id: config.channelId },
+                clientSideFetch: true
+            }
+        };
+    }
+    
+    /**
+     * Fetch channel data with flexible options
+     * @param {Object} options - Fetch options
+     * @returns {Promise<Object>} Channel data
+     */
+    async function fetchChannelData(options = {}) {
+        const { results = 100, days, start, end, fetchAll = false } = options;
+        
+        if (fetchAll) {
+            return await fetchAllChannelData(options);
+        }
+        
+        try {
+            // Prefer server-side processing through our API
+            try {
+                const params = new URLSearchParams({
+                    results: results.toString(),
+                    days: days || '',
+                    start: start || '',
+                    end: end || ''
+                });
+                
+                const apiResponse = await fetch(`/api/thingspeak/data?${params.toString()}`);
+                
+                if (apiResponse.ok) {
+                    return await apiResponse.json();
+                }
+                
+                console.warn('Server-side ThingSpeak API failed, falling back to direct ThingSpeak API');
+            } catch (apiError) {
+                console.warn('Error using server ThingSpeak proxy:', apiError);
+                console.log('Falling back to direct ThingSpeak API');
+            }
+            
+            // Direct ThingSpeak API fallback
+            const url = getChannelFeedUrl(options);
+            
+            const response = await fetch(url, { cache: 'no-store' });
+            if (!response.ok) {
+                throw new Error(`ThingSpeak API returned ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            // Normalize data to match our expected format
+            const normalizedData = {
+                success: true,
+                data: data.feeds.map(feed => ({
+                    entry_id: feed.entry_id,
+                    created_at: feed.created_at,
+                    field1: feed.field1,
+                    field2: feed.field2,
+                    field3: feed.field3,
+                    field4: feed.field4,
+                    humidity: feed[config.fields.humidity],
+                    temperature: feed[config.fields.temperature],
+                    pm25: feed[config.fields.pm25],
+                    pm10: feed[config.fields.pm10]
+                })),
+                channel: data.channel
+            };
+            
+            connectionStatus = true;
+            return normalizedData;
+        } catch (error) {
+            connectionStatus = false;
+            lastError = error;
+            console.error('Error fetching ThingSpeak data:', error);
+            
+            return {
+                success: false,
+                error: error.message,
+                data: []
+            };
+        }
+    }
+    
     function getChannelFeedUrl(options = {}) {
         const { results = 100, days, start, end } = options;
         
@@ -111,76 +316,50 @@ const ThingSpeakHelper = (function() {
     }
     
     /**
-     * Fetch channel data
-     * @param {Object} options - Fetch options
-     * @returns {Promise<Object>} Channel data
+     * Fetch data for a specific time period with comprehensive options
      */
-    async function fetchChannelData(options = {}) {
+    async function fetchTimePeriod(days = 7, results = 500, includeAnalysis = false) {
+        const options = {
+            days: days === 'all' ? null : parseInt(days),
+            results: results === 'unlimited' ? null : parseInt(results),
+            includeAnalysis,
+            fetchAll: days === 'all' || results === 'unlimited'
+        };
+        
+        if (options.fetchAll) {
+            console.log('Fetching all available data from ThingSpeak...');
+            return await fetchAllChannelData(options);
+        }
+        
         try {
-            // Prefer server-side processing through our API
-            try {
-                const apiResponse = await fetch(`/api/thingspeak/data?${new URLSearchParams({
-                    results: options.results || 100,
-                    days: options.days || '',
-                    start: options.start || '',
-                    end: options.end || ''
-                })}`);
-                
-                if (apiResponse.ok) {
-                    return await apiResponse.json();
-                }
-                
-                console.warn('Server-side ThingSpeak API failed, falling back to direct ThingSpeak API');
-            } catch (apiError) {
-                console.warn('Error using server ThingSpeak proxy:', apiError);
-                console.log('Falling back to direct ThingSpeak API');
-            }
-            
-            // Direct ThingSpeak API fallback
-            const url = getChannelFeedUrl(options);
-            
-            const response = await fetch(url, { cache: 'no-store' });
+            const response = await fetch(`/api/thingspeak/direct?days=${days}&results=${results}&analysis=${includeAnalysis}`);
             if (!response.ok) {
-                throw new Error(`ThingSpeak API returned ${response.status}`);
+                throw new Error(`Server returned ${response.status}`);
             }
             
-            const data = await response.json();
-            
-            // Normalize data to match our expected format
-            const normalizedData = {
-                success: true,
-                data: data.feeds.map(feed => ({
-                    entry_id: feed.entry_id,
-                    created_at: feed.created_at,
-                    field1: feed.field1,
-                    field2: feed.field2,
-                    field3: feed.field3,
-                    field4: feed.field4,
-                    field5: feed.field5,
-                    field6: feed.field6,
-                    field7: feed.field7,
-                    field8: feed.field8,
-                    // Add semantic mappings based on config
-                    humidity: feed[config.fields.humidity],
-                    temperature: feed[config.fields.temperature],
-                    pm25: feed[config.fields.pm25],
-                    pm10: feed[config.fields.pm10]
-                })),
-                channel: data.channel
-            };
-            
-            connectionStatus = true;
-            return normalizedData;
+            return await response.json();
         } catch (error) {
-            connectionStatus = false;
-            lastError = error;
-            console.error('Error fetching ThingSpeak data:', error);
+            console.error('Error fetching ThingSpeak time period:', error);
             
-            return {
-                success: false,
-                error: error.message,
-                data: []
-            };
+            // Fallback to direct fetch
+            console.log('Falling back to direct ThingSpeak API');
+            
+            try {
+                const data = await fetchChannelData(options);
+                return {
+                    success: data.success,
+                    data: {
+                        data: data.data,
+                        channel: data.channel
+                    }
+                };
+            } catch (directError) {
+                console.error('Direct ThingSpeak fetch also failed:', directError);
+                return {
+                    success: false,
+                    error: directError.message
+                };
+            }
         }
     }
     
@@ -268,207 +447,29 @@ const ThingSpeakHelper = (function() {
         }
     }
     
-    /**
-     * Check ThingSpeak availability
-     * @returns {Promise<boolean>} Whether ThingSpeak is available
-     */
-    async function checkAvailability() {
-        try {
-            // Try server status endpoint first
-            try {
-                const response = await fetch('/api/thingspeak/status');
-                if (response.ok) {
-                    const data = await response.json();
-                    connectionStatus = data.connected || data.success;
-                    return connectionStatus;
-                }
-            } catch (error) {
-                console.warn('Error checking ThingSpeak status from server:', error);
-            }
-            
-            // Fallback to direct ThingSpeak ping
-            const response = await fetch('https://api.thingspeak.com/ping.json');
-            connectionStatus = response.ok;
-            return connectionStatus;
-        } catch (error) {
-            connectionStatus = false;
-            lastError = error;
-            console.error('Error checking ThingSpeak availability:', error);
-            
-            return false;
-        }
-    }
-    
-    /**
-     * Test ThingSpeak connection
-     * @returns {Promise<Object>} Connection test results
-     */
-    async function testConnection() {
-        try {
-            const response = await fetch('/api/thingspeak/test-connection');
-            if (response.ok) {
-                return await response.json();
-            } else {
-                throw new Error(`Server returned ${response.status}`);
-            }
-        } catch (error) {
-            console.error('Error testing ThingSpeak connection:', error);
-            return {
-                success: false,
-                error: error.message
-            };
-        }
-    }
-    
-    /**
-     * Fetch data for a specific time period
-     * @param {number} days - Number of days
-     * @param {number} results - Maximum number of results
-     * @param {boolean} includeAnalysis - Whether to include analysis
-     * @returns {Promise<Object>} ThingSpeak data
-     */
-    async function fetchTimePeriod(days = 7, results = 500, includeAnalysis = false) {
-        try {
-            const response = await fetch(`/api/thingspeak/direct?days=${days}&results=${results}&analysis=${includeAnalysis}`);
-            if (!response.ok) {
-                throw new Error(`Server returned ${response.status}`);
-            }
-            
-            return await response.json();
-        } catch (error) {
-            console.error('Error fetching ThingSpeak time period:', error);
-            
-            // Fallback to direct fetch
-            console.log('Falling back to direct ThingSpeak API');
-            
-            try {
-                const data = await fetchChannelData({ days, results });
-                return {
-                    success: data.success,
-                    data: {
-                        data: data.data,
-                        channel: data.channel
-                    }
-                };
-            } catch (directError) {
-                console.error('Direct ThingSpeak fetch also failed:', directError);
-                return {
-                    success: false,
-                    error: directError.message
-                };
-            }
-        }
-    }
-    
-    /**
-     * Update ThingSpeak configuration
-     * @param {Object} newConfig - New configuration values
-     * @returns {Promise<Object>} Update result
-     */
-    async function updateConfig(newConfig) {
-        try {
-            // Update server-side config
-            const response = await fetch('/api/thingspeak/update-config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newConfig)
-            });
-            
-            if (!response.ok) {
-                throw new Error(`Server returned ${response.status}`);
-            }
-            
-            const result = await response.json();
-            
-            // Update local config
-            config = { ...config, ...newConfig };
-            
-            // Store in localStorage
-            localStorage.setItem('thingspeak_config', JSON.stringify(config));
-            
-            // Notify listeners
-            configListeners.forEach(listener => {
-                try {
-                    listener(config);
-                } catch (error) {
-                    console.error('Error in config listener:', error);
-                }
-            });
-            
-            return result;
-        } catch (error) {
-            console.error('Error updating ThingSpeak config:', error);
-            
-            // Still update local config for offline usage
-            config = { ...config, ...newConfig };
-            localStorage.setItem('thingspeak_config', JSON.stringify(config));
-            
-            return {
-                success: false,
-                error: error.message
-            };
-        }
-    }
-    
-    /**
-     * Get current ThingSpeak configuration
-     * @returns {Object} Current configuration
-     */
-    function getConfig() {
-        return { ...config };
-    }
-    
-    /**
-     * Add configuration change listener
-     * @param {Function} listener - Listener function
-     */
-    function addEventListener(listener) {
-        if (typeof listener === 'function' && !configListeners.includes(listener)) {
-            configListeners.push(listener);
-        }
-    }
-    
-    /**
-     * Remove configuration change listener
-     * @param {Function} listener - Listener function
-     */
-    function removeEventListener(listener) {
-        const index = configListeners.indexOf(listener);
-        if (index !== -1) {
-            configListeners.splice(index, 1);
-        }
-    }
-    
-    /**
-     * Get connection status
-     * @returns {Object} Connection status info
-     */
-    function getConnectionStatus() {
-        return {
-            connected: connectionStatus,
-            lastError: lastError ? lastError.message : null
-        };
-    }
-    
-    // Initialize on load
-    init();
-    
     // Public API
     return {
         init,
         fetchChannelData,
+        fetchAllChannelData,
+        fetchTimePeriod,
         getLatestFeed,
         getChannelDetails,
-        checkAvailability,
-        testConnection,
-        fetchTimePeriod,
-        updateConfig,
-        getConfig,
-        addEventListener,
-        removeEventListener,
-        getConnectionStatus
+        getConfig: () => ({ ...config }),
+        addEventListener: (listener) => {
+            if (typeof listener === 'function' && !configListeners.includes(listener)) {
+                configListeners.push(listener);
+            }
+        }
     };
 })();
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    ThingSpeakHelper.init().then(success => {
+        console.log('ThingSpeak helper initialized');
+    });
+});
 
 // Make it globally available
 window.ThingSpeakHelper = ThingSpeakHelper;
