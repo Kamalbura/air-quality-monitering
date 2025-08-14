@@ -1,229 +1,522 @@
-# Air Quality Monitoring System
+# 🌬️ Air Quality Monitoring System
 
-A comprehensive web-based dashboard for monitoring, analyzing, and visualizing PM2.5 and PM10 particulate matter levels in real-time. This application interfaces with ThingSpeak IoT platform for data storage and retrieval, and provides advanced visualization and analysis features.
+<div align="center">
 
-![Dashboard Preview](public/images/dashboard_preview.png)
+[![Node.js](https://img.shields.io/badge/Node.js-v18+-green.svg)](https://nodejs.org/)
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org/)
+[![Express](https://img.shields.io/badge/Express-4.18+-lightgrey.svg)](https://expressjs.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-Active-brightgreen.svg)]()
 
-## Features
+**A comprehensive real-time air quality monitoring system with IoT sensors, machine learning predictions, and interactive dashboards**
 
-- **Real-time Data Monitoring**: Live updates of air quality measurements
-- **Comprehensive Dashboard**: User-friendly interface with key statistics and visualizations
-- **Advanced Visualizations**: Time series, daily patterns, heatmaps, and correlation analysis
-- **Data Analysis**: Statistical analysis of air quality trends
-- **AI-Powered Predictions**: LSTM neural networks for forecasting future air quality
-- **Flexible Data Sources**: ThingSpeak API integration with local CSV fallback
-- **Responsive Design**: Works on desktop and mobile devices
-- **Offline Capability**: Fallback to local data when cloud services are unavailable
-- **Python-powered Visualizations**: Matplotlib/Seaborn for high-quality charts with JavaScript fallback
+[Live Demo](#demo) • [Quick Start](#quick-start) • [Documentation](#documentation) • [Hardware Setup](#hardware-setup)
 
-## Technologies Used
+</div>
 
-- **Backend**:
-  - Node.js with Express
-  - Python for advanced data analysis and visualization
-  - RESTful API design
-  - Flask microservice for LSTM model serving
-  
-- **Frontend**:
-  - Bootstrap 5 for responsive UI
-  - Chart.js for client-side visualizations
-  - EJS templating
-  
-- **Data Management**:
-  - ThingSpeak IoT platform integration
-  
-- **Machine Learning**:
-  - TensorFlow/Keras for LSTM model implementation
-  - Time-series forecasting for air quality prediction
-  - Local CSV storage
-  - Node-Cache for optimization
-  
-- **Visualization Libraries**:
-  - Matplotlib/Seaborn (Python)
-  - Chart.js (JavaScript)
+---
 
-## Project Structure
+## 🎯 What This Project Does
+
+This system provides **real-time air quality monitoring** by collecting PM2.5 and PM10 particulate matter data from IoT sensors, analyzing it with machine learning, and presenting insights through interactive web dashboards.
+
+### 🔑 Key Features
+- **📊 Real-time monitoring** of PM2.5, PM10, temperature, and humidity
+- **🤖 AI-powered predictions** using LSTM neural networks  
+- **📱 Responsive web dashboard** with live charts and analytics
+- **🔗 IoT integration** with ThingSpeak cloud platform
+- **🏠 Local & cloud deployment** options with Docker support
+- **📈 Historical analysis** and trend visualization
+- **⚡ Real-time alerts** and data validation
+
+---
+
+## 🧠 Project Mind Map & Architecture
+
+```
+                    🌬️ AIR QUALITY MONITORING SYSTEM
+                                      │
+              ┌───────────────────────┼───────────────────────┐
+              │                       │                       │
+         📡 HARDWARE              💾 DATA LAYER          🖥️ APPLICATION
+              │                       │                       │
+    ┌─────────┴─────────┐    ┌────────┴────────┐    ┌─────────┴─────────┐
+    │                   │    │                 │    │                   │
+🔧 ESP32/Arduino    📊 Sensors    🌐 ThingSpeak   💿 Local CSV    🚀 Node.js Server  📱 Web Dashboard
+    │                   │    │                 │    │                   │
+  WiFi Setup        PM2.5/PM10      Cloud API    Backup Data     Express Routes    Bootstrap UI
+  Firmware          Temp/Humidity   Real-time    Data Storage    RESTful API       Chart.js
+  Auto-upload       SDS011/AHT10    Storage      File System     WebSockets        Responsive
+                                                                                   
+              │                       │                       │
+         🤖 INTELLIGENCE          🔧 PROCESSING          🚀 DEPLOYMENT
+              │                       │                       │
+    ┌─────────┴─────────┐    ┌────────┴────────┐    ┌─────────┴─────────┐
+    │                   │    │                 │    │                   │
+🧠 LSTM Models      📈 Analytics    🐍 Python Scripts  🔄 Data Pipeline   🐳 Docker         ☁️ Cloud Deploy
+    │                   │    │                 │    │                   │
+TensorFlow/PyTorch  Trend Analysis   Visualization    Background Jobs   Containerized     Vercel/Railway
+Time Series         Statistical      Matplotlib/      Cron Tasks        Multi-stage       Auto-scaling
+Forecasting         Calculations     Seaborn          Data Validation   Production        Load Balancing
+```
+
+---
+
+## 🔄 Data Flow Diagram
+
+```
+   🔧 Hardware Sensors  →  🌐 ThingSpeak Cloud  →  🚀 Node.js Backend
+        │                       │                       │
+        ├─ PM2.5/PM10          ├─ API Endpoints         ├─ Data Processing
+        ├─ Temperature         ├─ Channel Storage       ├─ Cache Management  
+        └─ Humidity            └─ Real-time Feed        └─ Error Handling
+                                       │                       │
+                                       ↓                       ↓
+   📱 Web Dashboard  ←  🤖 ML Predictions  ←  🐍 Python Analytics
+        │                       │                       │
+        ├─ Live Charts         ├─ LSTM Models          ├─ Statistical Analysis
+        ├─ Historical Data     ├─ Forecasting          ├─ Trend Detection
+        └─ Real-time Updates   └─ Pattern Recognition  └─ Visualization Generation
+```
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- **Node.js** v18+ and **npm**
+- **Python** 3.8+ with pip
+- **Git** for cloning
+- ThingSpeak account (optional, has local fallback)
+
+### 1️⃣ Clone & Install
+```bash
+# Clone the repository
+git clone https://github.com/Kamalbura/air-quality-monitering.git
+cd air-quality-monitering
+
+# Install Node.js dependencies
+npm install
+
+# Install Python dependencies  
+pip install -r requirements.txt
+```
+
+### 2️⃣ Configure Environment
+```bash
+# Copy environment template
+cp .env.example .env
+
+# Edit configuration (optional - works with defaults)
+nano .env
+```
+
+### 3️⃣ Start the System
+```bash
+# Quick start (includes dependency checks)
+npm start
+
+# Or start development server with auto-reload
+npm run dev
+```
+
+### 4️⃣ Access Dashboard
+Open your browser to: **http://localhost:3000**
+
+**🎉 That's it! Your air quality monitoring system is running!**
+
+---
+
+## 📚 System Components
+
+### 🔧 Hardware Layer
+**IoT Sensors & Microcontrollers**
+- **ESP32/Arduino** boards with WiFi connectivity
+- **SDS011** particulate matter sensor (PM2.5/PM10)
+- **AHT10** temperature and humidity sensor
+- **Auto-uploading firmware** with ThingSpeak integration
+
+**Files:** `sketch_mar5a/`, `sketch_mar5b/`
+
+### 🌐 Data Collection Layer  
+**Cloud & Local Storage**
+- **ThingSpeak IoT Platform** for cloud data storage
+- **Local CSV files** as backup/offline mode
+- **Real-time data streams** with automatic fallback
+- **Data validation** and error handling
+
+**Files:** `services/thingspeak-service.js`, `services/local-data-service.js`
+
+### 🚀 Application Layer
+**Node.js Backend Services**
+- **Express.js server** with RESTful API
+- **WebSocket support** for real-time updates  
+- **Microservices architecture** with service modules
+- **Caching system** for performance optimization
+- **Error handling** and logging
+
+**Files:** `server.js`, `routes/`, `services/`, `middleware/`
+
+### 🤖 Machine Learning Layer
+**AI-Powered Analytics**
+- **LSTM neural networks** for time-series forecasting
+- **TensorFlow/PyTorch** model implementations
+- **Real-time predictions** via Python API
+- **Model training** and optimization tools
+
+**Files:** `python/lstm_api.py`, `python/model_manager.py`, `ml/`
+
+### 📊 Visualization Layer
+**Data Analysis & Charts**
+- **Python-generated plots** (Matplotlib/Seaborn)
+- **Interactive JavaScript charts** (Chart.js)
+- **Real-time dashboard** with Bootstrap UI
+- **Statistical analysis** and trend detection
+
+**Files:** `python/visualization.py`, `public/js/`, `views/`
+
+### 🐳 Deployment Layer
+**Container & Cloud Ready**
+- **Docker containerization** with multi-stage builds
+- **Cloud deployment** configurations (Vercel, Railway)
+- **Environment management** and secrets handling
+- **Production optimization** and scaling
+
+**Files:** `Dockerfile`, `docker-compose.yml`, `vercel.json`
+
+---
+
+## 🏗️ Project Structure
+
+<details>
+<summary>📁 <strong>Click to expand detailed file structure</strong></summary>
 
 ```
 air-quality-monitering/
-├── data/                 # Local data storage directory
-│   ├── air_quality_data.csv    # Primary data file for air quality measurements
-│   └── feeds-data.csv          # Alternative format data backup
-├── helpers/              # Helper modules for common functionality
-│   ├── debug-helper.js         # Debugging utilities and logging functions
-│   ├── diagnostic-helper.js    # Network and system diagnostic tools
-│   ├── visualization-helper.js # Utilities for generating visualizations
-│   ├── data-validator.js       # Data validation utilities (optional)
-│   └── network-diagnostics.js  # Advanced network troubleshooting tools
-├── iithyd/               # Arduino/ESP32 firmware for sensor nodes
-│   └── iithyd.ino              # Main firmware code for the sensor hardware
-├── logs/                 # Application log files
-│   ├── debug.log               # General debugging information
-│   ├── error.log               # Application error messages
-│   └── diagnostic.log          # Network and API diagnostics
-├── middleware/           # Express middleware components
-│   ├── api-monitor.js          # API request monitoring and metrics
-│   └── security-middleware.js  # Security-related middleware (optional)
-├── public/               # Publicly accessible static files
-│   ├── css/                    # CSS stylesheets
-│   │   └── style.css           # Main application styles
-│   ├── images/                 # Generated visualizations and static images
-│   │   └── dashboard_preview.png # Preview image for README
-│   └── js/                     # Client-side JavaScript
-│       ├── config.js           # Client-side configuration
-│       ├── dashboard.js        # Main dashboard functionality
-│       ├── data-renderer.js    # Data rendering utilities
-│       ├── fallback-viz.js     # Client-side visualization fallbacks
-│       └── status.js           # System status page functionality
-├── python/               # Python scripts for analysis and visualization
-│   ├── analysis.py             # Data analysis script for statistics
-│   ├── check_deps.py           # Python dependency checker
-│   ├── correlation_large.py    # Memory-efficient correlation analysis for large datasets
-│   ├── create_error_image.py   # Generates error images for visualization failures
-│   ├── data_validator.py       # Validates data integrity and structure
-│   ├── fix_encoding.py         # Fixes encoding issues in Python files
-│   ├── sample_data.py          # Generates sample data for testing
-│   ├── verify_data.py          # Verifies dataset integrity
-│   └── visualization.py        # Main visualization generator
-├── routes/               # Express route handlers
-│   └── api.js                  # API endpoints implementation
-├── services/             # Service modules for external integrations
-│   ├── local-data-service.js   # Local CSV data provider service
-│   └── thingspeak-service.js   # ThingSpeak API client service
-├── sketch_mar5a/         # Alternative sensor firmware
-│   └── sketch_mar5a/           # ESP8266/Arduino firmware files
-├── views/                # EJS templates for rendering HTML
-│   ├── dashboard.ejs           # Main dashboard view template
-│   ├── error.ejs               # Error page template
-│   └── status.ejs              # System status page template
-├── .env                  # Environment variables (API keys, etc.)
-├── error-handler.js      # Centralized application error handler
-├── install.bat           # Installation script for Windows
-├── making-report.py      # Script for generating project reports
-├── package.json          # Node.js dependencies and scripts
-├── requirements.txt      # Python dependencies
-├── run.bat               # Application launcher for Windows
-├── server.js             # Main application entry point
-├── setup_dirs.bat        # Directory structure setup script
-├── start.bat             # Simplified startup script
-├── test.js               # Basic test script
-├── test-thingspeak-connection.js # ThingSpeak connectivity tester
-├── validate.js           # Dependency validation script
-└── visualization_wrapper.js # JavaScript wrapper for Python visualizations
+│
+├── 🔧 HARDWARE & FIRMWARE
+│   ├── sketch_mar5a/               # ESP32 firmware (main)
+│   │   └── sketch_mar5a.ino        # Arduino code for sensors
+│   └── sketch_mar5b/               # Alternative firmware
+│       └── sketch_mar5b.ino        # ESP8266 variant
+│
+├── 🚀 BACKEND APPLICATION  
+│   ├── server.js                   # Main application entry point
+│   ├── startup.js                  # System initialization
+│   ├── package.json               # Node.js dependencies & scripts
+│   ├── routes/                     # API endpoints
+│   │   ├── api.js                  # Main API routes
+│   │   ├── api/                    # Specialized API modules
+│   │   └── diagnostics-routes.js   # System diagnostics
+│   ├── services/                   # Backend services
+│   │   ├── thingspeak-service.js   # ThingSpeak API client
+│   │   ├── local-data-service.js   # Local data management
+│   │   ├── python-backend-service.js # Python ML integration
+│   │   └── data-processing-service.js # Data processing
+│   ├── middleware/                 # Express middleware
+│   │   ├── api-monitor.js          # API monitoring
+│   │   └── security-middleware.js  # Security features
+│   └── helpers/                    # Utility modules
+│       ├── debug-helper.js         # Debugging tools
+│       ├── diagnostic-helper.js    # System diagnostics
+│       └── visualization-helper.js # Chart generation
+│
+├── 🤖 MACHINE LEARNING
+│   ├── python/                     # Python ML services
+│   │   ├── lstm_api.py             # LSTM prediction API
+│   │   ├── model_manager.py        # Model management
+│   │   ├── visualization.py        # Data visualization
+│   │   └── api/                    # ML API modules
+│   ├── ml/                         # ML models & training
+│   │   └── lstm-trainer.js         # Model training scripts
+│   └── models/                     # Trained model files
+│
+├── 📱 FRONTEND APPLICATION
+│   ├── views/                      # EJS templates
+│   │   ├── dashboard.ejs           # Main dashboard
+│   │   ├── status.ejs              # System status
+│   │   ├── lstm-dashboard.ejs      # ML predictions view
+│   │   └── config.ejs              # Configuration panel
+│   └── public/                     # Static assets
+│       ├── css/style.css           # Application styles  
+│       ├── js/                     # Client-side JavaScript
+│       │   ├── dashboard.js        # Dashboard functionality
+│       │   ├── data-renderer.js    # Data visualization
+│       │   └── config.js           # Client configuration
+│       └── images/                 # Generated visualizations
+│
+├── 💾 DATA & CONFIGURATION
+│   ├── data/                       # Data storage
+│   │   ├── air_quality_data.csv    # Main dataset
+│   │   └── feeds-data.csv          # Backup data
+│   ├── config/                     # Configuration files
+│   ├── logs/                       # Application logs
+│   ├── .env.example               # Environment template
+│   └── requirements.txt           # Python dependencies
+│
+├── 🐳 DEPLOYMENT
+│   ├── Dockerfile                 # Container configuration
+│   ├── docker-compose.yml         # Multi-container setup
+│   ├── vercel.json               # Vercel deployment
+│   └── DEPLOYMENT.md             # Deployment guide
+│
+└── 📖 DOCUMENTATION
+    ├── README.md                  # This file
+    ├── ANALYSIS_REPORT.md         # Code analysis
+    ├── SETUP.md                   # Setup instructions
+    └── IMPLEMENTATION_COMPLETE.md # Implementation notes
 ```
 
-## File Descriptions
+</details>
 
-### Core Application Files
+---
 
-- **server.js**: The main entry point of the application. Initializes Express server, sets up middleware, and defines routes. Manages server startup with port selection and graceful shutdown.
+## 🔧 Hardware Setup
 
-- **package.json**: Defines Node.js dependencies, project metadata, and npm scripts for running, testing, and managing the application.
+### Required Components
+- **ESP32** or **Arduino with WiFi** (NodeMCU, Wemos D1)
+- **SDS011** laser PM2.5/PM10 sensor
+- **AHT10** temperature/humidity sensor  
+- Jumper wires and breadboard
+- USB cable for programming
 
-- **error-handler.js**: Centralized error handling mechanism that logs errors, creates error images when needed, and formats error responses consistently.
+### Wiring Diagram
+```
+ESP32          SDS011 Sensor      AHT10 Sensor
+GPIO14    →    RX (Yellow)        
+GPIO12    →    TX (Blue)          
+3.3V      →    VCC (Red)          VCC
+GND       →    GND (Black)        GND
+GPIO21    →                      SDA
+GPIO22    →                      SCL
+```
 
-### Configuration Files
+### Firmware Installation
+1. **Install Arduino IDE** with ESP32 board support
+2. **Add required libraries:**
+   - WiFi (built-in)
+   - ThingSpeak by MathWorks
+   - Adafruit AHTX0
+   - SDS011 sensor library
+3. **Configure WiFi credentials** in `sketch_mar5a.ino`
+4. **Upload firmware** to your ESP32 board
 
-- **.env**: Stores environment variables including ThingSpeak API keys, channel IDs, and application settings. Not committed to version control for security.
+### Sensor Calibration
+- Allow **15 minutes warm-up** for accurate readings
+- Place sensor **away from direct airflow**
+- **Outdoor deployment** requires weatherproof enclosure
 
-- **requirements.txt**: Lists Python package dependencies including pandas, matplotlib, numpy, seaborn, and scikit-learn.
+---
 
-### Service Modules
+## 🌐 API Documentation
 
-- **services/thingspeak-service.js**: Handles all ThingSpeak API communication with enhanced error handling, rate limiting, and caching. Provides data retrieval, status checking, and data submission.
+### Core Endpoints
 
-- **services/local-data-service.js**: Provides fallback data services using local CSV files when ThingSpeak is unavailable. Handles efficient streaming for large datasets.
+| Method | Endpoint | Description | Response |
+|--------|----------|-------------|----------|
+| `GET` | `/api/latest` | Latest sensor readings | Real-time data |
+| `GET` | `/api/historical` | Historical dataset | Time-series data |
+| `GET` | `/api/stats` | Statistical summary | Analytics |
+| `GET` | `/api/health` | System health check | Status info |
+| `GET` | `/api/predictions` | ML forecasts | LSTM predictions |
+| `POST` | `/api/refresh` | Manual data refresh | Status update |
 
-### Helper Modules
+### Data Format
+```json
+{
+  "timestamp": "2024-01-15T10:30:00Z",
+  "pm25": 15.2,
+  "pm10": 22.1, 
+  "temperature": 24.5,
+  "humidity": 60.2,
+  "quality_index": "Good"
+}
+```
 
-- **helpers/debug-helper.js**: Provides debugging utilities including logging, data sampling, and operational tracking to help identify issues.
+### WebSocket Events
+- `data-update` - New sensor readings
+- `prediction-update` - ML forecast updates
+- `system-alert` - Error notifications
 
-- **helpers/diagnostic-helper.js**: Tools for diagnosing network and API connectivity issues, particularly with ThingSpeak.
+---
 
-- **helpers/visualization-helper.js**: Manages the generation of visualizations, handling Python script execution, temporary file management, and caching.
+## 🚀 Deployment Options
 
-- **helpers/network-diagnostics.js**: Advanced network diagnostics including DNS resolution, ping tests, and network interface information.
+### 🐳 Docker Deployment (Recommended)
+```bash
+# Build and run with Docker Compose
+docker-compose up --build
 
-### Middleware
+# Access at http://localhost:3000
+```
 
-- **middleware/api-monitor.js**: Monitors API usage, tracks request counts, response times, and errors to help optimize performance.
+### ☁️ Cloud Deployment
 
-- **middleware/security-middleware.js**: Optional security middleware for request validation, rate limiting, and other security measures.
+**Vercel (Frontend + API)**
+```bash
+npm run deploy:vercel
+```
 
-### API Routes
+**Railway (Full Stack)**
+```bash
+railway login
+railway deploy
+```
 
-- **routes/api.js**: Defines all RESTful API endpoints for data retrieval, visualization generation, system status, and cache management.
+**Heroku (Full Stack)**
+```bash
+heroku create your-app-name
+git push heroku main
+```
 
-### Frontend JavaScript
+### 🖥️ Local Development
+```bash
+# Start development server
+npm run dev
 
-- **public/js/dashboard.js**: Core dashboard functionality, managing user interactions, data loading, visualization display, and real-time updates.
+# Start with debugging
+DEBUG=* npm start
 
-- **public/js/data-renderer.js**: Utilities for rendering data tables and processing raw data for display.
+# Run Python services separately
+cd python && python lstm_api.py
+```
 
-- **public/js/fallback-viz.js**: Client-side fallback visualization using Chart.js when Python-generated visualizations are unavailable.
+---
 
-- **public/js/status.js**: Controls the system status page functionality including API endpoint testing and cache management.
+## 🔍 Monitoring & Analytics
 
-- **public/js/config.js**: Client-side configuration with parameters for sampling rates, pagination settings, and feature flags.
+### System Health Dashboard
+Access **http://localhost:3000/status** for:
+- ✅ API endpoint health
+- 📊 Performance metrics  
+- 🔄 Cache statistics
+- 🌐 ThingSpeak connectivity
+- 💾 Database status
 
-## Python Scripts
+### Available Analytics
+- **Air Quality Index (AQI)** calculations
+- **Trend analysis** and pattern detection
+- **Correlation studies** between environmental factors
+- **Predictive modeling** with confidence intervals
+- **Comparative analysis** across time periods
 
-All Python analysis scripts are located in the `python/` directory:
+### Visualization Types
+- 📈 **Time series plots** for trend analysis
+- 🗓️ **Daily/weekly patterns** with heatmaps
+- 🔗 **Correlation matrices** for factor relationships
+- 🎯 **Forecast charts** with uncertainty bands
+- 📊 **Statistical summaries** and distributions
 
-- `analysis.py` - Main analysis script that generates visualizations
-  - Creates `time_series.png` and `pm25_trend.png` in public/images directory
-  - Can be run with `--extended` flag to generate additional visualizations
+---
 
-To run manually:
+## 🛠️ Development Guide
 
-- **python/visualization.py**: Core visualization generator that creates time series, daily patterns, heatmaps, and correlation plots.
+### Development Setup
+```bash
+# Clone and setup
+git clone <repo-url>
+cd air-quality-monitering
 
-- **python/analysis.py**: Performs statistical analysis on air quality data, calculating averages, maximums, and trends.
+# Install dependencies
+npm install
+pip install -r requirements.txt
 
-- **python/correlation_large.py**: Memory-efficient implementation of correlation analysis for very large datasets.
+# Setup environment
+cp .env.example .env
 
-- **python/sample_data.py**: Generates sample air quality data for testing and demonstration purposes.
+# Start development
+npm run dev
+```
 
-- **python/data_validator.py**: Validates data integrity, field mapping, and structure to ensure proper analysis.
+### Code Structure Guidelines
+- **Services**: Business logic in `services/`
+- **Routes**: API endpoints in `routes/`
+- **Middleware**: Request processing in `middleware/`
+- **Views**: EJS templates in `views/`
+- **Public**: Static assets in `public/`
 
-### Views (Templates)
+### Testing
+```bash
+# Run basic tests
+npm test
 
-- **views/dashboard.ejs**: Main dashboard interface template with panels for visualizations, data tables, and controls.
+# Test ThingSpeak connection
+node test-thingspeak-connection.js
 
-- **views/status.ejs**: System status and diagnostic page template showing API health and performance metrics.
+# Validate system dependencies
+npm run validate
+```
 
-- **views/error.ejs**: Error page template for displaying user-friendly error messages.
+### Adding New Features
+1. **Backend**: Add service in `services/`, route in `routes/`
+2. **Frontend**: Add JavaScript in `public/js/`, template in `views/`
+3. **ML Models**: Add Python script in `python/`, integrate via API
+4. **Sensors**: Modify firmware in `sketch_mar5a/`
 
-### Hardware Firmware
+---
 
-- **iithyd/iithyd.ino**: ESP32-based firmware for the air quality monitoring node that reads sensors and uploads data to ThingSpeak.
+## 🤝 Contributing
 
-- **sketch_mar5a/sketch_mar5a.ino**: Alternative firmware version for different hardware configurations.
+We welcome contributions! Please see our guidelines:
 
-### Utility Scripts
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
 
-- **run.bat**: Windows batch script that sets up the environment, checks dependencies, and launches the application with optimized settings.
+### Development Standards
+- Follow **ESLint** configuration for JavaScript
+- Use **PEP 8** for Python code
+- Write **clear commit messages**
+- Add **tests** for new features
+- Update **documentation** as needed
 
-- **install.bat**: Installation script that installs Node.js and Python dependencies and sets up the directory structure.
+---
 
-- **validate.js**: Validates that all required dependencies are properly installed before running the application.
+## 📖 Additional Resources
 
-- **test-thingspeak-connection.js**: Tests connectivity to ThingSpeak API to verify configuration and network access.
+### Documentation
+- 📚 [Complete Setup Guide](SETUP.md)
+- 🚀 [Deployment Instructions](DEPLOYMENT.md)  
+- 🔍 [Code Analysis Report](ANALYSIS_REPORT.md)
+- ⚡ [Implementation Details](IMPLEMENTATION_COMPLETE.md)
 
-## Data Flow
+### External Links
+- 🌐 [ThingSpeak Documentation](https://thingspeak.com/docs)
+- 🤖 [TensorFlow Guides](https://tensorflow.org/tutorials)
+- 📊 [Chart.js Documentation](https://chartjs.org/docs/)
+- 🔧 [Arduino ESP32 Guide](https://docs.espressif.com/projects/arduino-esp32/)
 
-1. Sensor nodes collect PM2.5, PM10, temperature and humidity data
-2. Data is sent to ThingSpeak via WiFi/Internet
-3. The Node.js application retrieves data from ThingSpeak (or local CSV if unavailable)
-4. Python scripts process the data for analysis and visualization
-5. Results are displayed on the web dashboard via Express and EJS templates
-6. Real-time updates are pushed to the UI when new data arrives
+### Support
+- 💬 [GitHub Issues](../../issues) for bug reports
+- 💡 [GitHub Discussions](../../discussions) for questions
+- 📧 Email: [your-email@example.com](mailto:your-email@example.com)
 
-## Subsystems
+---
 
-- **Data Collection**: Hardware sensors and firmware
-- **Data Storage**: ThingSpeak cloud platform and local CSV fallback
-- **Data Processing**: Python analysis scripts and Node.js services
-- **Visualization**: Python-generated plots with JavaScript fallbacks
-- **Presentation**: Express web server and Bootstrap UI
+## 📄 License
 
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **ThingSpeak** for IoT platform services
+- **ESP32/Arduino** community for hardware support  
+- **TensorFlow** team for ML framework
+- **Chart.js** for visualization library
+- **Bootstrap** for responsive UI framework
+- **Node.js & Express** communities
+
+---
+
+<div align="center">
+
+**🌬️ Made with ❤️ for cleaner air and better environmental monitoring**
+
+[![GitHub stars](https://img.shields.io/github/stars/Kamalbura/air-quality-monitering.svg?style=social&label=Star)](https://github.com/Kamalbura/air-quality-monitering)
+[![GitHub forks](https://img.shields.io/github/forks/Kamalbura/air-quality-monitering.svg?style=social&label=Fork)](https://github.com/Kamalbura/air-quality-monitering/fork)
+
+</div>
